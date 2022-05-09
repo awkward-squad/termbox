@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+
 import Data.Semigroup ((<>))
 import qualified Termbox
 
