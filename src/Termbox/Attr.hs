@@ -68,45 +68,45 @@ attrToWord :: Attr -> Word16
 attrToWord (Attr x y) =
   x .|. y
 
--- | @black = 1@.
+-- | @black = 0@.
 black :: Attr
 black =
-  Attr tB_BLACK 0
+  Attr 0 0
 
--- | @red = 2@.
+-- | @red = 1@.
 red :: Attr
 red =
-  Attr tB_RED 0
+  Attr 1 0
 
--- | @green = 3@.
+-- | @green = 2@.
 green :: Attr
 green =
-  Attr tB_GREEN 0
+  Attr 2 0
 
--- | @yellow = 4@.
+-- | @yellow = 3@.
 yellow :: Attr
 yellow =
-  Attr tB_YELLOW 0
+  Attr 3 0
 
--- | @blue = 5@.
+-- | @blue = 4@.
 blue :: Attr
 blue =
-  Attr tB_BLUE 0
+  Attr 4 0
 
--- | @magenta = 6@.
+-- | @magenta = 5@.
 magenta :: Attr
 magenta =
-  Attr tB_MAGENTA 0
+  Attr 5 0
 
--- | @cyan = 7@.
+-- | @cyan = 6@.
 cyan :: Attr
 cyan =
-  Attr tB_CYAN 0
+  Attr 6 0
 
--- | @white = 8@.
+-- | @white = 7@.
 white :: Attr
 white =
-  Attr tB_WHITE 0
+  Attr 7 0
 
 -- | Bold modifier attribute.
 bold :: Attr
