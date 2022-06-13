@@ -20,7 +20,7 @@
 --
 -- loop :: (Termbox.'Cells' -> Termbox.'Cursor' -> IO ()) -> IO Termbox.'Event' -> Int -> IO ()
 -- loop render poll n = do
---   render (string (show n)) Termbox.'NoCursor'
+--   render (string 0 0 (show n)) Termbox.'NoCursor'
 --
 --   poll >>= \\case
 --     Termbox.'EventKey' Termbox.'KeyEsc' -> pure ()
