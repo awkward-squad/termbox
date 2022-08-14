@@ -30,7 +30,7 @@ import Prelude hiding (reverse)
 -- underlined. The 'Monoid' instance combines 'Attr's this way, with a right bias.
 data Attr
   = Attr !Word16 {- color -} !Word16 {- attr -}
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)
 
 instance Monoid Attr where
   mempty :: Attr

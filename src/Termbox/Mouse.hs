@@ -15,7 +15,7 @@ data Mouse
   | MouseRight
   | MouseWheelDown
   | MouseWheelUp
-  deriving (Eq, Ord, Show)
+  deriving stock (Eq, Ord, Show)
 
 parseMouse :: Word16 -> Mouse
 parseMouse key

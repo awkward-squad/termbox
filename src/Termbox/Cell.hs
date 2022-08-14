@@ -14,7 +14,7 @@ import Termbox.Attr (Attr, attrToWord, wordToAttr)
 -- | A cell contains a character, foreground attribute, and background attribute.
 data Cell
   = Cell !Char !Attr !Attr
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)
 
 instance Storable Cell where
   sizeOf :: Cell -> Int

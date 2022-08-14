@@ -130,7 +130,7 @@ data InitError
   = FailedToOpenTTY
   | PipeTrapError
   | UnsupportedTerminal
-  deriving (Show)
+  deriving stock (Show)
 
 instance Exception InitError
 

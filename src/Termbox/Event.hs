@@ -27,7 +27,7 @@ data Event
     EventResize !Int !Int
   | -- | Mouse event (column, then row)
     EventMouse !Mouse !Int !Int
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)
 
 -- | Block until an 'Event' arrives.
 --
@@ -43,7 +43,7 @@ poll =
 -- codebase.
 data PollError
   = PollError
-  deriving (Show)
+  deriving stock (Show)
 
 instance Exception PollError
 

@@ -1,7 +1,7 @@
 cabal-version: 2.4
 
 name: termbox
-version: 0.3.0
+version: 0.4.0
 category: User Interfaces
 description:
   This package provides a thin wrapper around @termbox v1.1.2@, a simple C
@@ -18,8 +18,7 @@ copyright: (c) 2018-2022, Mitchell Rosen
 license: BSD-3-Clause
 license-file: LICENSE
 build-type: Simple
-tested-with: GHC ==8.10.7, GHC ==9.0.2, GHC ==9.2.2
-x-revision: 1
+tested-with: GHC == 9.0.2, GHC == 9.2.4, GHC == 9.4.1
 
 
 extra-source-files:
@@ -38,6 +37,7 @@ flag build-examples
 
 common component
   default-extensions:
+    DerivingStrategies
     GeneralizedNewtypeDeriving
     InstanceSigs
     LambdaCase
@@ -54,10 +54,13 @@ common component
     ghc-options:
       -Wno-missing-safe-haskell-mode
       -Wno-prepositive-qualified-module
+  if impl(ghc >= 9.2)
+    ghc-options:
+      -Wno-missing-kind-signatures
 
 library
   import: component
-  build-depends: base ^>= 4.10 || ^>= 4.11 || ^>= 4.12 || ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16
+  build-depends: base ^>= 4.10 || ^>= 4.11 || ^>= 4.12 || ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17
   c-sources:
     cbits/termbox.c
     cbits/utf8.c

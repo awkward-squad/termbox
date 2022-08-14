@@ -87,7 +87,7 @@ data Key
   | KeySpace
   | -- | Also: @Ctrl+I@
     KeyTab
-  deriving (Eq, Ord, Show)
+  deriving stock (Eq, Ord, Show)
 
 pattern KeyCtrlH :: Key
 pattern KeyCtrlH = KeyCtrlBackspace
