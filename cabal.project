@@ -1,2 +1,3 @@
 packages:
-  termbox
+  termbox,
+  termbox-bindings-c

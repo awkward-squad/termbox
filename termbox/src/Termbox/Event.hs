@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeApplications #-}
-
 module Termbox.Event
   ( Event (..),
     poll,
@@ -10,11 +8,10 @@ where
 import Control.Exception (Exception, throwIO)
 import Data.Char (chr)
 import Data.Int (Int32)
-import Data.Semigroup (Semigroup (..))
 import Data.Word (Word32)
 import Foreign.Marshal.Alloc (alloca)
 import Foreign.Storable (peek)
-import Termbox.Internal
+import Termbox.Bindings.C
 import Termbox.Key (Key (KeyChar), parseKey)
 import Termbox.Mouse (Mouse, parseMouse)
 import Prelude hiding (mod)
@@ -51,7 +48,7 @@ instance Exception PollError
 parseEvent :: TbEvent -> Event
 parseEvent (TbEvent typ _mod key ch w h x y)
   | typ == tB_EVENT_KEY =
-    EventKey (if ch == 0 then parseKey key else KeyChar (chr (fromIntegral @Word32 @Int ch)))
+      EventKey (if ch == 0 then parseKey key else KeyChar (chr (fromIntegral @Word32 @Int ch)))
   | typ == tB_EVENT_RESIZE = EventResize (fromIntegral @Int32 @Int w) (fromIntegral @Int32 @Int h)
   | typ == tB_EVENT_MOUSE = EventMouse (parseMouse key) (fromIntegral @Int32 @Int x) (fromIntegral @Int32 @Int y)
   | otherwise = error ("termbox: unknown event type " ++ show typ)

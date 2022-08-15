@@ -17,7 +17,7 @@ module Termbox.Key
 where
 
 import Data.Word (Word16)
-import Termbox.Internal
+import Termbox.Bindings.C
 
 -- | A key event.
 data Key

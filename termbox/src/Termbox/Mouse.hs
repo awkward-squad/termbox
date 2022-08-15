@@ -5,7 +5,7 @@ module Termbox.Mouse
 where
 
 import Data.Word (Word16)
-import Termbox.Internal
+import Termbox.Bindings.C
 
 -- | A mouse event.
 data Mouse

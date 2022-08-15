@@ -7,8 +7,8 @@ where
 import Data.Char (ord)
 import Data.Semigroup (Semigroup)
 import Termbox.Attr (attrToWord)
+import Termbox.Bindings.C (tb_change_cell)
 import Termbox.Cell (Cell (Cell))
-import Termbox.Internal (tb_change_cell)
 
 -- | A grid of cells. Create with 'set' and combine with ('<>').
 newtype Cells

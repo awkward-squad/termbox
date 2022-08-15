@@ -1,4 +1,4 @@
-module Termbox.Internal where
+module Termbox.Bindings.C where
 
 import Data.Int (Int32)
 import Data.Word

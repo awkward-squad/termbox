@@ -340,12 +340,11 @@ module Termbox
 where
 
 import Control.Exception
-import Data.Semigroup (Semigroup (..))
 import Termbox.Attr
+import Termbox.Bindings.C
 import Termbox.Cell (Cell (Cell))
 import Termbox.Cells (Cells (Cells), set)
 import Termbox.Event (Event (..), PollError (..), poll)
-import Termbox.Internal
 import Termbox.Key
   ( Key (..),
     pattern KeyCtrl2,
