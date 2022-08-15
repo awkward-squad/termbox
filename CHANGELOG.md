@@ -1,6 +1,11 @@
 ## [0.4.0] - Unreleased
 - Support GHC 9.4.1
 - Fix off-by-one error in named colors (black, etc) (thanks @seagreen)
+- Add names for bright versions of basic colors (e.g. `brightRed`)
+- Add names for miscellaneous colors (`color0` .. `color215`)
+- Add names for grayscale colors (`gray0` .. `gray23`)
+- Remove `Semigroup`, `Monoid` and `Num` instances of `Attr`
+- Change type of `bold`, `underline` and `reverse` from `Attr` to `Attr -> Attr`
 
 ## [0.3.0] - 2020-09-20
 - Add `Cells` and `Cursor` types
