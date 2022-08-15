@@ -340,8 +340,9 @@ module Termbox
 where
 
 import Control.Exception
+import Foreign.C.Types (CInt)
 import Termbox.Attr
-import Termbox.Bindings.C
+import qualified Termbox.Bindings.C as C
 import Termbox.Cell (Cell (Cell))
 import Termbox.Cells (Cells (Cells), set)
 import Termbox.Event (Event (..), PollError (..), poll)
@@ -393,38 +394,38 @@ instance Exception InitError
 run :: (Int -> Int -> (Cells -> Cursor -> IO ()) -> IO Event -> IO a) -> IO a
 run action = do
   mask $ \unmask -> do
-    initResult <- tb_init
+    initResult <- C.tb_init
     case () of
       _ | initResult == 0 -> do
         result <-
           unmask
             ( do
-                _ <- tb_select_input_mode tB_INPUT_MOUSE
-                _ <- tb_select_output_mode tB_OUTPUT_256
-                width <- tb_width
-                height <- tb_height
-                action width height render poll
+                _ <- C.tb_select_input_mode C._TB_INPUT_MOUSE
+                _ <- C.tb_select_output_mode C._TB_OUTPUT_256
+                width <- C.tb_width
+                height <- C.tb_height
+                action (fromIntegral @CInt @Int width) (fromIntegral @CInt @Int height) render poll
             )
             `onException` shutdown
         shutdown
         pure result
-      _ | initResult == tB_EFAILED_TO_OPEN_TTY -> throwIO FailedToOpenTTY
-      _ | initResult == tB_EPIPE_TRAP_ERROR -> throwIO PipeTrapError
-      _ | initResult == tB_EUNSUPPORTED_TERMINAL -> throwIO UnsupportedTerminal
+      _ | initResult == C._TB_EFAILED_TO_OPEN_TTY -> throwIO FailedToOpenTTY
+      _ | initResult == C._TB_EPIPE_TRAP_ERROR -> throwIO PipeTrapError
+      _ | initResult == C._TB_EUNSUPPORTED_TERMINAL -> throwIO UnsupportedTerminal
       _ -> error ("termbox: unknown tb_init error " ++ show initResult)
 
 -- | Render a scene.
 render :: Cells -> Cursor -> IO ()
 render (Cells cells) cursor = do
-  tb_set_clear_attributes 0 0
-  tb_clear
+  C.tb_set_clear_attributes 0 0
+  C.tb_clear
   cells
   case cursor of
-    Cursor col row -> tb_set_cursor col row
-    NoCursor -> tb_set_cursor tB_HIDE_CURSOR tB_HIDE_CURSOR
-  tb_present
+    Cursor col row -> C.tb_set_cursor (fromIntegral @Int @CInt col) (fromIntegral @Int @CInt row)
+    NoCursor -> C.tb_set_cursor C._TB_HIDE_CURSOR C._TB_HIDE_CURSOR
+  C.tb_present
 
 shutdown :: IO ()
 shutdown = do
-  _ <- tb_select_output_mode tB_OUTPUT_NORMAL
-  tb_shutdown
+  _ <- C.tb_select_output_mode C._TB_OUTPUT_NORMAL
+  C.tb_shutdown

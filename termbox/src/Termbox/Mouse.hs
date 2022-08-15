@@ -5,7 +5,7 @@ module Termbox.Mouse
 where
 
 import Data.Word (Word16)
-import Termbox.Bindings.C
+import qualified Termbox.Bindings.C as C
 
 -- | A mouse event.
 data Mouse
@@ -19,10 +19,10 @@ data Mouse
 
 parseMouse :: Word16 -> Mouse
 parseMouse key
-  | key == tB_KEY_MOUSE_LEFT = MouseLeft
-  | key == tB_KEY_MOUSE_MIDDLE = MouseMiddle
-  | key == tB_KEY_MOUSE_RELEASE = MouseRelease
-  | key == tB_KEY_MOUSE_RIGHT = MouseRight
-  | key == tB_KEY_MOUSE_WHEEL_DOWN = MouseWheelDown
-  | key == tB_KEY_MOUSE_WHEEL_UP = MouseWheelUp
+  | key == C._TB_KEY_MOUSE_LEFT = MouseLeft
+  | key == C._TB_KEY_MOUSE_MIDDLE = MouseMiddle
+  | key == C._TB_KEY_MOUSE_RELEASE = MouseRelease
+  | key == C._TB_KEY_MOUSE_RIGHT = MouseRight
+  | key == C._TB_KEY_MOUSE_WHEEL_DOWN = MouseWheelDown
+  | key == C._TB_KEY_MOUSE_WHEEL_UP = MouseWheelUp
   | otherwise = error ("termbox: unknown mouse " ++ show key)
