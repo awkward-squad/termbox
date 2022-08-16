@@ -22,7 +22,7 @@ module Termbox.Bindings.C
     tb_change_cell,
     tb_cell_buffer,
 
-    -- ** Set input / output mode
+    -- ** Get/set input/output mode
     tb_select_input_mode,
     tb_select_output_mode,
 
@@ -241,11 +241,11 @@ foreign import capi unsafe "termbox.h tb_put_cell"
     Ptr Tb_cell ->
     IO ()
 
--- | Set the input mode.
+-- | Get/set the input mode.
 foreign import capi unsafe "termbox.h tb_select_input_mode"
   tb_select_input_mode :: CInt -> IO CInt
 
--- | Set the output mode.
+-- | Get/set the output mode.
 foreign import capi unsafe "termbox.h tb_select_output_mode"
   tb_select_output_mode :: CInt -> IO CInt
 

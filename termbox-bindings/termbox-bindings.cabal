@@ -33,6 +33,7 @@ library
   default-extensions:
     BlockArguments
     DerivingStrategies
+    DuplicateRecordFields
     GeneralizedNewtypeDeriving
     LambdaCase
     PatternSynonyms

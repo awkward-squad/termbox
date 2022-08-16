@@ -1,5 +1,3 @@
-{-# LANGUAGE PatternSynonyms #-}
-
 module Termbox.Key
   ( Key (..),
     parseKey,
@@ -16,7 +14,6 @@ module Termbox.Key
   )
 where
 
-import Data.Word (Word16)
 import qualified Termbox.Bindings
 
 -- | A key event.
@@ -119,63 +116,63 @@ pattern KeyCtrlI = KeyTab
 pattern KeyCtrlUnderscore :: Key
 pattern KeyCtrlUnderscore = KeyCtrlSlash
 
-parseKey :: Word16 -> Key
-parseKey key
-  | key == Termbox.Bindings._TB_KEY_ARROW_DOWN = KeyArrowDown
-  | key == Termbox.Bindings._TB_KEY_ARROW_LEFT = KeyArrowLeft
-  | key == Termbox.Bindings._TB_KEY_ARROW_RIGHT = KeyArrowRight
-  | key == Termbox.Bindings._TB_KEY_ARROW_UP = KeyArrowUp
-  | key == Termbox.Bindings._TB_KEY_BACKSPACE = KeyBackspace
-  | key == Termbox.Bindings._TB_KEY_CTRL_TILDE = KeyCtrlTilde
-  | key == Termbox.Bindings._TB_KEY_CTRL_6 = KeyCtrl6
-  | key == Termbox.Bindings._TB_KEY_CTRL_8 = KeyCtrl8
-  | key == Termbox.Bindings._TB_KEY_CTRL_A = KeyCtrlA
-  | key == Termbox.Bindings._TB_KEY_CTRL_B = KeyCtrlB
-  | key == Termbox.Bindings._TB_KEY_CTRL_BACKSLASH = KeyCtrlBackslash
-  | key == Termbox.Bindings._TB_KEY_CTRL_C = KeyCtrlC
-  | key == Termbox.Bindings._TB_KEY_CTRL_D = KeyCtrlD
-  | key == Termbox.Bindings._TB_KEY_CTRL_E = KeyCtrlE
-  | key == Termbox.Bindings._TB_KEY_CTRL_F = KeyCtrlF
-  | key == Termbox.Bindings._TB_KEY_CTRL_G = KeyCtrlG
-  | key == Termbox.Bindings._TB_KEY_CTRL_H = KeyCtrlBackspace
-  | key == Termbox.Bindings._TB_KEY_CTRL_J = KeyCtrlJ
-  | key == Termbox.Bindings._TB_KEY_CTRL_K = KeyCtrlK
-  | key == Termbox.Bindings._TB_KEY_CTRL_L = KeyCtrlL
-  | key == Termbox.Bindings._TB_KEY_CTRL_N = KeyCtrlN
-  | key == Termbox.Bindings._TB_KEY_CTRL_O = KeyCtrlO
-  | key == Termbox.Bindings._TB_KEY_CTRL_P = KeyCtrlP
-  | key == Termbox.Bindings._TB_KEY_CTRL_Q = KeyCtrlQ
-  | key == Termbox.Bindings._TB_KEY_CTRL_R = KeyCtrlR
-  | key == Termbox.Bindings._TB_KEY_CTRL_RSQ_BRACKET = KeyCtrlRsqBracket
-  | key == Termbox.Bindings._TB_KEY_CTRL_S = KeyCtrlS
-  | key == Termbox.Bindings._TB_KEY_CTRL_SLASH = KeyCtrlSlash
-  | key == Termbox.Bindings._TB_KEY_CTRL_T = KeyCtrlT
-  | key == Termbox.Bindings._TB_KEY_CTRL_U = KeyCtrlU
-  | key == Termbox.Bindings._TB_KEY_CTRL_V = KeyCtrlV
-  | key == Termbox.Bindings._TB_KEY_CTRL_W = KeyCtrlW
-  | key == Termbox.Bindings._TB_KEY_CTRL_X = KeyCtrlX
-  | key == Termbox.Bindings._TB_KEY_CTRL_Y = KeyCtrlY
-  | key == Termbox.Bindings._TB_KEY_CTRL_Z = KeyCtrlZ
-  | key == Termbox.Bindings._TB_KEY_DELETE = KeyDelete
-  | key == Termbox.Bindings._TB_KEY_END = KeyEnd
-  | key == Termbox.Bindings._TB_KEY_ENTER = KeyEnter
-  | key == Termbox.Bindings._TB_KEY_ESC = KeyEsc
-  | key == Termbox.Bindings._TB_KEY_F1 = KeyF1
-  | key == Termbox.Bindings._TB_KEY_F10 = KeyF10
-  | key == Termbox.Bindings._TB_KEY_F11 = KeyF11
-  | key == Termbox.Bindings._TB_KEY_F12 = KeyF12
-  | key == Termbox.Bindings._TB_KEY_F2 = KeyF2
-  | key == Termbox.Bindings._TB_KEY_F3 = KeyF3
-  | key == Termbox.Bindings._TB_KEY_F4 = KeyF4
-  | key == Termbox.Bindings._TB_KEY_F5 = KeyF5
-  | key == Termbox.Bindings._TB_KEY_F6 = KeyF6
-  | key == Termbox.Bindings._TB_KEY_F7 = KeyF7
-  | key == Termbox.Bindings._TB_KEY_F8 = KeyF8
-  | key == Termbox.Bindings._TB_KEY_F9 = KeyF9
-  | key == Termbox.Bindings._TB_KEY_HOME = KeyHome
-  | key == Termbox.Bindings._TB_KEY_INSERT = KeyInsert
-  | key == Termbox.Bindings._TB_KEY_PGDN = KeyPageDn
-  | key == Termbox.Bindings._TB_KEY_PGUP = KeyPageUp
-  | key == Termbox.Bindings._TB_KEY_SPACE = KeySpace
-  | key == Termbox.Bindings._TB_KEY_TAB = KeyTab
-  | otherwise = error ("termbox: unknown key " ++ show key)
+parseKey :: Termbox.Bindings.Tb_key -> Key
+parseKey = \case
+  Termbox.Bindings.TB_KEY_ARROW_DOWN -> KeyArrowDown
+  Termbox.Bindings.TB_KEY_ARROW_LEFT -> KeyArrowLeft
+  Termbox.Bindings.TB_KEY_ARROW_RIGHT -> KeyArrowRight
+  Termbox.Bindings.TB_KEY_ARROW_UP -> KeyArrowUp
+  Termbox.Bindings.TB_KEY_BACKSPACE -> KeyBackspace
+  Termbox.Bindings.TB_KEY_CTRL_TILDE -> KeyCtrlTilde
+  Termbox.Bindings.TB_KEY_CTRL_6 -> KeyCtrl6
+  Termbox.Bindings.TB_KEY_CTRL_8 -> KeyCtrl8
+  Termbox.Bindings.TB_KEY_CTRL_A -> KeyCtrlA
+  Termbox.Bindings.TB_KEY_CTRL_B -> KeyCtrlB
+  Termbox.Bindings.TB_KEY_CTRL_BACKSLASH -> KeyCtrlBackslash
+  Termbox.Bindings.TB_KEY_CTRL_C -> KeyCtrlC
+  Termbox.Bindings.TB_KEY_CTRL_D -> KeyCtrlD
+  Termbox.Bindings.TB_KEY_CTRL_E -> KeyCtrlE
+  Termbox.Bindings.TB_KEY_CTRL_F -> KeyCtrlF
+  Termbox.Bindings.TB_KEY_CTRL_G -> KeyCtrlG
+  Termbox.Bindings.TB_KEY_CTRL_H -> KeyCtrlBackspace
+  Termbox.Bindings.TB_KEY_CTRL_J -> KeyCtrlJ
+  Termbox.Bindings.TB_KEY_CTRL_K -> KeyCtrlK
+  Termbox.Bindings.TB_KEY_CTRL_L -> KeyCtrlL
+  Termbox.Bindings.TB_KEY_CTRL_N -> KeyCtrlN
+  Termbox.Bindings.TB_KEY_CTRL_O -> KeyCtrlO
+  Termbox.Bindings.TB_KEY_CTRL_P -> KeyCtrlP
+  Termbox.Bindings.TB_KEY_CTRL_Q -> KeyCtrlQ
+  Termbox.Bindings.TB_KEY_CTRL_R -> KeyCtrlR
+  Termbox.Bindings.TB_KEY_CTRL_RSQ_BRACKET -> KeyCtrlRsqBracket
+  Termbox.Bindings.TB_KEY_CTRL_S -> KeyCtrlS
+  Termbox.Bindings.TB_KEY_CTRL_SLASH -> KeyCtrlSlash
+  Termbox.Bindings.TB_KEY_CTRL_T -> KeyCtrlT
+  Termbox.Bindings.TB_KEY_CTRL_U -> KeyCtrlU
+  Termbox.Bindings.TB_KEY_CTRL_V -> KeyCtrlV
+  Termbox.Bindings.TB_KEY_CTRL_W -> KeyCtrlW
+  Termbox.Bindings.TB_KEY_CTRL_X -> KeyCtrlX
+  Termbox.Bindings.TB_KEY_CTRL_Y -> KeyCtrlY
+  Termbox.Bindings.TB_KEY_CTRL_Z -> KeyCtrlZ
+  Termbox.Bindings.TB_KEY_DELETE -> KeyDelete
+  Termbox.Bindings.TB_KEY_END -> KeyEnd
+  Termbox.Bindings.TB_KEY_ENTER -> KeyEnter
+  Termbox.Bindings.TB_KEY_ESC -> KeyEsc
+  Termbox.Bindings.TB_KEY_F1 -> KeyF1
+  Termbox.Bindings.TB_KEY_F10 -> KeyF10
+  Termbox.Bindings.TB_KEY_F11 -> KeyF11
+  Termbox.Bindings.TB_KEY_F12 -> KeyF12
+  Termbox.Bindings.TB_KEY_F2 -> KeyF2
+  Termbox.Bindings.TB_KEY_F3 -> KeyF3
+  Termbox.Bindings.TB_KEY_F4 -> KeyF4
+  Termbox.Bindings.TB_KEY_F5 -> KeyF5
+  Termbox.Bindings.TB_KEY_F6 -> KeyF6
+  Termbox.Bindings.TB_KEY_F7 -> KeyF7
+  Termbox.Bindings.TB_KEY_F8 -> KeyF8
+  Termbox.Bindings.TB_KEY_F9 -> KeyF9
+  Termbox.Bindings.TB_KEY_HOME -> KeyHome
+  Termbox.Bindings.TB_KEY_INSERT -> KeyInsert
+  Termbox.Bindings.TB_KEY_PGDN -> KeyPageDn
+  Termbox.Bindings.TB_KEY_PGUP -> KeyPageUp
+  Termbox.Bindings.TB_KEY_SPACE -> KeySpace
+  Termbox.Bindings.TB_KEY_TAB -> KeyTab
+  key -> error ("unknown key: " ++ show key)

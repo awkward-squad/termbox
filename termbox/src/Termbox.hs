@@ -1,5 +1,3 @@
-{-# LANGUAGE PatternSynonyms #-}
-
 -- |
 -- A @termbox@ program is typically constructed as an infinite loop that:
 --

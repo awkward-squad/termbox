@@ -4,4 +4,6 @@ set -e
 
 ghcid \
   --command 'cabal repl termbox --repl-options=-fno-code' \
-  --restart termbox/termbox.cabal
+  --restart termbox/termbox.cabal \
+  --restart termbox-bindings/ \
+  --restart termbox-bindings-c/
