@@ -33,6 +33,7 @@ library
   default-extensions:
     DerivingStrategies
     GeneralizedNewtypeDeriving
+    LambdaCase
     PatternSynonyms
     ViewPatterns
   default-language: Haskell2010

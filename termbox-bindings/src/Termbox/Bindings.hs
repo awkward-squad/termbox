@@ -48,6 +48,13 @@ module Termbox.Bindings
       ),
     Tb_cell (..),
     Termbox.Bindings.C.Tb_event (..),
+    Tb_input_mode
+      ( Tb_input_mode,
+        TB_INPUT_CURRENT,
+        TB_INPUT_ALT,
+        TB_INPUT_ESC,
+        TB_INPUT_MOUSE
+      ),
 
     -- * Constants
 
@@ -142,12 +149,6 @@ module Termbox.Bindings
 
     -- ** Hide cursor
     Termbox.Bindings.C._TB_HIDE_CURSOR,
-
-    -- ** Input modes
-    Termbox.Bindings.C._TB_INPUT_CURRENT,
-    Termbox.Bindings.C._TB_INPUT_ALT,
-    Termbox.Bindings.C._TB_INPUT_ESC,
-    Termbox.Bindings.C._TB_INPUT_MOUSE,
 
     -- ** Output modes
     Termbox.Bindings.C._TB_OUTPUT_CURRENT,
@@ -248,9 +249,9 @@ tb_put_cell x y cell =
     Termbox.Bindings.C.tb_put_cell (intToCInt x) (intToCInt y) c_cell
 
 -- | Set the input mode.
-tb_select_input_mode :: Int -> IO Int
-tb_select_input_mode mode =
-  cintToInt <$> Termbox.Bindings.C.tb_select_input_mode (intToCInt mode)
+tb_select_input_mode :: Tb_input_mode -> IO Int
+tb_select_input_mode (Tb_input_mode mode) =
+  cintToInt <$> Termbox.Bindings.C.tb_select_input_mode mode
 
 -- | Set the output mode.
 tb_select_output_mode :: Int -> IO Int
@@ -275,6 +276,7 @@ tb_width =
 ------------------------------------------------------------------------------------------------------------------------
 -- Objects
 
+-- | An attribute.
 newtype Tb_attr
   = Tb_attr Word16
   deriving stock (Eq)
@@ -355,6 +357,43 @@ pattern TB_UNDERLINE <-
   ((== Tb_attr Termbox.Bindings.C._TB_UNDERLINE) -> True)
   where
     TB_UNDERLINE = Tb_attr Termbox.Bindings.C._TB_UNDERLINE
+
+newtype Tb_input_mode
+  = Tb_input_mode CInt
+  deriving stock (Eq)
+
+instance Show Tb_input_mode where
+  show = \case
+    TB_INPUT_CURRENT -> "TB_INPUT_CURRENT"
+    TB_INPUT_ALT -> "TB_INPUT_ALT"
+    TB_INPUT_ESC -> "TB_INPUT_ESC"
+    TB_INPUT_MOUSE -> "TB_INPUT_MOUSE"
+
+pattern TB_INPUT_CURRENT :: Tb_input_mode
+pattern TB_INPUT_CURRENT <-
+  ((== Tb_input_mode Termbox.Bindings.C._TB_INPUT_CURRENT) -> True)
+  where
+    TB_INPUT_CURRENT = Tb_input_mode Termbox.Bindings.C._TB_INPUT_CURRENT
+
+pattern TB_INPUT_ALT :: Tb_input_mode
+pattern TB_INPUT_ALT <-
+  ((== Tb_input_mode Termbox.Bindings.C._TB_INPUT_ALT) -> True)
+  where
+    TB_INPUT_ALT = Tb_input_mode Termbox.Bindings.C._TB_INPUT_ALT
+
+pattern TB_INPUT_ESC :: Tb_input_mode
+pattern TB_INPUT_ESC <-
+  ((== Tb_input_mode Termbox.Bindings.C._TB_INPUT_ESC) -> True)
+  where
+    TB_INPUT_ESC = Tb_input_mode Termbox.Bindings.C._TB_INPUT_ESC
+
+pattern TB_INPUT_MOUSE :: Tb_input_mode
+pattern TB_INPUT_MOUSE <-
+  ((== Tb_input_mode Termbox.Bindings.C._TB_INPUT_MOUSE) -> True)
+  where
+    TB_INPUT_MOUSE = Tb_input_mode Termbox.Bindings.C._TB_INPUT_MOUSE
+
+{-# COMPLETE TB_INPUT_CURRENT, TB_INPUT_ALT, TB_INPUT_ESC, TB_INPUT_MOUSE #-}
 
 -- | A cell.
 data Tb_cell = Tb_cell

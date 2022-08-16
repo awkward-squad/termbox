@@ -400,7 +400,7 @@ run action = do
         result <-
           unmask
             ( do
-                _ <- Termbox.Bindings.tb_select_input_mode (fromIntegral @CInt @Int Termbox.Bindings._TB_INPUT_MOUSE)
+                _ <- Termbox.Bindings.tb_select_input_mode Termbox.Bindings.TB_INPUT_MOUSE
                 _ <- Termbox.Bindings.tb_select_output_mode (fromIntegral @CInt @Int Termbox.Bindings._TB_OUTPUT_256)
                 width <- Termbox.Bindings.tb_width
                 height <- Termbox.Bindings.tb_height
