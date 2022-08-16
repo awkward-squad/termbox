@@ -6,11 +6,10 @@ build-type: Simple
 category: User Interfaces
 copyright: (c) 2018-2022, Mitchell Rosen
 description:
-  This package provides bindings to @termbox v1.1.2@, a simple C
-  library for writing text-based user interfaces: <https://github.com/termbox/termbox>
+  This package provides bindings to @termbox v1.1.4@, a simple C library for writing text-based user interfaces:
+  <https://github.com/termbox/termbox>
   .
-  The full source of @termbox v1.1.2@ (1000 lines of C) is bundled; you do
-  not need to install any system packages to use this library.
+  The full source of @termbox v1.1.4@ is bundled; you do not need to install any system packages to use this library.
 homepage: https://github.com/termbox/termbox-haskell
 license-file: LICENSE
 license: BSD-3-Clause

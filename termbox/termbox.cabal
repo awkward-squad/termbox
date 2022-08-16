@@ -6,7 +6,7 @@ bug-reports: https://github.com/termbox/termbox-haskell/issues
 build-type: Simple
 copyright: (c) 2018-2022, Mitchell Rosen
 description:
-  This package provides a high-level wrapper around @termbox v1.1.2@, a simple C
+  This package provides a high-level wrapper around @termbox@, a simple C
   library for writing text-based user interfaces: <https://github.com/termbox/termbox>
 homepage: https://github.com/termbox/termbox-haskell
 license-file: LICENSE
