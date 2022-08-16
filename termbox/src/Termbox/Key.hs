@@ -17,6 +17,9 @@ where
 import qualified Termbox.Bindings
 
 -- | A key event.
+--
+-- In a few cases, distinct key sequences map to equivalent key events. Pattern synonyms below are provided for an
+-- alternate syntax in these cases, if desired.
 data Key
   = KeyChar Char
   | KeyArrowDown
@@ -24,13 +27,13 @@ data Key
   | KeyArrowRight
   | KeyArrowUp
   | KeyBackspace
-  | -- | Also: @Ctrl+H@
+  | -- | Also 'KeyCtrlH'
     KeyCtrlBackspace
   | KeyCtrl6
   | KeyCtrl8
   | KeyCtrlA
   | KeyCtrlB
-  | -- | Also: @Ctrl-4@
+  | -- | Also 'KeyCtrl4'
     KeyCtrlBackslash
   | KeyCtrlC
   | KeyCtrlD
@@ -45,12 +48,12 @@ data Key
   | KeyCtrlP
   | KeyCtrlQ
   | KeyCtrlR
-  | -- | Also: @Ctrl-5@
+  | -- | Also 'KeyCtrl5'
     KeyCtrlRsqBracket
   | KeyCtrlS
-  | -- | Also: @Ctrl-/@, @Ctrl-_@
+  | -- | Also 'KeyCtrl7', 'KeyCtrlUnderscore'
     KeyCtrlSlash
-  | -- | Also: @Ctrl+2@
+  | -- | Also 'KeyCtrl2'
     KeyCtrlTilde
   | KeyCtrlT
   | KeyCtrlU
@@ -61,9 +64,9 @@ data Key
   | KeyCtrlZ
   | KeyDelete
   | KeyEnd
-  | -- | Also: @Ctrl-M@
+  | -- | Also 'KeyCtrlM'
     KeyEnter
-  | -- | Also: @Ctrl-[@, @Ctrl-3@
+  | -- | Also 'KeyCtrlLsqBracket', 'KeyCtrl3'
     KeyEsc
   | KeyF1
   | KeyF10
@@ -82,7 +85,7 @@ data Key
   | KeyPageDn
   | KeyPageUp
   | KeySpace
-  | -- | Also: @Ctrl+I@
+  | -- | Also 'KeyCtrlI'
     KeyTab
   deriving stock (Eq, Ord, Show)
 

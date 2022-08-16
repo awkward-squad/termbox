@@ -46,18 +46,19 @@ module Termbox
 
     -- * Event handling
     Event (..),
-    Key (..),
-    -- $key-aliases
-    pattern KeyCtrlH,
-    pattern KeyCtrlLsqBracket,
-    pattern KeyCtrl2,
-    pattern KeyCtrl3,
-    pattern KeyCtrl4,
-    pattern KeyCtrl5,
-    pattern KeyCtrl7,
-    pattern KeyCtrlM,
-    pattern KeyCtrlI,
-    pattern KeyCtrlUnderscore,
+    Key
+      ( ..,
+        KeyCtrlH,
+        KeyCtrlLsqBracket,
+        KeyCtrl2,
+        KeyCtrl3,
+        KeyCtrl4,
+        KeyCtrl5,
+        KeyCtrl7,
+        KeyCtrlM,
+        KeyCtrlI,
+        KeyCtrlUnderscore
+      ),
     Mouse (..),
     PollError (..),
 
@@ -364,10 +365,6 @@ data Cursor
   = -- | Column, then row
     Cursor !Int !Int
   | NoCursor
-
--- $key-aliases
--- In a few cases, distinct key sequences map to equivalent key events. The pattern synonyms below are provided for an
--- alternate syntax in these cases, if desired.
 
 -- | Termbox initialization errors.
 data InitError
