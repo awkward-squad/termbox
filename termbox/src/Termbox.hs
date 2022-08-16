@@ -338,7 +338,6 @@ module Termbox
 where
 
 import Control.Exception
-import Foreign.C.Types (CInt)
 import Termbox.Attr
 import qualified Termbox.Bindings
 import Termbox.Cell (Cell (Cell))
@@ -419,11 +418,8 @@ render (Cells cells) cursor = do
   Termbox.Bindings.tb_clear
   cells
   case cursor of
-    Cursor col row -> Termbox.Bindings.tb_set_cursor col row
-    NoCursor ->
-      Termbox.Bindings.tb_set_cursor
-        (fromIntegral @CInt @Int Termbox.Bindings._TB_HIDE_CURSOR)
-        (fromIntegral @CInt @Int Termbox.Bindings._TB_HIDE_CURSOR)
+    Cursor col row -> Termbox.Bindings.tb_set_cursor (Just (col, row))
+    NoCursor -> Termbox.Bindings.tb_set_cursor Nothing
   Termbox.Bindings.tb_present
 
 shutdown :: IO ()

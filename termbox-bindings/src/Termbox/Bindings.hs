@@ -156,9 +156,6 @@ module Termbox.Bindings
         TB_OUTPUT_GRAYSCALE,
         TB_OUTPUT_NORMAL
       ),
-
-    -- ** Hide cursor
-    Termbox.Bindings.C._TB_HIDE_CURSOR,
   )
 where
 
@@ -298,13 +295,12 @@ tb_set_clear_attributes (Tb_color foreground) (Tb_color background) =
 
 -- | Set the cursor location, or hide it.
 tb_set_cursor ::
-  -- | x
-  Int ->
-  -- | y
-  Int ->
+  -- | x, y
+  Maybe (Int, Int) ->
   IO ()
-tb_set_cursor cx cy =
-  Termbox.Bindings.C.tb_set_cursor (intToCInt cx) (intToCInt cy)
+tb_set_cursor = \case
+  Nothing -> Termbox.Bindings.C.tb_set_cursor Termbox.Bindings.C._TB_HIDE_CURSOR Termbox.Bindings.C._TB_HIDE_CURSOR
+  Just (cx, cy) -> Termbox.Bindings.C.tb_set_cursor (intToCInt cx) (intToCInt cy)
 
 -- | Get the terminal width.
 tb_width :: IO Int
