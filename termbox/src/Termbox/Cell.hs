@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeApplications #-}
-
 module Termbox.Cell
   ( Cell (..),
   )

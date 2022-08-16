@@ -262,7 +262,7 @@ module Termbox.Attr
     --
     attrToWord,
     wordToAttr,
-    attrToAttribute,
+    attrToTbAttr,
   )
 where
 
@@ -277,19 +277,19 @@ import Prelude hiding (reverse)
 -- A cell can only have one color, but may be (for example) bold /and/
 -- underlined.
 data Attr
-  = Attr !Termbox.Bindings.Attribute {- color -} !Termbox.Bindings.Attribute {- attr -}
+  = Attr !Termbox.Bindings.Tb_attr {- color -} !Termbox.Bindings.Tb_attr {- attr -}
   deriving stock (Eq, Show)
 
 wordToAttr :: Word16 -> Attr
 wordToAttr w =
-  Attr (Termbox.Bindings.Attribute (w .&. 0x00FF)) (Termbox.Bindings.Attribute (w .&. 0xFF00))
+  Attr (Termbox.Bindings.Tb_attr (w .&. 0x00FF)) (Termbox.Bindings.Tb_attr (w .&. 0xFF00))
 
 attrToWord :: Attr -> Word16
-attrToWord (Attr (Termbox.Bindings.Attribute x) (Termbox.Bindings.Attribute y)) =
+attrToWord (Attr (Termbox.Bindings.Tb_attr x) (Termbox.Bindings.Tb_attr y)) =
   x .|. y
 
-attrToAttribute :: Attr -> Termbox.Bindings.Attribute
-attrToAttribute (Attr x y) =
+attrToTbAttr :: Attr -> Termbox.Bindings.Tb_attr
+attrToTbAttr (Attr x y) =
   x <> y
 
 black :: Attr

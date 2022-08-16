@@ -7,7 +7,7 @@ where
 import Data.Char (ord)
 import Data.Semigroup (Semigroup)
 import Data.Word (Word32)
-import Termbox.Attr (attrToAttribute)
+import Termbox.Attr (attrToTbAttr)
 import qualified Termbox.Bindings
 import Termbox.Cell (Cell (Cell))
 
@@ -24,6 +24,6 @@ set col row (Cell ch fg bg) =
         col
         row
         (fromIntegral @Int @Word32 (ord ch))
-        (attrToAttribute fg)
-        (attrToAttribute bg)
+        (attrToTbAttr fg)
+        (attrToTbAttr bg)
     )
