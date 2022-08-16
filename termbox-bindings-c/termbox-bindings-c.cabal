@@ -57,4 +57,5 @@ library
   if impl(ghc >= 9.2)
     ghc-options:
       -Wno-missing-kind-signatures
-  include-dirs: include
+  include-dirs: cbits
+  includes: termbox.h
