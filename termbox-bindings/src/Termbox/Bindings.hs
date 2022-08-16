@@ -190,8 +190,8 @@ tb_change_cell ::
   -- | bg
   Tb_attr ->
   IO ()
-tb_change_cell x y c (Tb_attr foreground) (Tb_attr background) =
-  Termbox.Bindings.C.tb_change_cell (intToCInt x) (intToCInt y) c foreground background
+tb_change_cell cx cy c (Tb_attr foreground) (Tb_attr background) =
+  Termbox.Bindings.C.tb_change_cell (intToCInt cx) (intToCInt cy) c foreground background
 
 -- | Get the terminal height.
 tb_height :: IO Int
@@ -243,10 +243,10 @@ tb_put_cell ::
   -- | cell
   Tb_cell ->
   IO ()
-tb_put_cell x y cell =
+tb_put_cell cx cy cell =
   alloca \c_cell -> do
     Storable.poke c_cell (cellToCCell cell)
-    Termbox.Bindings.C.tb_put_cell (intToCInt x) (intToCInt y) c_cell
+    Termbox.Bindings.C.tb_put_cell (intToCInt cx) (intToCInt cy) c_cell
 
 -- | Get/set the input mode.
 tb_select_input_mode :: Tb_input_mode -> IO Tb_input_mode
@@ -275,8 +275,8 @@ tb_set_cursor ::
   -- | y
   Int ->
   IO ()
-tb_set_cursor x y =
-  Termbox.Bindings.C.tb_set_cursor (intToCInt x) (intToCInt y)
+tb_set_cursor cx cy =
+  Termbox.Bindings.C.tb_set_cursor (intToCInt cx) (intToCInt cy)
 
 -- | Get the terminal width.
 tb_width :: IO Int
@@ -293,8 +293,8 @@ newtype Tb_attr
   deriving newtype (Num, Show)
 
 instance Semigroup Tb_attr where
-  Tb_attr x <> Tb_attr y =
-    Tb_attr (x .|. y)
+  Tb_attr cx <> Tb_attr cy =
+    Tb_attr (cx .|. cy)
 
 pattern TB_DEFAULT :: Tb_attr
 pattern TB_DEFAULT <-
