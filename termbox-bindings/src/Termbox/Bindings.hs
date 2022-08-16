@@ -30,7 +30,22 @@ module Termbox.Bindings
     tb_peek_event,
     tb_poll_event,
 
-    -- * Objects
+    -- * Types
+    Attribute
+      ( Attribute,
+        TB_DEFAULT,
+        TB_BLACK,
+        TB_BLUE,
+        TB_CYAN,
+        TB_GREEN,
+        TB_MAGENTA,
+        TB_RED,
+        TB_WHITE,
+        TB_YELLOW,
+        TB_BOLD,
+        TB_REVERSE,
+        TB_UNDERLINE
+      ),
     Termbox.Bindings.C.Tb_cell (..),
     Termbox.Bindings.C.Tb_event (..),
 
@@ -115,22 +130,6 @@ module Termbox.Bindings
     Termbox.Bindings.C._TB_MOD_ALT,
     Termbox.Bindings.C._TB_MOD_MOTION,
 
-    -- ** Colors
-    Termbox.Bindings.C._TB_DEFAULT,
-    Termbox.Bindings.C._TB_BLACK,
-    Termbox.Bindings.C._TB_BLUE,
-    Termbox.Bindings.C._TB_CYAN,
-    Termbox.Bindings.C._TB_GREEN,
-    Termbox.Bindings.C._TB_MAGENTA,
-    Termbox.Bindings.C._TB_RED,
-    Termbox.Bindings.C._TB_WHITE,
-    Termbox.Bindings.C._TB_YELLOW,
-
-    -- ** Attributes
-    Termbox.Bindings.C._TB_BOLD,
-    Termbox.Bindings.C._TB_REVERSE,
-    Termbox.Bindings.C._TB_UNDERLINE,
-
     -- ** Event types
     Termbox.Bindings.C._TB_EVENT_KEY,
     Termbox.Bindings.C._TB_EVENT_MOUSE,
@@ -159,6 +158,8 @@ module Termbox.Bindings
   )
 where
 
+import Data.Bits ((.|.))
+import Data.Semigroup (Semigroup (..))
 import Data.Word
 import Foreign.C.Error (Errno, getErrno)
 import Foreign.C.Types (CInt)
@@ -184,11 +185,11 @@ tb_change_cell ::
   -- | ch
   Word32 ->
   -- | fg
-  Word16 ->
+  Attribute ->
   -- | bg
-  Word16 ->
+  Attribute ->
   IO ()
-tb_change_cell x y ch fg bg =
+tb_change_cell x y ch (Attribute fg) (Attribute bg) =
   Termbox.Bindings.C.tb_change_cell (intToCInt x) (intToCInt y) ch fg bg
 
 -- | Get the terminal height.
@@ -270,6 +271,90 @@ tb_set_cursor x y =
 tb_width :: IO Int
 tb_width =
   cintToInt <$> Termbox.Bindings.C.tb_width
+
+------------------------------------------------------------------------------------------------------------------------
+-- Objects
+
+newtype Attribute
+  = Attribute Word16
+  deriving stock (Eq)
+  deriving newtype (Num, Show)
+
+instance Semigroup Attribute where
+  Attribute x <> Attribute y =
+    Attribute (x .|. y)
+
+pattern TB_DEFAULT :: Attribute
+pattern TB_DEFAULT <-
+  ((== Attribute Termbox.Bindings.C._TB_DEFAULT) -> True)
+  where
+    TB_DEFAULT = Attribute Termbox.Bindings.C._TB_DEFAULT
+
+pattern TB_BLACK :: Attribute
+pattern TB_BLACK <-
+  ((== Attribute Termbox.Bindings.C._TB_BLACK) -> True)
+  where
+    TB_BLACK = Attribute Termbox.Bindings.C._TB_BLACK
+
+pattern TB_BLUE :: Attribute
+pattern TB_BLUE <-
+  ((== Attribute Termbox.Bindings.C._TB_BLUE) -> True)
+  where
+    TB_BLUE = Attribute Termbox.Bindings.C._TB_BLUE
+
+pattern TB_CYAN :: Attribute
+pattern TB_CYAN <-
+  ((== Attribute Termbox.Bindings.C._TB_CYAN) -> True)
+  where
+    TB_CYAN = Attribute Termbox.Bindings.C._TB_CYAN
+
+pattern TB_GREEN :: Attribute
+pattern TB_GREEN <-
+  ((== Attribute Termbox.Bindings.C._TB_GREEN) -> True)
+  where
+    TB_GREEN = Attribute Termbox.Bindings.C._TB_GREEN
+
+pattern TB_MAGENTA :: Attribute
+pattern TB_MAGENTA <-
+  ((== Attribute Termbox.Bindings.C._TB_MAGENTA) -> True)
+  where
+    TB_MAGENTA = Attribute Termbox.Bindings.C._TB_MAGENTA
+
+pattern TB_RED :: Attribute
+pattern TB_RED <-
+  ((== Attribute Termbox.Bindings.C._TB_RED) -> True)
+  where
+    TB_RED = Attribute Termbox.Bindings.C._TB_RED
+
+pattern TB_WHITE :: Attribute
+pattern TB_WHITE <-
+  ((== Attribute Termbox.Bindings.C._TB_WHITE) -> True)
+  where
+    TB_WHITE = Attribute Termbox.Bindings.C._TB_WHITE
+
+pattern TB_YELLOW :: Attribute
+pattern TB_YELLOW <-
+  ((== Attribute Termbox.Bindings.C._TB_YELLOW) -> True)
+  where
+    TB_YELLOW = Attribute Termbox.Bindings.C._TB_YELLOW
+
+pattern TB_BOLD :: Attribute
+pattern TB_BOLD <-
+  ((== Attribute Termbox.Bindings.C._TB_BOLD) -> True)
+  where
+    TB_BOLD = Attribute Termbox.Bindings.C._TB_BOLD
+
+pattern TB_REVERSE :: Attribute
+pattern TB_REVERSE <-
+  ((== Attribute Termbox.Bindings.C._TB_REVERSE) -> True)
+  where
+    TB_REVERSE = Attribute Termbox.Bindings.C._TB_REVERSE
+
+pattern TB_UNDERLINE :: Attribute
+pattern TB_UNDERLINE <-
+  ((== Attribute Termbox.Bindings.C._TB_UNDERLINE) -> True)
+  where
+    TB_UNDERLINE = Attribute Termbox.Bindings.C._TB_UNDERLINE
 
 --
 

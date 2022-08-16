@@ -262,6 +262,7 @@ module Termbox.Attr
     --
     attrToWord,
     wordToAttr,
+    attrToAttribute,
   )
 where
 
@@ -276,16 +277,20 @@ import Prelude hiding (reverse)
 -- A cell can only have one color, but may be (for example) bold /and/
 -- underlined.
 data Attr
-  = Attr !Word16 {- color -} !Word16 {- attr -}
+  = Attr !Termbox.Bindings.Attribute {- color -} !Termbox.Bindings.Attribute {- attr -}
   deriving stock (Eq, Show)
 
 wordToAttr :: Word16 -> Attr
 wordToAttr w =
-  Attr (w .&. 0x00FF) (w .&. 0xFF00)
+  Attr (Termbox.Bindings.Attribute (w .&. 0x00FF)) (Termbox.Bindings.Attribute (w .&. 0xFF00))
 
 attrToWord :: Attr -> Word16
-attrToWord (Attr x y) =
+attrToWord (Attr (Termbox.Bindings.Attribute x) (Termbox.Bindings.Attribute y)) =
   x .|. y
+
+attrToAttribute :: Attr -> Termbox.Bindings.Attribute
+attrToAttribute (Attr x y) =
+  x <> y
 
 black :: Attr
 black =
@@ -1314,14 +1319,14 @@ gray23 =
 -- | Bold modifier attribute.
 bold :: Attr -> Attr
 bold (Attr c s) =
-  Attr c (s .|. Termbox.Bindings._TB_BOLD)
+  Attr c (s <> Termbox.Bindings.TB_BOLD)
 
 -- | Underline modifier attribute.
 underline :: Attr -> Attr
 underline (Attr c s) =
-  Attr c (s .|. Termbox.Bindings._TB_UNDERLINE)
+  Attr c (s <> Termbox.Bindings.TB_UNDERLINE)
 
 -- | Reverse modifier attribute.
 reverse :: Attr -> Attr
 reverse (Attr c s) =
-  Attr c (s .|. Termbox.Bindings._TB_REVERSE)
+  Attr c (s <> Termbox.Bindings.TB_REVERSE)
