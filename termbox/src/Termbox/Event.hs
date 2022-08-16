@@ -6,9 +6,7 @@ module Termbox.Event
 where
 
 import Control.Exception (Exception, throwIO)
-import Data.Char (chr)
 import Data.Int (Int32)
-import Data.Word (Word32)
 import qualified Termbox.Bindings
 import Termbox.Key (Key (KeyChar), parseKey)
 import Termbox.Mouse (Mouse, parseMouse)
@@ -56,7 +54,7 @@ parseEvent
     } =
     case type_ of
       Termbox.Bindings.TB_EVENT_KEY ->
-        EventKey (if ch == 0 then parseKey key else KeyChar (chr (fromIntegral @Word32 @Int ch)))
+        EventKey (if ch == '\0' then parseKey key else KeyChar ch)
       Termbox.Bindings.TB_EVENT_RESIZE ->
         EventResize (fromIntegral @Int32 @Int w) (fromIntegral @Int32 @Int h)
       Termbox.Bindings.TB_EVENT_MOUSE ->

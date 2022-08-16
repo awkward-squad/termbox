@@ -6,10 +6,13 @@ build-type: Simple
 category: User Interfaces
 copyright: (c) 2018-2022, Mitchell Rosen
 description:
-  This package provides bindings to @termbox v1.1.4@, a simple C library for writing text-based user interfaces:
-  <https://github.com/termbox/termbox>
+  This package provides bindings to @termbox@, a simple C library for writing text-based user interfaces:
+  <https://github.com/termbox/termbox>.
   .
-  The full source of @termbox v1.1.4@ is bundled; you do not need to install any system packages to use this library.
+  See also:
+  .
+  * @<https://hackage.haskell.org/package/termbox-bindings-c termbox-bindings-c>@ for lower-level bindings.
+  * @<https://hackage.haskell.org/package/termbox termbox>@ for higher-level bindings.
 homepage: https://github.com/termbox/termbox-haskell
 license-file: LICENSE
 license: BSD-3-Clause
@@ -36,7 +39,9 @@ library
     DuplicateRecordFields
     GeneralizedNewtypeDeriving
     LambdaCase
+    NamedFieldPuns
     PatternSynonyms
+    TypeApplications
     ViewPatterns
   default-language: Haskell2010
   exposed-modules: Termbox.Bindings

@@ -4,8 +4,6 @@ module Termbox.Cells
   )
 where
 
-import Data.Char (ord)
-import Data.Word (Word32)
 import Termbox.Attr (Attr (Attr))
 import qualified Termbox.Bindings
 import Termbox.Cell (Cell (Cell))
@@ -18,11 +16,4 @@ newtype Cells
 -- | Set a single cell's value (column, then row).
 set :: Int -> Int -> Cell -> Cells
 set col row (Cell ch (Attr fg) (Attr bg)) =
-  Cells
-    ( Termbox.Bindings.tb_change_cell
-        col
-        row
-        (fromIntegral @Int @Word32 (ord ch))
-        fg
-        bg
-    )
+  Cells (Termbox.Bindings.tb_change_cell col row ch fg bg)

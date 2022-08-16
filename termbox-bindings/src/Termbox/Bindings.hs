@@ -160,6 +160,7 @@ module Termbox.Bindings
 where
 
 import Data.Bits ((.|.))
+import qualified Data.Char as Char
 import Data.Coerce (coerce)
 import Data.Int (Int32)
 import Data.Word (Word16, Word32, Word8)
@@ -170,7 +171,6 @@ import Foreign.Marshal.Alloc (alloca)
 import qualified Foreign.Storable as Storable
 import System.Posix.Types (Fd (Fd))
 import qualified Termbox.Bindings.C
-import Unsafe.Coerce (unsafeCoerce)
 import Prelude hiding (mod)
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -188,14 +188,14 @@ tb_change_cell ::
   -- | y
   Int ->
   -- | ch
-  Word32 ->
+  Char ->
   -- | fg
   Tb_color ->
   -- | bg
   Tb_color ->
   IO ()
 tb_change_cell cx cy c (Tb_color foreground) (Tb_color background) =
-  Termbox.Bindings.C.tb_change_cell (intToCInt cx) (intToCInt cy) c foreground background
+  Termbox.Bindings.C.tb_change_cell (intToCInt cx) (intToCInt cy) (charToWord32 c) foreground background
 
 -- | Get the terminal height.
 tb_height :: IO Int
@@ -235,14 +235,11 @@ tb_init_file file = do
       then Right ()
       else Left (Tb_init_error code)
 
--- | Wait for an event.
-tb_peek_event ::
-  -- | Timeout (in milliseconds).
-  CInt ->
-  IO (Either Errno (Maybe Tb_event))
+-- | Wait up to a number of milliseconds for an event.
+tb_peek_event :: Int -> IO (Either Errno (Maybe Tb_event))
 tb_peek_event timeout =
   alloca \c_event -> do
-    result <- Termbox.Bindings.C.tb_peek_event c_event timeout
+    result <- Termbox.Bindings.C.tb_peek_event c_event (intToCInt timeout)
     if result < 0
       then Left <$> getErrno
       else
@@ -340,7 +337,7 @@ pattern TB_UNDERLINE <-
 -- | A cell.
 data Tb_cell = Tb_cell
   { -- | A unicode character.
-    ch :: {-# UNPACK #-} !Word32,
+    ch :: {-# UNPACK #-} !Char,
     -- | Foreground attribute.
     fg :: {-# UNPACK #-} !Tb_attr,
     -- | Background attribute.
@@ -349,8 +346,13 @@ data Tb_cell = Tb_cell
   deriving stock (Eq, Ord, Show)
 
 cellToCCell :: Tb_cell -> Termbox.Bindings.C.Tb_cell
-cellToCCell =
-  unsafeCoerce -- equivalent record types that only differ by newtype wrappers
+cellToCCell Tb_cell {ch, fg = Tb_attr fg, bg = Tb_attr bg} =
+  Termbox.Bindings.C.Tb_cell
+    { ch = charToWord32 ch,
+      fg,
+      bg
+    }
+{-# INLINE cellToCCell #-}
 
 -- | A color.
 newtype Tb_color
@@ -417,7 +419,7 @@ data Tb_event = Tb_event
   { type_ :: {-# UNPACK #-} !Tb_event_type,
     mod :: {-# UNPACK #-} !Tb_event_mod,
     key :: {-# UNPACK #-} !Tb_key,
-    ch :: {-# UNPACK #-} !Word32,
+    ch :: {-# UNPACK #-} !Char,
     w :: {-# UNPACK #-} !Int32,
     h :: {-# UNPACK #-} !Int32,
     x :: {-# UNPACK #-} !Int32,
@@ -426,8 +428,18 @@ data Tb_event = Tb_event
   deriving stock (Eq, Ord, Show)
 
 ceventToEvent :: Termbox.Bindings.C.Tb_event -> Tb_event
-ceventToEvent =
-  unsafeCoerce -- equivalent record types that only differ by newtype wrappers
+ceventToEvent Termbox.Bindings.C.Tb_event {type_, mod, key, ch, w, h, x, y} =
+  Tb_event
+    { type_ = Tb_event_type type_,
+      mod = Tb_event_mod mod,
+      key = Tb_key key,
+      ch = word32ToChar ch,
+      w,
+      h,
+      x,
+      y
+    }
+{-# INLINE ceventToEvent #-}
 
 -- | An event modifier.
 newtype Tb_event_mod
@@ -1101,10 +1113,22 @@ pattern TB_OUTPUT_NORMAL <-
 
 --
 
+charToWord32 :: Char -> Word32
+charToWord32 =
+  fromIntegral @Int @Word32 . Char.ord
+{-# INLINE charToWord32 #-}
+
+word32ToChar :: Word32 -> Char
+word32ToChar =
+  Char.chr . fromIntegral @Word32 @Int
+{-# INLINE word32ToChar #-}
+
 cintToInt :: CInt -> Int
-cintToInt = fromIntegral
+cintToInt =
+  fromIntegral
 {-# INLINE cintToInt #-}
 
 intToCInt :: Int -> CInt
-intToCInt = fromIntegral
+intToCInt =
+  fromIntegral
 {-# INLINE intToCInt #-}

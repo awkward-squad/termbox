@@ -214,13 +214,9 @@ foreign import capi unsafe "termbox.h tb_init_file"
 foreign import capi unsafe "termbox.h tb_init_fd"
   tb_init_fd :: CInt -> IO CInt
 
--- | Wait for an event.
+-- | Wait up to a number of milliseconds for an event.
 foreign import capi safe "termbox.h tb_peek_event"
-  tb_peek_event ::
-    Ptr Tb_event ->
-    -- | Timeout (in milliseconds).
-    CInt ->
-    IO CInt
+  tb_peek_event :: Ptr Tb_event -> CInt -> IO CInt
 
 -- | Wait for an event.
 foreign import capi safe "termbox.h tb_poll_event"

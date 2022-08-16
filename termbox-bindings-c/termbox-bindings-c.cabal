@@ -10,6 +10,10 @@ description:
   <https://github.com/termbox/termbox>
   .
   The full source of @termbox v1.1.4@ is bundled; you do not need to install any system packages to use this library.
+  .
+  See also:
+  * @<https://hackage.haskell.org/package/termbox-bindings termbox-bindings-c>@ for higher-level bindings.
+  * @<https://hackage.haskell.org/package/termbox termbox>@ for even higher-level bindings.
 homepage: https://github.com/termbox/termbox-haskell
 license-file: LICENSE
 license: BSD-3-Clause
