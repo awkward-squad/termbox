@@ -60,7 +60,7 @@ common component
 library
   import: component
   build-depends:
-    base ^>= 4.12 || ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17,
+    base ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17,
     termbox-bindings ^>= 0.1,
   exposed-modules: Termbox
   hs-source-dirs: src

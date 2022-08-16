@@ -164,7 +164,6 @@ where
 import Data.Bits ((.|.))
 import Data.Coerce (coerce)
 import Data.Int (Int32)
-import Data.Semigroup (Semigroup (..))
 import Data.Word (Word16, Word32, Word8)
 import Foreign.C.Error (Errno, getErrno)
 import Foreign.C.Types (CInt)

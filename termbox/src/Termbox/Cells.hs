@@ -5,7 +5,6 @@ module Termbox.Cells
 where
 
 import Data.Char (ord)
-import Data.Semigroup (Semigroup)
 import Data.Word (Word32)
 import Termbox.Attr (attrToTbAttr)
 import qualified Termbox.Bindings

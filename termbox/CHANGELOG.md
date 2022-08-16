@@ -6,7 +6,7 @@
 - Remove `Semigroup`, `Monoid` and `Num` instances of `Attr`
 - Change type of `bold`, `underline` and `reverse` from `Attr` to `Attr -> Attr`
 - Support GHC 9.4
-- Drop support for GHC < 8.6
+- Drop support for GHC < 8.8
 
 ## [0.3.0] - 2020-09-20
 - Add `Cells` and `Cursor` types
