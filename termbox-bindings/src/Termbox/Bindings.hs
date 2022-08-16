@@ -218,7 +218,7 @@ tb_peek_event ::
   CInt ->
   IO (Either Errno (Maybe Termbox.Bindings.C.Tb_event))
 tb_peek_event timeout =
-  alloca $ \c_event -> do
+  alloca \c_event -> do
     result <- Termbox.Bindings.C.tb_peek_event c_event timeout
     if result < 0
       then Left <$> getErrno
@@ -230,7 +230,7 @@ tb_peek_event timeout =
 -- | Wait for an event.
 tb_poll_event :: IO (Either Errno Termbox.Bindings.C.Tb_event)
 tb_poll_event =
-  alloca $ \c_event -> do
+  alloca \c_event -> do
     result <- Termbox.Bindings.C.tb_poll_event c_event
     if result < 0
       then Left <$> getErrno
@@ -246,7 +246,7 @@ tb_put_cell ::
   Termbox.Bindings.C.Tb_cell ->
   IO ()
 tb_put_cell x y cell =
-  alloca $ \c_cell -> do
+  alloca \c_cell -> do
     Storable.poke c_cell cell
     Termbox.Bindings.C.tb_put_cell (intToCInt x) (intToCInt y) c_cell
 

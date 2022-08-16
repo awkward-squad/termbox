@@ -1,11 +1,9 @@
-{-# LANGUAGE LambdaCase #-}
-
 import Data.Foldable (fold)
 import qualified Termbox
 
 main :: IO ()
 main =
-  Termbox.run $ \_w _h render poll -> do
+  Termbox.run \_w _h render poll -> do
     let loop :: Maybe Termbox.Event -> IO ()
         loop lastEvent = do
           render (cells lastEvent) Termbox.NoCursor

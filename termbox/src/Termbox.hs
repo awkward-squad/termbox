@@ -393,7 +393,7 @@ instance Exception InitError
 -- /Throws/: 'InitError'
 run :: (Int -> Int -> (Cells -> Cursor -> IO ()) -> IO Event -> IO a) -> IO a
 run action = do
-  mask $ \unmask -> do
+  mask \unmask -> do
     initResult <- Termbox.Bindings.tb_init
     case () of
       _ | initResult == 0 -> do
