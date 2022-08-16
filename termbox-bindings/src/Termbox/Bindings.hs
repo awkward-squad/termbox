@@ -53,6 +53,11 @@ module Termbox.Bindings
         TB_YELLOW
       ),
     Tb_event (..),
+    Tb_event_mod
+      ( Tb_event_mod,
+        TB_MOD_ALT,
+        TB_MOD_MOTION
+      ),
     Tb_event_type
       ( Tb_event_type,
         TB_EVENT_KEY,
@@ -152,10 +157,6 @@ module Termbox.Bindings
       ),
 
     -- * Constants
-
-    -- ** Alt modifiers
-    Termbox.Bindings.C._TB_MOD_ALT,
-    Termbox.Bindings.C._TB_MOD_MOTION,
 
     -- ** 'tb_init' error codes
     Termbox.Bindings.C._TB_EFAILED_TO_OPEN_TTY,
@@ -309,8 +310,7 @@ tb_width =
 -- | An attribute.
 newtype Tb_attr
   = Tb_attr Word16
-  deriving stock (Eq)
-  deriving newtype (Show)
+  deriving stock (Eq, Ord, Show)
 
 instance Semigroup Tb_attr where
   Tb_attr cx <> Tb_attr cy =
@@ -343,6 +343,7 @@ data Tb_cell = Tb_cell
     -- | Background attribute.
     bg :: {-# UNPACK #-} !Tb_attr
   }
+  deriving stock (Eq, Ord, Show)
 
 cellToCCell :: Tb_cell -> Termbox.Bindings.C.Tb_cell
 cellToCCell =
@@ -351,7 +352,7 @@ cellToCCell =
 -- | A color.
 newtype Tb_color
   = Tb_color Word16
-  deriving stock (Eq)
+  deriving stock (Eq, Ord)
   deriving newtype (Num, Show)
 
 pattern TB_DEFAULT :: Tb_color
@@ -411,7 +412,7 @@ pattern TB_YELLOW <-
 -- | An event.
 data Tb_event = Tb_event
   { type_ :: {-# UNPACK #-} !Tb_event_type,
-    mod :: {-# UNPACK #-} !Word8,
+    mod :: {-# UNPACK #-} !Tb_event_mod,
     key :: {-# UNPACK #-} !Tb_key,
     ch :: {-# UNPACK #-} !Word32,
     w :: {-# UNPACK #-} !Int32,
@@ -419,15 +420,33 @@ data Tb_event = Tb_event
     x :: {-# UNPACK #-} !Int32,
     y :: {-# UNPACK #-} !Int32
   }
+  deriving stock (Eq, Ord, Show)
 
 ceventToEvent :: Termbox.Bindings.C.Tb_event -> Tb_event
 ceventToEvent =
   unsafeCoerce -- equivalent record types that only differ by newtype wrappers
 
+-- | An event modifier.
+newtype Tb_event_mod
+  = Tb_event_mod Word8
+  deriving stock (Eq, Ord, Show)
+
+pattern TB_MOD_ALT :: Tb_event_mod
+pattern TB_MOD_ALT <-
+  ((== Tb_event_mod Termbox.Bindings.C._TB_MOD_ALT) -> True)
+  where
+    TB_MOD_ALT = Tb_event_mod Termbox.Bindings.C._TB_MOD_ALT
+
+pattern TB_MOD_MOTION :: Tb_event_mod
+pattern TB_MOD_MOTION <-
+  ((== Tb_event_mod Termbox.Bindings.C._TB_MOD_MOTION) -> True)
+  where
+    TB_MOD_MOTION = Tb_event_mod Termbox.Bindings.C._TB_MOD_MOTION
+
 -- | An event type.
 newtype Tb_event_type
   = Tb_event_type Word8
-  deriving stock (Eq)
+  deriving stock (Eq, Ord)
 
 instance Show Tb_event_type where
   show = \case
@@ -458,7 +477,7 @@ pattern TB_EVENT_RESIZE <-
 -- | The input mode.
 newtype Tb_input_mode
   = Tb_input_mode CInt
-  deriving stock (Eq)
+  deriving stock (Eq, Ord)
 
 instance Show Tb_input_mode where
   show = \case
@@ -495,7 +514,7 @@ pattern TB_INPUT_MOUSE <-
 
 newtype Tb_key
   = Tb_key Word16
-  deriving stock (Eq)
+  deriving stock (Eq, Ord)
 
 instance Show Tb_key where
   show = \case
@@ -1004,7 +1023,7 @@ pattern TB_KEY_TAB <-
 -- | The output mode.
 newtype Tb_output_mode
   = Tb_output_mode CInt
-  deriving stock (Eq)
+  deriving stock (Eq, Ord)
 
 instance Show Tb_output_mode where
   show = \case

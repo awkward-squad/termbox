@@ -37,6 +37,7 @@ library
     cbits/utf8.c
   default-extensions:
     CApiFFI
+    DerivingStrategies
     DuplicateRecordFields
     InstanceSigs
     NamedFieldPuns

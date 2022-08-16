@@ -287,6 +287,7 @@ data Tb_cell = Tb_cell
     -- | Background attribute.
     bg :: {-# UNPACK #-} !Word16
   }
+  deriving stock (Eq, Ord, Show)
 
 instance Storable Tb_cell where
   sizeOf :: Tb_cell -> Int
@@ -321,6 +322,7 @@ data Tb_event = Tb_event
     x :: {-# UNPACK #-} !Int32,
     y :: {-# UNPACK #-} !Int32
   }
+  deriving stock (Eq, Ord, Show)
 
 instance Storable Tb_event where
   sizeOf :: Tb_event -> Int
