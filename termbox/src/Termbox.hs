@@ -391,10 +391,9 @@ instance Exception InitError
 -- /Throws/: 'InitError'
 run :: (Int -> Int -> (Cells -> Cursor -> IO ()) -> IO Event -> IO a) -> IO a
 run action = do
-  mask \unmask -> do
-    initResult <- Termbox.Bindings.tb_init
-    case () of
-      _ | initResult == 0 -> do
+  mask \unmask ->
+    Termbox.Bindings.tb_init >>= \case
+      Right () -> do
         result <-
           unmask
             ( do
@@ -407,12 +406,11 @@ run action = do
             `onException` shutdown
         shutdown
         pure result
-      _ | initResult == fromIntegral @CInt @Int Termbox.Bindings._TB_EFAILED_TO_OPEN_TTY -> throwIO FailedToOpenTTY
-      _ | initResult == fromIntegral @CInt @Int Termbox.Bindings._TB_EPIPE_TRAP_ERROR -> throwIO PipeTrapError
-      _
-        | initResult == fromIntegral @CInt @Int Termbox.Bindings._TB_EUNSUPPORTED_TERMINAL ->
-            throwIO UnsupportedTerminal
-      _ -> error ("termbox: unknown tb_init error " ++ show initResult)
+      Left err ->
+        throwIO case err of
+          Termbox.Bindings.TB_EFAILED_TO_OPEN_TTY -> FailedToOpenTTY
+          Termbox.Bindings.TB_EPIPE_TRAP_ERROR -> PipeTrapError
+          Termbox.Bindings.TB_EUNSUPPORTED_TERMINAL -> UnsupportedTerminal
 
 -- | Render a scene.
 render :: Cells -> Cursor -> IO ()

@@ -59,21 +59,23 @@ module Termbox.Bindings
         TB_MOD_MOTION
       ),
     Tb_event_type
-      ( Tb_event_type,
-        TB_EVENT_KEY,
+      ( TB_EVENT_KEY,
         TB_EVENT_MOUSE,
         TB_EVENT_RESIZE
       ),
+    Tb_init_error
+      ( TB_EFAILED_TO_OPEN_TTY,
+        TB_EPIPE_TRAP_ERROR,
+        TB_EUNSUPPORTED_TERMINAL
+      ),
     Tb_input_mode
-      ( Tb_input_mode,
-        TB_INPUT_CURRENT,
+      ( TB_INPUT_CURRENT,
         TB_INPUT_ALT,
         TB_INPUT_ESC,
         TB_INPUT_MOUSE
       ),
     Tb_key
-      ( Tb_key,
-        TB_KEY_ARROW_DOWN,
+      ( TB_KEY_ARROW_DOWN,
         TB_KEY_ARROW_LEFT,
         TB_KEY_ARROW_RIGHT,
         TB_KEY_ARROW_UP,
@@ -148,20 +150,12 @@ module Termbox.Bindings
         TB_KEY_TAB
       ),
     Tb_output_mode
-      ( Tb_output_mode,
-        TB_OUTPUT_CURRENT,
+      ( TB_OUTPUT_CURRENT,
         TB_OUTPUT_216,
         TB_OUTPUT_256,
         TB_OUTPUT_GRAYSCALE,
         TB_OUTPUT_NORMAL
       ),
-
-    -- * Constants
-
-    -- ** 'tb_init' error codes
-    Termbox.Bindings.C._TB_EFAILED_TO_OPEN_TTY,
-    Termbox.Bindings.C._TB_EPIPE_TRAP_ERROR,
-    Termbox.Bindings.C._TB_EUNSUPPORTED_TERMINAL,
 
     -- ** Hide cursor
     Termbox.Bindings.C._TB_HIDE_CURSOR,
@@ -212,24 +206,37 @@ tb_height =
   cintToInt <$> Termbox.Bindings.C.tb_height
 
 -- | Initialize the @termbox@ library.
-tb_init :: IO Int
-tb_init =
-  cintToInt <$> Termbox.Bindings.C.tb_init
+tb_init :: IO (Either Tb_init_error ())
+tb_init = do
+  code <- Termbox.Bindings.C.tb_init
+  pure
+    if code == 0
+      then Right ()
+      else Left (Tb_init_error code)
 
 -- | Initialize the @termbox@ library.
 --
 -- > tb_init = tb_init_fd(0)
-tb_init_fd :: Fd -> IO Int
-tb_init_fd (Fd fd) =
-  cintToInt <$> Termbox.Bindings.C.tb_init_fd fd
+tb_init_fd :: Fd -> IO (Either Tb_init_error ())
+tb_init_fd (Fd fd) = do
+  code <- Termbox.Bindings.C.tb_init_fd fd
+  pure
+    if code == 0
+      then Right ()
+      else Left (Tb_init_error code)
 
 -- | Initialize the @termbox@ library.
 --
 -- > tb_init = tb_init_file("/dev/tty")
-tb_init_file :: FilePath -> IO Int
-tb_init_file file =
-  withCString file \c_file ->
-    cintToInt <$> Termbox.Bindings.C.tb_init_file c_file
+tb_init_file :: FilePath -> IO (Either Tb_init_error ())
+tb_init_file file = do
+  code <-
+    withCString file \c_file ->
+      Termbox.Bindings.C.tb_init_file c_file
+  pure
+    if code == 0
+      then Right ()
+      else Left (Tb_init_error code)
 
 -- | Wait for an event.
 tb_peek_event ::
@@ -305,7 +312,7 @@ tb_width =
   cintToInt <$> Termbox.Bindings.C.tb_width
 
 ------------------------------------------------------------------------------------------------------------------------
--- Objects
+-- Types
 
 -- | An attribute.
 newtype Tb_attr
@@ -473,6 +480,37 @@ pattern TB_EVENT_RESIZE <-
     TB_EVENT_RESIZE = Tb_event_type Termbox.Bindings.C._TB_EVENT_RESIZE
 
 {-# COMPLETE TB_EVENT_KEY, TB_EVENT_MOUSE, TB_EVENT_RESIZE #-}
+
+-- | A 'tb_init' error.
+newtype Tb_init_error
+  = Tb_init_error CInt
+  deriving stock (Eq, Ord)
+
+instance Show Tb_init_error where
+  show = \case
+    TB_EFAILED_TO_OPEN_TTY -> "TB_EFAILED_TO_OPEN_TTY"
+    TB_EPIPE_TRAP_ERROR -> "TB_EPIPE_TRAP_ERROR"
+    TB_EUNSUPPORTED_TERMINAL -> "TB_EUNSUPPORTED_TERMINAL"
+
+pattern TB_EFAILED_TO_OPEN_TTY :: Tb_init_error
+pattern TB_EFAILED_TO_OPEN_TTY <-
+  ((== Tb_init_error Termbox.Bindings.C._TB_EFAILED_TO_OPEN_TTY) -> True)
+  where
+    TB_EFAILED_TO_OPEN_TTY = Tb_init_error Termbox.Bindings.C._TB_EFAILED_TO_OPEN_TTY
+
+pattern TB_EPIPE_TRAP_ERROR :: Tb_init_error
+pattern TB_EPIPE_TRAP_ERROR <-
+  ((== Tb_init_error Termbox.Bindings.C._TB_EPIPE_TRAP_ERROR) -> True)
+  where
+    TB_EPIPE_TRAP_ERROR = Tb_init_error Termbox.Bindings.C._TB_EPIPE_TRAP_ERROR
+
+pattern TB_EUNSUPPORTED_TERMINAL :: Tb_init_error
+pattern TB_EUNSUPPORTED_TERMINAL <-
+  ((== Tb_init_error Termbox.Bindings.C._TB_EUNSUPPORTED_TERMINAL) -> True)
+  where
+    TB_EUNSUPPORTED_TERMINAL = Tb_init_error Termbox.Bindings.C._TB_EUNSUPPORTED_TERMINAL
+
+{-# COMPLETE TB_EFAILED_TO_OPEN_TTY, TB_EPIPE_TRAP_ERROR, TB_EUNSUPPORTED_TERMINAL #-}
 
 -- | The input mode.
 newtype Tb_input_mode
