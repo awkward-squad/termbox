@@ -4,7 +4,7 @@ module Termbox.Bindings
     -- ** Initialize / shutdown
     tb_init,
     tb_init_fd,
-    -- tb_init_file,
+    tb_init_file,
     Termbox.Bindings.C.tb_shutdown,
 
     -- ** Get terminal dimensions
@@ -166,6 +166,7 @@ import Data.Coerce (coerce)
 import Data.Int (Int32)
 import Data.Word (Word16, Word32, Word8)
 import Foreign.C.Error (Errno, getErrno)
+import Foreign.C.String (withCString)
 import Foreign.C.Types (CInt)
 import Foreign.Marshal.Alloc (alloca)
 import qualified Foreign.Storable as Storable
@@ -209,6 +210,14 @@ tb_init =
 tb_init_fd :: Fd -> IO Int
 tb_init_fd (Fd fd) =
   cintToInt <$> Termbox.Bindings.C.tb_init_fd fd
+
+-- | Initialize the @termbox@ library.
+--
+-- > tb_init = tb_init_file("/dev/tty")
+tb_init_file :: FilePath -> IO Int
+tb_init_file file =
+  withCString file \c_file ->
+    cintToInt <$> Termbox.Bindings.C.tb_init_file c_file
 
 -- | Wait for an event.
 tb_peek_event ::
