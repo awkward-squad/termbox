@@ -35,23 +35,8 @@ module Termbox.Bindings.C
     Tb_event (..),
 
     -- * Constants
-    _TB_BLACK,
-    _TB_BLUE,
-    _TB_BOLD,
-    _TB_CYAN,
-    _TB_DEFAULT,
-    _TB_EFAILED_TO_OPEN_TTY,
-    _TB_EPIPE_TRAP_ERROR,
-    _TB_EUNSUPPORTED_TERMINAL,
-    _TB_EVENT_KEY,
-    _TB_EVENT_MOUSE,
-    _TB_EVENT_RESIZE,
-    _TB_GREEN,
-    _TB_HIDE_CURSOR,
-    _TB_INPUT_ALT,
-    _TB_INPUT_CURRENT,
-    _TB_INPUT_ESC,
-    _TB_INPUT_MOUSE,
+
+    -- ** Keys
     _TB_KEY_ARROW_DOWN,
     _TB_KEY_ARROW_LEFT,
     _TB_KEY_ARROW_RIGHT,
@@ -125,19 +110,52 @@ module Termbox.Bindings.C
     _TB_KEY_PGUP,
     _TB_KEY_SPACE,
     _TB_KEY_TAB,
-    _TB_MAGENTA,
+
+    -- ** Alt modifiers
     _TB_MOD_ALT,
     _TB_MOD_MOTION,
-    _TB_OUTPUT_216,
-    _TB_OUTPUT_256,
-    _TB_OUTPUT_CURRENT,
-    _TB_OUTPUT_GRAYSCALE,
-    _TB_OUTPUT_NORMAL,
+
+    -- ** Colors
+    _TB_DEFAULT,
+    _TB_BLACK,
+    _TB_BLUE,
+    _TB_CYAN,
+    _TB_GREEN,
+    _TB_MAGENTA,
     _TB_RED,
-    _TB_REVERSE,
-    _TB_UNDERLINE,
     _TB_WHITE,
     _TB_YELLOW,
+
+    -- ** Attributes
+    _TB_BOLD,
+    _TB_REVERSE,
+    _TB_UNDERLINE,
+
+    -- ** Event types
+    _TB_EVENT_KEY,
+    _TB_EVENT_MOUSE,
+    _TB_EVENT_RESIZE,
+
+    -- ** 'tb_init' error codes
+    _TB_EFAILED_TO_OPEN_TTY,
+    _TB_EPIPE_TRAP_ERROR,
+    _TB_EUNSUPPORTED_TERMINAL,
+
+    -- ** Hide cursor
+    _TB_HIDE_CURSOR,
+
+    -- ** Input modes
+    _TB_INPUT_CURRENT,
+    _TB_INPUT_ALT,
+    _TB_INPUT_ESC,
+    _TB_INPUT_MOUSE,
+
+    -- ** Output modes
+    _TB_OUTPUT_CURRENT,
+    _TB_OUTPUT_216,
+    _TB_OUTPUT_256,
+    _TB_OUTPUT_GRAYSCALE,
+    _TB_OUTPUT_NORMAL,
   )
 where
 
@@ -159,15 +177,15 @@ foreign import capi unsafe "termbox.h tb_cell_buffer"
 -- | Set a cell value in the back buffer.
 foreign import capi unsafe "termbox.h tb_change_cell"
   tb_change_cell ::
-    -- | @x@
+    -- | x
     CInt ->
-    -- | @y@
+    -- | y
     CInt ->
-    -- | @ch@
+    -- | ch
     Word32 ->
-    -- | @fg@
+    -- | fg
     Word16 ->
-    -- | @bg@
+    -- | bg
     Word16 ->
     IO ()
 
@@ -214,11 +232,11 @@ foreign import capi unsafe "termbox.h tb_present"
 -- | Set a cell value in the back buffer.
 foreign import capi unsafe "termbox.h tb_put_cell"
   tb_put_cell ::
-    -- | @x@
+    -- | x
     CInt ->
-    -- | @y@
+    -- | y
     CInt ->
-    -- | @cell@
+    -- | cell
     Ptr Tb_cell ->
     IO ()
 
@@ -237,9 +255,9 @@ foreign import capi unsafe "termbox.h tb_set_clear_attributes"
 -- | Set the cursor location, or hide it.
 foreign import capi unsafe "termbox.h tb_set_cursor"
   tb_set_cursor ::
-    -- | @x@
+    -- | x
     CInt ->
-    -- | @y@
+    -- | y
     CInt ->
     IO ()
 
