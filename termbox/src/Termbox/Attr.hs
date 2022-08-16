@@ -1,5 +1,5 @@
 module Termbox.Attr
-  ( Attr,
+  ( Attr (Attr),
     black,
     blue,
     bold,
@@ -259,15 +259,9 @@ module Termbox.Attr
     underline,
     white,
     yellow,
-    --
-    attrToWord,
-    wordToAttr,
-    attrToTbAttr,
   )
 where
 
-import Data.Bits ((.&.), (.|.))
-import Data.Word (Word16)
 import qualified Termbox.Bindings
 import Prelude hiding (reverse)
 
@@ -276,1057 +270,1045 @@ import Prelude hiding (reverse)
 --
 -- A cell can only have one color, but may be (for example) bold /and/
 -- underlined.
-data Attr
-  = Attr !Termbox.Bindings.Tb_attr {- color -} !Termbox.Bindings.Tb_attr {- attr -}
+newtype Attr
+  = Attr Termbox.Bindings.Tb_color
   deriving stock (Eq, Show)
-
-wordToAttr :: Word16 -> Attr
-wordToAttr w =
-  Attr (Termbox.Bindings.Tb_attr (w .&. 0x00FF)) (Termbox.Bindings.Tb_attr (w .&. 0xFF00))
-
-attrToWord :: Attr -> Word16
-attrToWord (Attr (Termbox.Bindings.Tb_attr x) (Termbox.Bindings.Tb_attr y)) =
-  x .|. y
-
-attrToTbAttr :: Attr -> Termbox.Bindings.Tb_attr
-attrToTbAttr (Attr x y) =
-  x <> y
 
 black :: Attr
 black =
-  Attr 0 0
+  Attr 0
 
 red :: Attr
 red =
-  Attr 1 0
+  Attr 1
 
 green :: Attr
 green =
-  Attr 2 0
+  Attr 2
 
 yellow :: Attr
 yellow =
-  Attr 3 0
+  Attr 3
 
 blue :: Attr
 blue =
-  Attr 4 0
+  Attr 4
 
 magenta :: Attr
 magenta =
-  Attr 5 0
+  Attr 5
 
 cyan :: Attr
 cyan =
-  Attr 6 0
+  Attr 6
 
 white :: Attr
 white =
-  Attr 7 0
+  Attr 7
 
 brightBlack :: Attr
 brightBlack =
-  Attr 8 0
+  Attr 8
 
 brightRed :: Attr
 brightRed =
-  Attr 9 0
+  Attr 9
 
 brightGreen :: Attr
 brightGreen =
-  Attr 10 0
+  Attr 10
 
 brightYellow :: Attr
 brightYellow =
-  Attr 11 0
+  Attr 11
 
 brightBlue :: Attr
 brightBlue =
-  Attr 12 0
+  Attr 12
 
 brightMagenta :: Attr
 brightMagenta =
-  Attr 13 0
+  Attr 13
 
 brightCyan :: Attr
 brightCyan =
-  Attr 14 0
+  Attr 14
 
 brightWhite :: Attr
 brightWhite =
-  Attr 15 0
+  Attr 15
 
 color0 :: Attr
 color0 =
-  Attr 16 0
+  Attr 16
 
 color1 :: Attr
 color1 =
-  Attr 17 0
+  Attr 17
 
 color2 :: Attr
 color2 =
-  Attr 18 0
+  Attr 18
 
 color3 :: Attr
 color3 =
-  Attr 19 0
+  Attr 19
 
 color4 :: Attr
 color4 =
-  Attr 20 0
+  Attr 20
 
 color5 :: Attr
 color5 =
-  Attr 21 0
+  Attr 21
 
 color6 :: Attr
 color6 =
-  Attr 22 0
+  Attr 22
 
 color7 :: Attr
 color7 =
-  Attr 23 0
+  Attr 23
 
 color8 :: Attr
 color8 =
-  Attr 24 0
+  Attr 24
 
 color9 :: Attr
 color9 =
-  Attr 25 0
+  Attr 25
 
 color10 :: Attr
 color10 =
-  Attr 26 0
+  Attr 26
 
 color11 :: Attr
 color11 =
-  Attr 27 0
+  Attr 27
 
 color12 :: Attr
 color12 =
-  Attr 28 0
+  Attr 28
 
 color13 :: Attr
 color13 =
-  Attr 29 0
+  Attr 29
 
 color14 :: Attr
 color14 =
-  Attr 30 0
+  Attr 30
 
 color15 :: Attr
 color15 =
-  Attr 31 0
+  Attr 31
 
 color16 :: Attr
 color16 =
-  Attr 32 0
+  Attr 32
 
 color17 :: Attr
 color17 =
-  Attr 33 0
+  Attr 33
 
 color18 :: Attr
 color18 =
-  Attr 34 0
+  Attr 34
 
 color19 :: Attr
 color19 =
-  Attr 35 0
+  Attr 35
 
 color20 :: Attr
 color20 =
-  Attr 36 0
+  Attr 36
 
 color21 :: Attr
 color21 =
-  Attr 37 0
+  Attr 37
 
 color22 :: Attr
 color22 =
-  Attr 38 0
+  Attr 38
 
 color23 :: Attr
 color23 =
-  Attr 39 0
+  Attr 39
 
 color24 :: Attr
 color24 =
-  Attr 40 0
+  Attr 40
 
 color25 :: Attr
 color25 =
-  Attr 41 0
+  Attr 41
 
 color26 :: Attr
 color26 =
-  Attr 42 0
+  Attr 42
 
 color27 :: Attr
 color27 =
-  Attr 43 0
+  Attr 43
 
 color28 :: Attr
 color28 =
-  Attr 44 0
+  Attr 44
 
 color29 :: Attr
 color29 =
-  Attr 45 0
+  Attr 45
 
 color30 :: Attr
 color30 =
-  Attr 46 0
+  Attr 46
 
 color31 :: Attr
 color31 =
-  Attr 47 0
+  Attr 47
 
 color32 :: Attr
 color32 =
-  Attr 48 0
+  Attr 48
 
 color33 :: Attr
 color33 =
-  Attr 49 0
+  Attr 49
 
 color34 :: Attr
 color34 =
-  Attr 50 0
+  Attr 50
 
 color35 :: Attr
 color35 =
-  Attr 51 0
+  Attr 51
 
 color36 :: Attr
 color36 =
-  Attr 52 0
+  Attr 52
 
 color37 :: Attr
 color37 =
-  Attr 53 0
+  Attr 53
 
 color38 :: Attr
 color38 =
-  Attr 54 0
+  Attr 54
 
 color39 :: Attr
 color39 =
-  Attr 55 0
+  Attr 55
 
 color40 :: Attr
 color40 =
-  Attr 56 0
+  Attr 56
 
 color41 :: Attr
 color41 =
-  Attr 57 0
+  Attr 57
 
 color42 :: Attr
 color42 =
-  Attr 58 0
+  Attr 58
 
 color43 :: Attr
 color43 =
-  Attr 59 0
+  Attr 59
 
 color44 :: Attr
 color44 =
-  Attr 60 0
+  Attr 60
 
 color45 :: Attr
 color45 =
-  Attr 61 0
+  Attr 61
 
 color46 :: Attr
 color46 =
-  Attr 62 0
+  Attr 62
 
 color47 :: Attr
 color47 =
-  Attr 63 0
+  Attr 63
 
 color48 :: Attr
 color48 =
-  Attr 64 0
+  Attr 64
 
 color49 :: Attr
 color49 =
-  Attr 65 0
+  Attr 65
 
 color50 :: Attr
 color50 =
-  Attr 66 0
+  Attr 66
 
 color51 :: Attr
 color51 =
-  Attr 67 0
+  Attr 67
 
 color52 :: Attr
 color52 =
-  Attr 68 0
+  Attr 68
 
 color53 :: Attr
 color53 =
-  Attr 69 0
+  Attr 69
 
 color54 :: Attr
 color54 =
-  Attr 70 0
+  Attr 70
 
 color55 :: Attr
 color55 =
-  Attr 71 0
+  Attr 71
 
 color56 :: Attr
 color56 =
-  Attr 72 0
+  Attr 72
 
 color57 :: Attr
 color57 =
-  Attr 73 0
+  Attr 73
 
 color58 :: Attr
 color58 =
-  Attr 74 0
+  Attr 74
 
 color59 :: Attr
 color59 =
-  Attr 75 0
+  Attr 75
 
 color60 :: Attr
 color60 =
-  Attr 76 0
+  Attr 76
 
 color61 :: Attr
 color61 =
-  Attr 77 0
+  Attr 77
 
 color62 :: Attr
 color62 =
-  Attr 78 0
+  Attr 78
 
 color63 :: Attr
 color63 =
-  Attr 79 0
+  Attr 79
 
 color64 :: Attr
 color64 =
-  Attr 80 0
+  Attr 80
 
 color65 :: Attr
 color65 =
-  Attr 81 0
+  Attr 81
 
 color66 :: Attr
 color66 =
-  Attr 82 0
+  Attr 82
 
 color67 :: Attr
 color67 =
-  Attr 83 0
+  Attr 83
 
 color68 :: Attr
 color68 =
-  Attr 84 0
+  Attr 84
 
 color69 :: Attr
 color69 =
-  Attr 85 0
+  Attr 85
 
 color70 :: Attr
 color70 =
-  Attr 86 0
+  Attr 86
 
 color71 :: Attr
 color71 =
-  Attr 87 0
+  Attr 87
 
 color72 :: Attr
 color72 =
-  Attr 88 0
+  Attr 88
 
 color73 :: Attr
 color73 =
-  Attr 89 0
+  Attr 89
 
 color74 :: Attr
 color74 =
-  Attr 90 0
+  Attr 90
 
 color75 :: Attr
 color75 =
-  Attr 91 0
+  Attr 91
 
 color76 :: Attr
 color76 =
-  Attr 92 0
+  Attr 92
 
 color77 :: Attr
 color77 =
-  Attr 93 0
+  Attr 93
 
 color78 :: Attr
 color78 =
-  Attr 94 0
+  Attr 94
 
 color79 :: Attr
 color79 =
-  Attr 95 0
+  Attr 95
 
 color80 :: Attr
 color80 =
-  Attr 96 0
+  Attr 96
 
 color81 :: Attr
 color81 =
-  Attr 97 0
+  Attr 97
 
 color82 :: Attr
 color82 =
-  Attr 98 0
+  Attr 98
 
 color83 :: Attr
 color83 =
-  Attr 99 0
+  Attr 99
 
 color84 :: Attr
 color84 =
-  Attr 100 0
+  Attr 100
 
 color85 :: Attr
 color85 =
-  Attr 101 0
+  Attr 101
 
 color86 :: Attr
 color86 =
-  Attr 102 0
+  Attr 102
 
 color87 :: Attr
 color87 =
-  Attr 103 0
+  Attr 103
 
 color88 :: Attr
 color88 =
-  Attr 104 0
+  Attr 104
 
 color89 :: Attr
 color89 =
-  Attr 105 0
+  Attr 105
 
 color90 :: Attr
 color90 =
-  Attr 106 0
+  Attr 106
 
 color91 :: Attr
 color91 =
-  Attr 107 0
+  Attr 107
 
 color92 :: Attr
 color92 =
-  Attr 108 0
+  Attr 108
 
 color93 :: Attr
 color93 =
-  Attr 109 0
+  Attr 109
 
 color94 :: Attr
 color94 =
-  Attr 110 0
+  Attr 110
 
 color95 :: Attr
 color95 =
-  Attr 111 0
+  Attr 111
 
 color96 :: Attr
 color96 =
-  Attr 112 0
+  Attr 112
 
 color97 :: Attr
 color97 =
-  Attr 113 0
+  Attr 113
 
 color98 :: Attr
 color98 =
-  Attr 114 0
+  Attr 114
 
 color99 :: Attr
 color99 =
-  Attr 115 0
+  Attr 115
 
 color100 :: Attr
 color100 =
-  Attr 116 0
+  Attr 116
 
 color101 :: Attr
 color101 =
-  Attr 117 0
+  Attr 117
 
 color102 :: Attr
 color102 =
-  Attr 118 0
+  Attr 118
 
 color103 :: Attr
 color103 =
-  Attr 119 0
+  Attr 119
 
 color104 :: Attr
 color104 =
-  Attr 120 0
+  Attr 120
 
 color105 :: Attr
 color105 =
-  Attr 121 0
+  Attr 121
 
 color106 :: Attr
 color106 =
-  Attr 122 0
+  Attr 122
 
 color107 :: Attr
 color107 =
-  Attr 123 0
+  Attr 123
 
 color108 :: Attr
 color108 =
-  Attr 124 0
+  Attr 124
 
 color109 :: Attr
 color109 =
-  Attr 125 0
+  Attr 125
 
 color110 :: Attr
 color110 =
-  Attr 126 0
+  Attr 126
 
 color111 :: Attr
 color111 =
-  Attr 127 0
+  Attr 127
 
 color112 :: Attr
 color112 =
-  Attr 128 0
+  Attr 128
 
 color113 :: Attr
 color113 =
-  Attr 129 0
+  Attr 129
 
 color114 :: Attr
 color114 =
-  Attr 130 0
+  Attr 130
 
 color115 :: Attr
 color115 =
-  Attr 131 0
+  Attr 131
 
 color116 :: Attr
 color116 =
-  Attr 132 0
+  Attr 132
 
 color117 :: Attr
 color117 =
-  Attr 133 0
+  Attr 133
 
 color118 :: Attr
 color118 =
-  Attr 134 0
+  Attr 134
 
 color119 :: Attr
 color119 =
-  Attr 135 0
+  Attr 135
 
 color120 :: Attr
 color120 =
-  Attr 136 0
+  Attr 136
 
 color121 :: Attr
 color121 =
-  Attr 137 0
+  Attr 137
 
 color122 :: Attr
 color122 =
-  Attr 138 0
+  Attr 138
 
 color123 :: Attr
 color123 =
-  Attr 139 0
+  Attr 139
 
 color124 :: Attr
 color124 =
-  Attr 140 0
+  Attr 140
 
 color125 :: Attr
 color125 =
-  Attr 141 0
+  Attr 141
 
 color126 :: Attr
 color126 =
-  Attr 142 0
+  Attr 142
 
 color127 :: Attr
 color127 =
-  Attr 143 0
+  Attr 143
 
 color128 :: Attr
 color128 =
-  Attr 144 0
+  Attr 144
 
 color129 :: Attr
 color129 =
-  Attr 145 0
+  Attr 145
 
 color130 :: Attr
 color130 =
-  Attr 146 0
+  Attr 146
 
 color131 :: Attr
 color131 =
-  Attr 147 0
+  Attr 147
 
 color132 :: Attr
 color132 =
-  Attr 148 0
+  Attr 148
 
 color133 :: Attr
 color133 =
-  Attr 149 0
+  Attr 149
 
 color134 :: Attr
 color134 =
-  Attr 150 0
+  Attr 150
 
 color135 :: Attr
 color135 =
-  Attr 151 0
+  Attr 151
 
 color136 :: Attr
 color136 =
-  Attr 152 0
+  Attr 152
 
 color137 :: Attr
 color137 =
-  Attr 153 0
+  Attr 153
 
 color138 :: Attr
 color138 =
-  Attr 154 0
+  Attr 154
 
 color139 :: Attr
 color139 =
-  Attr 155 0
+  Attr 155
 
 color140 :: Attr
 color140 =
-  Attr 156 0
+  Attr 156
 
 color141 :: Attr
 color141 =
-  Attr 157 0
+  Attr 157
 
 color142 :: Attr
 color142 =
-  Attr 158 0
+  Attr 158
 
 color143 :: Attr
 color143 =
-  Attr 159 0
+  Attr 159
 
 color144 :: Attr
 color144 =
-  Attr 160 0
+  Attr 160
 
 color145 :: Attr
 color145 =
-  Attr 161 0
+  Attr 161
 
 color146 :: Attr
 color146 =
-  Attr 162 0
+  Attr 162
 
 color147 :: Attr
 color147 =
-  Attr 163 0
+  Attr 163
 
 color148 :: Attr
 color148 =
-  Attr 164 0
+  Attr 164
 
 color149 :: Attr
 color149 =
-  Attr 165 0
+  Attr 165
 
 color150 :: Attr
 color150 =
-  Attr 166 0
+  Attr 166
 
 color151 :: Attr
 color151 =
-  Attr 167 0
+  Attr 167
 
 color152 :: Attr
 color152 =
-  Attr 168 0
+  Attr 168
 
 color153 :: Attr
 color153 =
-  Attr 169 0
+  Attr 169
 
 color154 :: Attr
 color154 =
-  Attr 170 0
+  Attr 170
 
 color155 :: Attr
 color155 =
-  Attr 171 0
+  Attr 171
 
 color156 :: Attr
 color156 =
-  Attr 172 0
+  Attr 172
 
 color157 :: Attr
 color157 =
-  Attr 173 0
+  Attr 173
 
 color158 :: Attr
 color158 =
-  Attr 174 0
+  Attr 174
 
 color159 :: Attr
 color159 =
-  Attr 175 0
+  Attr 175
 
 color160 :: Attr
 color160 =
-  Attr 176 0
+  Attr 176
 
 color161 :: Attr
 color161 =
-  Attr 177 0
+  Attr 177
 
 color162 :: Attr
 color162 =
-  Attr 178 0
+  Attr 178
 
 color163 :: Attr
 color163 =
-  Attr 179 0
+  Attr 179
 
 color164 :: Attr
 color164 =
-  Attr 180 0
+  Attr 180
 
 color165 :: Attr
 color165 =
-  Attr 181 0
+  Attr 181
 
 color166 :: Attr
 color166 =
-  Attr 182 0
+  Attr 182
 
 color167 :: Attr
 color167 =
-  Attr 183 0
+  Attr 183
 
 color168 :: Attr
 color168 =
-  Attr 184 0
+  Attr 184
 
 color169 :: Attr
 color169 =
-  Attr 185 0
+  Attr 185
 
 color170 :: Attr
 color170 =
-  Attr 186 0
+  Attr 186
 
 color171 :: Attr
 color171 =
-  Attr 187 0
+  Attr 187
 
 color172 :: Attr
 color172 =
-  Attr 188 0
+  Attr 188
 
 color173 :: Attr
 color173 =
-  Attr 189 0
+  Attr 189
 
 color174 :: Attr
 color174 =
-  Attr 190 0
+  Attr 190
 
 color175 :: Attr
 color175 =
-  Attr 191 0
+  Attr 191
 
 color176 :: Attr
 color176 =
-  Attr 192 0
+  Attr 192
 
 color177 :: Attr
 color177 =
-  Attr 193 0
+  Attr 193
 
 color178 :: Attr
 color178 =
-  Attr 194 0
+  Attr 194
 
 color179 :: Attr
 color179 =
-  Attr 195 0
+  Attr 195
 
 color180 :: Attr
 color180 =
-  Attr 196 0
+  Attr 196
 
 color181 :: Attr
 color181 =
-  Attr 197 0
+  Attr 197
 
 color182 :: Attr
 color182 =
-  Attr 198 0
+  Attr 198
 
 color183 :: Attr
 color183 =
-  Attr 199 0
+  Attr 199
 
 color184 :: Attr
 color184 =
-  Attr 200 0
+  Attr 200
 
 color185 :: Attr
 color185 =
-  Attr 201 0
+  Attr 201
 
 color186 :: Attr
 color186 =
-  Attr 202 0
+  Attr 202
 
 color187 :: Attr
 color187 =
-  Attr 203 0
+  Attr 203
 
 color188 :: Attr
 color188 =
-  Attr 204 0
+  Attr 204
 
 color189 :: Attr
 color189 =
-  Attr 205 0
+  Attr 205
 
 color190 :: Attr
 color190 =
-  Attr 206 0
+  Attr 206
 
 color191 :: Attr
 color191 =
-  Attr 207 0
+  Attr 207
 
 color192 :: Attr
 color192 =
-  Attr 208 0
+  Attr 208
 
 color193 :: Attr
 color193 =
-  Attr 209 0
+  Attr 209
 
 color194 :: Attr
 color194 =
-  Attr 210 0
+  Attr 210
 
 color195 :: Attr
 color195 =
-  Attr 211 0
+  Attr 211
 
 color196 :: Attr
 color196 =
-  Attr 212 0
+  Attr 212
 
 color197 :: Attr
 color197 =
-  Attr 213 0
+  Attr 213
 
 color198 :: Attr
 color198 =
-  Attr 214 0
+  Attr 214
 
 color199 :: Attr
 color199 =
-  Attr 215 0
+  Attr 215
 
 color200 :: Attr
 color200 =
-  Attr 216 0
+  Attr 216
 
 color201 :: Attr
 color201 =
-  Attr 217 0
+  Attr 217
 
 color202 :: Attr
 color202 =
-  Attr 218 0
+  Attr 218
 
 color203 :: Attr
 color203 =
-  Attr 219 0
+  Attr 219
 
 color204 :: Attr
 color204 =
-  Attr 220 0
+  Attr 220
 
 color205 :: Attr
 color205 =
-  Attr 221 0
+  Attr 221
 
 color206 :: Attr
 color206 =
-  Attr 222 0
+  Attr 222
 
 color207 :: Attr
 color207 =
-  Attr 223 0
+  Attr 223
 
 color208 :: Attr
 color208 =
-  Attr 224 0
+  Attr 224
 
 color209 :: Attr
 color209 =
-  Attr 225 0
+  Attr 225
 
 color210 :: Attr
 color210 =
-  Attr 226 0
+  Attr 226
 
 color211 :: Attr
 color211 =
-  Attr 227 0
+  Attr 227
 
 color212 :: Attr
 color212 =
-  Attr 228 0
+  Attr 228
 
 color213 :: Attr
 color213 =
-  Attr 229 0
+  Attr 229
 
 color214 :: Attr
 color214 =
-  Attr 230 0
+  Attr 230
 
 color215 :: Attr
 color215 =
-  Attr 231 0
+  Attr 231
 
 gray0 :: Attr
 gray0 =
-  Attr 232 0
+  Attr 232
 
 gray1 :: Attr
 gray1 =
-  Attr 233 0
+  Attr 233
 
 gray2 :: Attr
 gray2 =
-  Attr 234 0
+  Attr 234
 
 gray3 :: Attr
 gray3 =
-  Attr 235 0
+  Attr 235
 
 gray4 :: Attr
 gray4 =
-  Attr 236 0
+  Attr 236
 
 gray5 :: Attr
 gray5 =
-  Attr 237 0
+  Attr 237
 
 gray6 :: Attr
 gray6 =
-  Attr 238 0
+  Attr 238
 
 gray7 :: Attr
 gray7 =
-  Attr 239 0
+  Attr 239
 
 gray8 :: Attr
 gray8 =
-  Attr 240 0
+  Attr 240
 
 gray9 :: Attr
 gray9 =
-  Attr 241 0
+  Attr 241
 
 gray10 :: Attr
 gray10 =
-  Attr 242 0
+  Attr 242
 
 gray11 :: Attr
 gray11 =
-  Attr 243 0
+  Attr 243
 
 gray12 :: Attr
 gray12 =
-  Attr 244 0
+  Attr 244
 
 gray13 :: Attr
 gray13 =
-  Attr 245 0
+  Attr 245
 
 gray14 :: Attr
 gray14 =
-  Attr 246 0
+  Attr 246
 
 gray15 :: Attr
 gray15 =
-  Attr 247 0
+  Attr 247
 
 gray16 :: Attr
 gray16 =
-  Attr 248 0
+  Attr 248
 
 gray17 :: Attr
 gray17 =
-  Attr 249 0
+  Attr 249
 
 gray18 :: Attr
 gray18 =
-  Attr 250 0
+  Attr 250
 
 gray19 :: Attr
 gray19 =
-  Attr 251 0
+  Attr 251
 
 gray20 :: Attr
 gray20 =
-  Attr 252 0
+  Attr 252
 
 gray21 :: Attr
 gray21 =
-  Attr 253 0
+  Attr 253
 
 gray22 :: Attr
 gray22 =
-  Attr 254 0
+  Attr 254
 
 gray23 :: Attr
 gray23 =
-  Attr 255 0
+  Attr 255
 
 -- | Bold modifier attribute.
 bold :: Attr -> Attr
-bold (Attr c s) =
-  Attr c (s <> Termbox.Bindings.TB_BOLD)
+bold (Attr c) =
+  Attr (Termbox.Bindings.tb_attr Termbox.Bindings.TB_BOLD c)
 
 -- | Underline modifier attribute.
 underline :: Attr -> Attr
-underline (Attr c s) =
-  Attr c (s <> Termbox.Bindings.TB_UNDERLINE)
+underline (Attr c) =
+  Attr (Termbox.Bindings.tb_attr Termbox.Bindings.TB_UNDERLINE c)
 
 -- | Reverse modifier attribute.
 reverse :: Attr -> Attr
-reverse (Attr c s) =
-  Attr c (s <> Termbox.Bindings.TB_REVERSE)
+reverse (Attr c) =
+  Attr (Termbox.Bindings.tb_attr Termbox.Bindings.TB_REVERSE c)

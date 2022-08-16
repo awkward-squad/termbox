@@ -5,6 +5,7 @@
 - Add names for grayscale colors (`gray0` .. `gray23`)
 - Remove `Semigroup`, `Monoid` and `Num` instances of `Attr`
 - Change type of `bold`, `underline` and `reverse` from `Attr` to `Attr -> Attr`
+- Remove `Termbox.Internal` module (see packages `termbox-bindings` or `termbox-bindings-c` instead)
 - Support GHC 9.4
 - Drop support for GHC < 8.8
 

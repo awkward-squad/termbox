@@ -7,32 +7,41 @@ module Termbox.Bindings
     tb_init_file,
     Termbox.Bindings.C.tb_shutdown,
 
+    -- ** Get\/set input\/output mode
+    tb_select_input_mode,
+    tb_select_output_mode,
+
     -- ** Get terminal dimensions
     tb_width,
     tb_height,
+
+    -- ** Poll for events
+    tb_peek_event,
+    tb_poll_event,
+
+    -- ** Style a color
+    tb_attr,
+
+    -- ** Set a cell
+    tb_set_cursor,
+    tb_put_cell,
+    tb_change_cell,
 
     -- ** Clear and synchronize the back buffer
     Termbox.Bindings.C.tb_clear,
     tb_set_clear_attributes,
     Termbox.Bindings.C.tb_present,
 
-    -- ** Set a cell
-    tb_set_cursor,
-    tb_put_cell,
-    tb_change_cell,
-    -- tb_cell_buffer,
-
-    -- ** Get/set input/output mode
-    tb_select_input_mode,
-    tb_select_output_mode,
-
-    -- ** Poll for events
-    tb_peek_event,
-    tb_poll_event,
-
     -- * Types
     Tb_attr
       ( Tb_attr,
+        TB_BOLD,
+        TB_REVERSE,
+        TB_UNDERLINE
+      ),
+    Tb_cell (..),
+    Tb_color
+      ( Tb_color,
         TB_DEFAULT,
         TB_BLACK,
         TB_BLUE,
@@ -41,12 +50,8 @@ module Termbox.Bindings
         TB_MAGENTA,
         TB_RED,
         TB_WHITE,
-        TB_YELLOW,
-        TB_BOLD,
-        TB_REVERSE,
-        TB_UNDERLINE
+        TB_YELLOW
       ),
-    Tb_cell (..),
     Tb_event (..),
     Tb_event_type
       ( Tb_event_type,
@@ -179,6 +184,11 @@ import Prelude hiding (mod)
 ------------------------------------------------------------------------------------------------------------------------
 -- Functions
 
+-- | Set the attribute of a color.
+tb_attr :: Tb_attr -> Tb_color -> Tb_color
+tb_attr =
+  coerce ((.|.) :: Word16 -> Word16 -> Word16)
+
 -- | Set a cell value in the back buffer.
 tb_change_cell ::
   -- | x
@@ -188,11 +198,11 @@ tb_change_cell ::
   -- | ch
   Word32 ->
   -- | fg
-  Tb_attr ->
+  Tb_color ->
   -- | bg
-  Tb_attr ->
+  Tb_color ->
   IO ()
-tb_change_cell cx cy c (Tb_attr foreground) (Tb_attr background) =
+tb_change_cell cx cy c (Tb_color foreground) (Tb_color background) =
   Termbox.Bindings.C.tb_change_cell (intToCInt cx) (intToCInt cy) c foreground background
 
 -- | Get the terminal height.
@@ -258,12 +268,12 @@ tb_put_cell cx cy cell =
     Storable.poke c_cell (cellToCCell cell)
     Termbox.Bindings.C.tb_put_cell (intToCInt cx) (intToCInt cy) c_cell
 
--- | Get/set the input mode.
+-- | Get\/set the input mode.
 tb_select_input_mode :: Tb_input_mode -> IO Tb_input_mode
 tb_select_input_mode =
   coerce Termbox.Bindings.C.tb_select_input_mode
 
--- | Get/set the output mode.
+-- | Get\/set the output mode.
 tb_select_output_mode :: Tb_output_mode -> IO Tb_output_mode
 tb_select_output_mode =
   coerce Termbox.Bindings.C.tb_select_output_mode
@@ -271,11 +281,11 @@ tb_select_output_mode =
 -- | Set the foreground and background attributes that 'tb_clear' clears the back buffer with.
 tb_set_clear_attributes ::
   -- | fg
-  Tb_attr ->
+  Tb_color ->
   -- | bg
-  Tb_attr ->
+  Tb_color ->
   IO ()
-tb_set_clear_attributes (Tb_attr foreground) (Tb_attr background) =
+tb_set_clear_attributes (Tb_color foreground) (Tb_color background) =
   Termbox.Bindings.C.tb_set_clear_attributes foreground background
 
 -- | Set the cursor location, or hide it.
@@ -300,65 +310,11 @@ tb_width =
 newtype Tb_attr
   = Tb_attr Word16
   deriving stock (Eq)
-  deriving newtype (Num, Show)
+  deriving newtype (Show)
 
 instance Semigroup Tb_attr where
   Tb_attr cx <> Tb_attr cy =
     Tb_attr (cx .|. cy)
-
-pattern TB_DEFAULT :: Tb_attr
-pattern TB_DEFAULT <-
-  ((== Tb_attr Termbox.Bindings.C._TB_DEFAULT) -> True)
-  where
-    TB_DEFAULT = Tb_attr Termbox.Bindings.C._TB_DEFAULT
-
-pattern TB_BLACK :: Tb_attr
-pattern TB_BLACK <-
-  ((== Tb_attr Termbox.Bindings.C._TB_BLACK) -> True)
-  where
-    TB_BLACK = Tb_attr Termbox.Bindings.C._TB_BLACK
-
-pattern TB_BLUE :: Tb_attr
-pattern TB_BLUE <-
-  ((== Tb_attr Termbox.Bindings.C._TB_BLUE) -> True)
-  where
-    TB_BLUE = Tb_attr Termbox.Bindings.C._TB_BLUE
-
-pattern TB_CYAN :: Tb_attr
-pattern TB_CYAN <-
-  ((== Tb_attr Termbox.Bindings.C._TB_CYAN) -> True)
-  where
-    TB_CYAN = Tb_attr Termbox.Bindings.C._TB_CYAN
-
-pattern TB_GREEN :: Tb_attr
-pattern TB_GREEN <-
-  ((== Tb_attr Termbox.Bindings.C._TB_GREEN) -> True)
-  where
-    TB_GREEN = Tb_attr Termbox.Bindings.C._TB_GREEN
-
-pattern TB_MAGENTA :: Tb_attr
-pattern TB_MAGENTA <-
-  ((== Tb_attr Termbox.Bindings.C._TB_MAGENTA) -> True)
-  where
-    TB_MAGENTA = Tb_attr Termbox.Bindings.C._TB_MAGENTA
-
-pattern TB_RED :: Tb_attr
-pattern TB_RED <-
-  ((== Tb_attr Termbox.Bindings.C._TB_RED) -> True)
-  where
-    TB_RED = Tb_attr Termbox.Bindings.C._TB_RED
-
-pattern TB_WHITE :: Tb_attr
-pattern TB_WHITE <-
-  ((== Tb_attr Termbox.Bindings.C._TB_WHITE) -> True)
-  where
-    TB_WHITE = Tb_attr Termbox.Bindings.C._TB_WHITE
-
-pattern TB_YELLOW :: Tb_attr
-pattern TB_YELLOW <-
-  ((== Tb_attr Termbox.Bindings.C._TB_YELLOW) -> True)
-  where
-    TB_YELLOW = Tb_attr Termbox.Bindings.C._TB_YELLOW
 
 pattern TB_BOLD :: Tb_attr
 pattern TB_BOLD <-
@@ -388,13 +344,69 @@ data Tb_cell = Tb_cell
     bg :: {-# UNPACK #-} !Tb_attr
   }
 
--- ccellToCell :: Termbox.Bindings.C.Tb_cell -> Tb_cell
--- ccellToCell =
---   unsafeCoerce -- equivalent record types that only differ by newtype wrappers
-
 cellToCCell :: Tb_cell -> Termbox.Bindings.C.Tb_cell
 cellToCCell =
   unsafeCoerce -- equivalent record types that only differ by newtype wrappers
+
+-- | A color.
+newtype Tb_color
+  = Tb_color Word16
+  deriving stock (Eq)
+  deriving newtype (Num, Show)
+
+pattern TB_DEFAULT :: Tb_color
+pattern TB_DEFAULT <-
+  ((== Tb_color Termbox.Bindings.C._TB_DEFAULT) -> True)
+  where
+    TB_DEFAULT = Tb_color Termbox.Bindings.C._TB_DEFAULT
+
+pattern TB_BLACK :: Tb_color
+pattern TB_BLACK <-
+  ((== Tb_color Termbox.Bindings.C._TB_BLACK) -> True)
+  where
+    TB_BLACK = Tb_color Termbox.Bindings.C._TB_BLACK
+
+pattern TB_BLUE :: Tb_color
+pattern TB_BLUE <-
+  ((== Tb_color Termbox.Bindings.C._TB_BLUE) -> True)
+  where
+    TB_BLUE = Tb_color Termbox.Bindings.C._TB_BLUE
+
+pattern TB_CYAN :: Tb_color
+pattern TB_CYAN <-
+  ((== Tb_color Termbox.Bindings.C._TB_CYAN) -> True)
+  where
+    TB_CYAN = Tb_color Termbox.Bindings.C._TB_CYAN
+
+pattern TB_GREEN :: Tb_color
+pattern TB_GREEN <-
+  ((== Tb_color Termbox.Bindings.C._TB_GREEN) -> True)
+  where
+    TB_GREEN = Tb_color Termbox.Bindings.C._TB_GREEN
+
+pattern TB_MAGENTA :: Tb_color
+pattern TB_MAGENTA <-
+  ((== Tb_color Termbox.Bindings.C._TB_MAGENTA) -> True)
+  where
+    TB_MAGENTA = Tb_color Termbox.Bindings.C._TB_MAGENTA
+
+pattern TB_RED :: Tb_color
+pattern TB_RED <-
+  ((== Tb_color Termbox.Bindings.C._TB_RED) -> True)
+  where
+    TB_RED = Tb_color Termbox.Bindings.C._TB_RED
+
+pattern TB_WHITE :: Tb_color
+pattern TB_WHITE <-
+  ((== Tb_color Termbox.Bindings.C._TB_WHITE) -> True)
+  where
+    TB_WHITE = Tb_color Termbox.Bindings.C._TB_WHITE
+
+pattern TB_YELLOW :: Tb_color
+pattern TB_YELLOW <-
+  ((== Tb_color Termbox.Bindings.C._TB_YELLOW) -> True)
+  where
+    TB_YELLOW = Tb_color Termbox.Bindings.C._TB_YELLOW
 
 -- | An event.
 data Tb_event = Tb_event

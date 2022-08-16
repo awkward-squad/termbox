@@ -7,14 +7,17 @@ module Termbox.Bindings.C
     tb_init_file,
     tb_shutdown,
 
+    -- ** Get\/set input\/output mode
+    tb_select_input_mode,
+    tb_select_output_mode,
+
     -- ** Get terminal dimensions
     tb_width,
     tb_height,
 
-    -- ** Clear and synchronize the back buffer
-    tb_clear,
-    tb_set_clear_attributes,
-    tb_present,
+    -- ** Poll for events
+    tb_peek_event,
+    tb_poll_event,
 
     -- ** Set a cell
     tb_set_cursor,
@@ -22,13 +25,10 @@ module Termbox.Bindings.C
     tb_change_cell,
     tb_cell_buffer,
 
-    -- ** Get/set input/output mode
-    tb_select_input_mode,
-    tb_select_output_mode,
-
-    -- ** Poll for events
-    tb_peek_event,
-    tb_poll_event,
+    -- ** Clear and synchronize the back buffer
+    tb_clear,
+    tb_set_clear_attributes,
+    tb_present,
 
     -- * Objects
     Tb_cell (..),
@@ -241,11 +241,11 @@ foreign import capi unsafe "termbox.h tb_put_cell"
     Ptr Tb_cell ->
     IO ()
 
--- | Get/set the input mode.
+-- | Get\/set the input mode.
 foreign import capi unsafe "termbox.h tb_select_input_mode"
   tb_select_input_mode :: CInt -> IO CInt
 
--- | Get/set the output mode.
+-- | Get\/set the output mode.
 foreign import capi unsafe "termbox.h tb_select_output_mode"
   tb_select_output_mode :: CInt -> IO CInt
 
