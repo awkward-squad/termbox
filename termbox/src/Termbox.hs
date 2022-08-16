@@ -401,7 +401,7 @@ run action = do
           unmask
             ( do
                 _ <- Termbox.Bindings.tb_select_input_mode Termbox.Bindings.TB_INPUT_MOUSE
-                _ <- Termbox.Bindings.tb_select_output_mode (fromIntegral @CInt @Int Termbox.Bindings._TB_OUTPUT_256)
+                _ <- Termbox.Bindings.tb_select_output_mode Termbox.Bindings.TB_OUTPUT_256
                 width <- Termbox.Bindings.tb_width
                 height <- Termbox.Bindings.tb_height
                 action width height render poll
@@ -432,5 +432,5 @@ render (Cells cells) cursor = do
 
 shutdown :: IO ()
 shutdown = do
-  _ <- Termbox.Bindings.tb_select_output_mode (fromIntegral @CInt @Int Termbox.Bindings._TB_OUTPUT_NORMAL)
+  _ <- Termbox.Bindings.tb_select_output_mode Termbox.Bindings.TB_OUTPUT_NORMAL
   Termbox.Bindings.tb_shutdown

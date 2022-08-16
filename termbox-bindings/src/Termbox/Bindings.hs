@@ -55,6 +55,14 @@ module Termbox.Bindings
         TB_INPUT_ESC,
         TB_INPUT_MOUSE
       ),
+    Tb_output_mode
+      ( Tb_output_mode,
+        TB_OUTPUT_CURRENT,
+        TB_OUTPUT_216,
+        TB_OUTPUT_256,
+        TB_OUTPUT_GRAYSCALE,
+        TB_OUTPUT_NORMAL
+      ),
 
     -- * Constants
 
@@ -149,17 +157,11 @@ module Termbox.Bindings
 
     -- ** Hide cursor
     Termbox.Bindings.C._TB_HIDE_CURSOR,
-
-    -- ** Output modes
-    Termbox.Bindings.C._TB_OUTPUT_CURRENT,
-    Termbox.Bindings.C._TB_OUTPUT_216,
-    Termbox.Bindings.C._TB_OUTPUT_256,
-    Termbox.Bindings.C._TB_OUTPUT_GRAYSCALE,
-    Termbox.Bindings.C._TB_OUTPUT_NORMAL,
   )
 where
 
 import Data.Bits ((.|.))
+import Data.Coerce (coerce)
 import Data.Semigroup (Semigroup (..))
 import Data.Word
 import Foreign.C.Error (Errno, getErrno)
@@ -249,14 +251,14 @@ tb_put_cell x y cell =
     Termbox.Bindings.C.tb_put_cell (intToCInt x) (intToCInt y) c_cell
 
 -- | Set the input mode.
-tb_select_input_mode :: Tb_input_mode -> IO Int
-tb_select_input_mode (Tb_input_mode mode) =
-  cintToInt <$> Termbox.Bindings.C.tb_select_input_mode mode
+tb_select_input_mode :: Tb_input_mode -> IO Tb_input_mode
+tb_select_input_mode =
+  coerce Termbox.Bindings.C.tb_select_input_mode
 
 -- | Set the output mode.
-tb_select_output_mode :: Int -> IO Int
-tb_select_output_mode mode =
-  cintToInt <$> Termbox.Bindings.C.tb_select_output_mode (intToCInt mode)
+tb_select_output_mode :: Tb_output_mode -> IO Tb_output_mode
+tb_select_output_mode =
+  coerce Termbox.Bindings.C.tb_select_output_mode
 
 -- | Set the foreground and background attributes that 'tb_clear' clears the back buffer with.
 tb_set_clear_attributes ::
@@ -368,6 +370,16 @@ pattern TB_UNDERLINE <-
   where
     TB_UNDERLINE = Tb_attr Termbox.Bindings.C._TB_UNDERLINE
 
+-- | A cell.
+data Tb_cell = Tb_cell
+  { -- | A unicode character.
+    ch :: {-# UNPACK #-} !Word32,
+    -- | Foreground attribute.
+    fg :: {-# UNPACK #-} !Tb_attr,
+    -- | Background attribute.
+    bg :: {-# UNPACK #-} !Tb_attr
+  }
+
 newtype Tb_input_mode
   = Tb_input_mode CInt
   deriving stock (Eq)
@@ -405,15 +417,49 @@ pattern TB_INPUT_MOUSE <-
 
 {-# COMPLETE TB_INPUT_CURRENT, TB_INPUT_ALT, TB_INPUT_ESC, TB_INPUT_MOUSE #-}
 
--- | A cell.
-data Tb_cell = Tb_cell
-  { -- | A unicode character.
-    ch :: {-# UNPACK #-} !Word32,
-    -- | Foreground attribute.
-    fg :: {-# UNPACK #-} !Tb_attr,
-    -- | Background attribute.
-    bg :: {-# UNPACK #-} !Tb_attr
-  }
+newtype Tb_output_mode
+  = Tb_output_mode CInt
+  deriving stock (Eq)
+
+instance Show Tb_output_mode where
+  show = \case
+    TB_OUTPUT_CURRENT -> "TB_OUTPUT_CURRENT"
+    TB_OUTPUT_216 -> "TB_OUTPUT_216"
+    TB_OUTPUT_256 -> "TB_OUTPUT_256"
+    TB_OUTPUT_GRAYSCALE -> "TB_OUTPUT_GRAYSCALE"
+    TB_OUTPUT_NORMAL -> "TB_OUTPUT_NORMAL"
+
+pattern TB_OUTPUT_CURRENT :: Tb_output_mode
+pattern TB_OUTPUT_CURRENT <-
+  ((== Tb_output_mode Termbox.Bindings.C._TB_OUTPUT_CURRENT) -> True)
+  where
+    TB_OUTPUT_CURRENT = Tb_output_mode Termbox.Bindings.C._TB_OUTPUT_CURRENT
+
+pattern TB_OUTPUT_216 :: Tb_output_mode
+pattern TB_OUTPUT_216 <-
+  ((== Tb_output_mode Termbox.Bindings.C._TB_OUTPUT_216) -> True)
+  where
+    TB_OUTPUT_216 = Tb_output_mode Termbox.Bindings.C._TB_OUTPUT_216
+
+pattern TB_OUTPUT_256 :: Tb_output_mode
+pattern TB_OUTPUT_256 <-
+  ((== Tb_output_mode Termbox.Bindings.C._TB_OUTPUT_256) -> True)
+  where
+    TB_OUTPUT_256 = Tb_output_mode Termbox.Bindings.C._TB_OUTPUT_256
+
+pattern TB_OUTPUT_GRAYSCALE :: Tb_output_mode
+pattern TB_OUTPUT_GRAYSCALE <-
+  ((== Tb_output_mode Termbox.Bindings.C._TB_OUTPUT_GRAYSCALE) -> True)
+  where
+    TB_OUTPUT_GRAYSCALE = Tb_output_mode Termbox.Bindings.C._TB_OUTPUT_GRAYSCALE
+
+pattern TB_OUTPUT_NORMAL :: Tb_output_mode
+pattern TB_OUTPUT_NORMAL <-
+  ((== Tb_output_mode Termbox.Bindings.C._TB_OUTPUT_NORMAL) -> True)
+  where
+    TB_OUTPUT_NORMAL = Tb_output_mode Termbox.Bindings.C._TB_OUTPUT_NORMAL
+
+{-# COMPLETE TB_OUTPUT_CURRENT, TB_OUTPUT_216, TB_OUTPUT_256, TB_OUTPUT_GRAYSCALE, TB_OUTPUT_NORMAL #-}
 
 --
 
