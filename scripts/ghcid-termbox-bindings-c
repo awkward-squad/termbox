@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+ghcid \
+  --command 'cabal repl termbox-bindings-c --repl-options=-fobject-code' \
+  --restart termbox-bindings-c/termbox-bindings-c.cabal
