@@ -267,7 +267,7 @@ where
 
 import Data.Bits ((.&.), (.|.))
 import Data.Word (Word16)
-import qualified Termbox.Bindings.C as C
+import qualified Termbox.Bindings
 import Prelude hiding (reverse)
 
 -- | A cell attribute, which includes its color, and whether or not it is
@@ -1314,14 +1314,14 @@ gray23 =
 -- | Bold modifier attribute.
 bold :: Attr -> Attr
 bold (Attr c s) =
-  Attr c (s .|. C._TB_BOLD)
+  Attr c (s .|. Termbox.Bindings._TB_BOLD)
 
 -- | Underline modifier attribute.
 underline :: Attr -> Attr
 underline (Attr c s) =
-  Attr c (s .|. C._TB_UNDERLINE)
+  Attr c (s .|. Termbox.Bindings._TB_UNDERLINE)
 
 -- | Reverse modifier attribute.
 reverse :: Attr -> Attr
 reverse (Attr c s) =
-  Attr c (s .|. C._TB_REVERSE)
+  Attr c (s .|. Termbox.Bindings._TB_REVERSE)

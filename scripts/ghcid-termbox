@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+ghcid \
+  --command 'cabal repl termbox --repl-options=-fno-code' \
+  --restart termbox/termbox.cabal

@@ -6,9 +6,9 @@ where
 
 import Data.Char (ord)
 import Data.Semigroup (Semigroup)
-import Foreign.C.Types (CInt)
+import Data.Word (Word32)
 import Termbox.Attr (attrToWord)
-import qualified Termbox.Bindings.C as C
+import qualified Termbox.Bindings
 import Termbox.Cell (Cell (Cell))
 
 -- | A grid of cells. Create with 'set' and combine with ('<>').
@@ -20,10 +20,10 @@ newtype Cells
 set :: Int -> Int -> Cell -> Cells
 set col row (Cell ch fg bg) =
   Cells
-    ( C.tb_change_cell
-        (fromIntegral @Int @CInt col)
-        (fromIntegral @Int @CInt row)
-        (fromIntegral (ord ch))
+    ( Termbox.Bindings.tb_change_cell
+        col
+        row
+        (fromIntegral @Int @Word32 (ord ch))
         (attrToWord fg)
         (attrToWord bg)
     )

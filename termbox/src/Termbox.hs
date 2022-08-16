@@ -342,7 +342,7 @@ where
 import Control.Exception
 import Foreign.C.Types (CInt)
 import Termbox.Attr
-import qualified Termbox.Bindings.C as C
+import qualified Termbox.Bindings
 import Termbox.Cell (Cell (Cell))
 import Termbox.Cells (Cells (Cells), set)
 import Termbox.Event (Event (..), PollError (..), poll)
@@ -394,38 +394,43 @@ instance Exception InitError
 run :: (Int -> Int -> (Cells -> Cursor -> IO ()) -> IO Event -> IO a) -> IO a
 run action = do
   mask $ \unmask -> do
-    initResult <- C.tb_init
+    initResult <- Termbox.Bindings.tb_init
     case () of
       _ | initResult == 0 -> do
         result <-
           unmask
             ( do
-                _ <- C.tb_select_input_mode C._TB_INPUT_MOUSE
-                _ <- C.tb_select_output_mode C._TB_OUTPUT_256
-                width <- C.tb_width
-                height <- C.tb_height
-                action (fromIntegral @CInt @Int width) (fromIntegral @CInt @Int height) render poll
+                _ <- Termbox.Bindings.tb_select_input_mode (fromIntegral @CInt @Int Termbox.Bindings._TB_INPUT_MOUSE)
+                _ <- Termbox.Bindings.tb_select_output_mode (fromIntegral @CInt @Int Termbox.Bindings._TB_OUTPUT_256)
+                width <- Termbox.Bindings.tb_width
+                height <- Termbox.Bindings.tb_height
+                action width height render poll
             )
             `onException` shutdown
         shutdown
         pure result
-      _ | initResult == C._TB_EFAILED_TO_OPEN_TTY -> throwIO FailedToOpenTTY
-      _ | initResult == C._TB_EPIPE_TRAP_ERROR -> throwIO PipeTrapError
-      _ | initResult == C._TB_EUNSUPPORTED_TERMINAL -> throwIO UnsupportedTerminal
+      _ | initResult == fromIntegral @CInt @Int Termbox.Bindings._TB_EFAILED_TO_OPEN_TTY -> throwIO FailedToOpenTTY
+      _ | initResult == fromIntegral @CInt @Int Termbox.Bindings._TB_EPIPE_TRAP_ERROR -> throwIO PipeTrapError
+      _
+        | initResult == fromIntegral @CInt @Int Termbox.Bindings._TB_EUNSUPPORTED_TERMINAL ->
+            throwIO UnsupportedTerminal
       _ -> error ("termbox: unknown tb_init error " ++ show initResult)
 
 -- | Render a scene.
 render :: Cells -> Cursor -> IO ()
 render (Cells cells) cursor = do
-  C.tb_set_clear_attributes 0 0
-  C.tb_clear
+  Termbox.Bindings.tb_set_clear_attributes 0 0
+  Termbox.Bindings.tb_clear
   cells
   case cursor of
-    Cursor col row -> C.tb_set_cursor (fromIntegral @Int @CInt col) (fromIntegral @Int @CInt row)
-    NoCursor -> C.tb_set_cursor C._TB_HIDE_CURSOR C._TB_HIDE_CURSOR
-  C.tb_present
+    Cursor col row -> Termbox.Bindings.tb_set_cursor col row
+    NoCursor ->
+      Termbox.Bindings.tb_set_cursor
+        (fromIntegral @CInt @Int Termbox.Bindings._TB_HIDE_CURSOR)
+        (fromIntegral @CInt @Int Termbox.Bindings._TB_HIDE_CURSOR)
+  Termbox.Bindings.tb_present
 
 shutdown :: IO ()
 shutdown = do
-  _ <- C.tb_select_output_mode C._TB_OUTPUT_NORMAL
-  C.tb_shutdown
+  _ <- Termbox.Bindings.tb_select_output_mode (fromIntegral @CInt @Int Termbox.Bindings._TB_OUTPUT_NORMAL)
+  Termbox.Bindings.tb_shutdown
