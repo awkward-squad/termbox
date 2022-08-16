@@ -53,11 +53,11 @@ parseEvent
       Termbox.Bindings.h,
       Termbox.Bindings.x,
       Termbox.Bindings.y
-    }
-    | type_ == Termbox.Bindings._TB_EVENT_KEY =
+    } =
+    case type_ of
+      Termbox.Bindings.TB_EVENT_KEY ->
         EventKey (if ch == 0 then parseKey key else KeyChar (chr (fromIntegral @Word32 @Int ch)))
-    | type_ == Termbox.Bindings._TB_EVENT_RESIZE =
+      Termbox.Bindings.TB_EVENT_RESIZE ->
         EventResize (fromIntegral @Int32 @Int w) (fromIntegral @Int32 @Int h)
-    | type_ == Termbox.Bindings._TB_EVENT_MOUSE =
+      Termbox.Bindings.TB_EVENT_MOUSE ->
         EventMouse (parseMouse key) (fromIntegral @Int32 @Int x) (fromIntegral @Int32 @Int y)
-    | otherwise = error ("termbox: unknown event type " ++ show type_)

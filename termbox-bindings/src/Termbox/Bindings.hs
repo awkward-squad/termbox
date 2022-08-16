@@ -48,6 +48,12 @@ module Termbox.Bindings
       ),
     Tb_cell (..),
     Tb_event (..),
+    Tb_event_type
+      ( Tb_event_type,
+        TB_EVENT_KEY,
+        TB_EVENT_MOUSE,
+        TB_EVENT_RESIZE
+      ),
     Tb_input_mode
       ( Tb_input_mode,
         TB_INPUT_CURRENT,
@@ -145,11 +151,6 @@ module Termbox.Bindings
     -- ** Alt modifiers
     Termbox.Bindings.C._TB_MOD_ALT,
     Termbox.Bindings.C._TB_MOD_MOTION,
-
-    -- ** Event types
-    Termbox.Bindings.C._TB_EVENT_KEY,
-    Termbox.Bindings.C._TB_EVENT_MOUSE,
-    Termbox.Bindings.C._TB_EVENT_RESIZE,
 
     -- ** 'tb_init' error codes
     Termbox.Bindings.C._TB_EFAILED_TO_OPEN_TTY,
@@ -397,7 +398,7 @@ cellToCCell =
 
 -- | An event.
 data Tb_event = Tb_event
-  { type_ :: {-# UNPACK #-} !Word8,
+  { type_ :: {-# UNPACK #-} !Tb_event_type,
     mod :: {-# UNPACK #-} !Word8,
     key :: {-# UNPACK #-} !Tb_key,
     ch :: {-# UNPACK #-} !Word32,
@@ -408,7 +409,39 @@ data Tb_event = Tb_event
   }
 
 ceventToEvent :: Termbox.Bindings.C.Tb_event -> Tb_event
-ceventToEvent = undefined
+ceventToEvent =
+  unsafeCoerce -- equivalent record types that only differ by newtype wrappers
+
+-- | An event type.
+newtype Tb_event_type
+  = Tb_event_type Word8
+  deriving stock (Eq)
+
+instance Show Tb_event_type where
+  show = \case
+    TB_EVENT_KEY -> "TB_EVENT_KEY"
+    TB_EVENT_MOUSE -> "TB_EVENT_MOUSE"
+    TB_EVENT_RESIZE -> "TB_EVENT_RESIZE"
+
+pattern TB_EVENT_KEY :: Tb_event_type
+pattern TB_EVENT_KEY <-
+  ((== Tb_event_type Termbox.Bindings.C._TB_EVENT_KEY) -> True)
+  where
+    TB_EVENT_KEY = Tb_event_type Termbox.Bindings.C._TB_EVENT_KEY
+
+pattern TB_EVENT_MOUSE :: Tb_event_type
+pattern TB_EVENT_MOUSE <-
+  ((== Tb_event_type Termbox.Bindings.C._TB_EVENT_MOUSE) -> True)
+  where
+    TB_EVENT_MOUSE = Tb_event_type Termbox.Bindings.C._TB_EVENT_MOUSE
+
+pattern TB_EVENT_RESIZE :: Tb_event_type
+pattern TB_EVENT_RESIZE <-
+  ((== Tb_event_type Termbox.Bindings.C._TB_EVENT_RESIZE) -> True)
+  where
+    TB_EVENT_RESIZE = Tb_event_type Termbox.Bindings.C._TB_EVENT_RESIZE
+
+{-# COMPLETE TB_EVENT_KEY, TB_EVENT_MOUSE, TB_EVENT_RESIZE #-}
 
 -- | The input mode.
 newtype Tb_input_mode
