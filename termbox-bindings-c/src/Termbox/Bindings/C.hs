@@ -251,7 +251,12 @@ foreign import capi unsafe "termbox.h tb_select_output_mode"
 
 -- | Set the foreground and background attributes that 'tb_clear' clears the back buffer with.
 foreign import capi unsafe "termbox.h tb_set_clear_attributes"
-  tb_set_clear_attributes :: Word16 -> Word16 -> IO ()
+  tb_set_clear_attributes ::
+    -- | fg
+    Word16 ->
+    -- | bg
+    Word16 ->
+    IO ()
 
 -- | Set the cursor location, or hide it.
 foreign import capi unsafe "termbox.h tb_set_cursor"

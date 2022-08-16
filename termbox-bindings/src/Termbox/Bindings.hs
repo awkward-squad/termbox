@@ -13,7 +13,7 @@ module Termbox.Bindings
 
     -- ** Clear and synchronize the back buffer
     Termbox.Bindings.C.tb_clear,
-    Termbox.Bindings.C.tb_set_clear_attributes,
+    tb_set_clear_attributes,
     Termbox.Bindings.C.tb_present,
 
     -- ** Set a cell
@@ -257,6 +257,16 @@ tb_select_input_mode (Tb_input_mode mode) =
 tb_select_output_mode :: Int -> IO Int
 tb_select_output_mode mode =
   cintToInt <$> Termbox.Bindings.C.tb_select_output_mode (intToCInt mode)
+
+-- | Set the foreground and background attributes that 'tb_clear' clears the back buffer with.
+tb_set_clear_attributes ::
+  -- | fg
+  Tb_attr ->
+  -- | bg
+  Tb_attr ->
+  IO ()
+tb_set_clear_attributes (Tb_attr foreground) (Tb_attr background) =
+  Termbox.Bindings.C.tb_set_clear_attributes foreground background
 
 -- | Set the cursor location, or hide it.
 tb_set_cursor ::
