@@ -14,34 +14,24 @@ homepage: https://github.com/termbox/termbox-haskell
 license-file: LICENSE
 license: BSD-3-Clause
 maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>
-name: termbox-bindings-c
+name: termbox-bindings
 synopsis: termbox bindings
 tested-with: GHC == 9.0.2, GHC == 9.2.4, GHC == 9.4.1
 version: 0.1.0
 
 extra-source-files:
   CHANGELOG.md
-  cbits/LICENSE
-  cbits/termbox.c
-  cbits/termbox.h
-  cbits/utf8.c
 
 source-repository head
   type: git
   location: git://github.com/termbox/termbox-haskell.git
 
 library
-  build-depends: base ^>= 4.10 || ^>= 4.11 || ^>= 4.12 || ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17
-  c-sources:
-    cbits/termbox.c
-    cbits/utf8.c
-  default-extensions:
-    CApiFFI
-    DuplicateRecordFields
-    InstanceSigs
-    NamedFieldPuns
+  build-depends: 
+    base ^>= 4.10 || ^>= 4.11 || ^>= 4.12 || ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17,
+    termbox-bindings-c ^>= 0.1,
   default-language: Haskell2010
-  exposed-modules: Termbox.Bindings.C
+  exposed-modules: Termbox.Bindings
   hs-source-dirs: src
   ghc-options:
     -Weverything
@@ -59,5 +49,3 @@ library
   if impl(ghc >= 9.2)
     ghc-options:
       -Wno-missing-kind-signatures
-  include-dirs: cbits
-  includes: termbox.h

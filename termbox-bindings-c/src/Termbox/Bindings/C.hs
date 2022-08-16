@@ -160,11 +160,12 @@ module Termbox.Bindings.C
 where
 
 import Data.Int (Int32)
-import Data.Word
+import Data.Word (Word16, Word32, Word8)
 import Foreign.C.String (CString)
 import Foreign.C.Types (CInt (CInt))
 import Foreign.Ptr (Ptr)
-import Foreign.Storable
+import Foreign.Storable (Storable)
+import qualified Foreign.Storable as Storable
 import Prelude hiding (mod)
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -282,6 +283,28 @@ data Tb_cell = Tb_cell
     bg :: {-# UNPACK #-} !Word16
   }
 
+instance Storable Tb_cell where
+  sizeOf :: Tb_cell -> Int
+  sizeOf _ =
+    8
+
+  alignment :: Tb_cell -> Int
+  alignment _ =
+    4
+
+  peek :: Ptr Tb_cell -> IO Tb_cell
+  peek ptr =
+    Tb_cell
+      <$> Storable.peekByteOff ptr 0
+      <*> Storable.peekByteOff ptr 4
+      <*> Storable.peekByteOff ptr 6
+
+  poke :: Ptr Tb_cell -> Tb_cell -> IO ()
+  poke ptr Tb_cell {ch, fg, bg} = do
+    Storable.pokeByteOff ptr 0 ch
+    Storable.pokeByteOff ptr 4 fg
+    Storable.pokeByteOff ptr 6 bg
+
 -- | An event.
 data Tb_event = Tb_event
   { type_ :: {-# UNPACK #-} !Word8,
@@ -306,25 +329,25 @@ instance Storable Tb_event where
   peek :: Ptr Tb_event -> IO Tb_event
   peek ptr =
     Tb_event
-      <$> peekByteOff ptr 0
-      <*> peekByteOff ptr 1
-      <*> peekByteOff ptr 2
-      <*> peekByteOff ptr 4
-      <*> peekByteOff ptr 8
-      <*> peekByteOff ptr 12
-      <*> peekByteOff ptr 16
-      <*> peekByteOff ptr 20
+      <$> Storable.peekByteOff ptr 0
+      <*> Storable.peekByteOff ptr 1
+      <*> Storable.peekByteOff ptr 2
+      <*> Storable.peekByteOff ptr 4
+      <*> Storable.peekByteOff ptr 8
+      <*> Storable.peekByteOff ptr 12
+      <*> Storable.peekByteOff ptr 16
+      <*> Storable.peekByteOff ptr 20
 
   poke :: Ptr Tb_event -> Tb_event -> IO ()
   poke ptr Tb_event {type_, mod, key, ch, w, h, x, y} = do
-    pokeByteOff ptr 0 type_
-    pokeByteOff ptr 1 mod
-    pokeByteOff ptr 2 key
-    pokeByteOff ptr 4 ch
-    pokeByteOff ptr 8 w
-    pokeByteOff ptr 12 h
-    pokeByteOff ptr 16 x
-    pokeByteOff ptr 20 y
+    Storable.pokeByteOff ptr 0 type_
+    Storable.pokeByteOff ptr 1 mod
+    Storable.pokeByteOff ptr 2 key
+    Storable.pokeByteOff ptr 4 ch
+    Storable.pokeByteOff ptr 8 w
+    Storable.pokeByteOff ptr 12 h
+    Storable.pokeByteOff ptr 16 x
+    Storable.pokeByteOff ptr 20 y
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Constants
