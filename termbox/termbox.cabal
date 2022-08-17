@@ -70,7 +70,6 @@ library
     Termbox.Cell
     Termbox.Cells
     Termbox.Event
-    Termbox.Image
     Termbox.Key
     Termbox.Mouse
 
