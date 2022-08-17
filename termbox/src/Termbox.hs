@@ -101,6 +101,9 @@ module Termbox
       ),
     Mouse (..),
     PollError (..),
+
+    -- * Miscellaneous types
+    Size (..),
   )
 where
 
@@ -144,6 +147,7 @@ import Termbox.Key
   )
 import Termbox.Mouse (Mouse (..))
 import Termbox.Scene (Scene, cursor, drawScene, fill, set)
+import Termbox.Size (Size (..))
 
 -- | Termbox initialization errors.
 data InitError
@@ -158,13 +162,13 @@ instance Exception InitError
 --
 -- The function provided to @run@ is provided:
 --
---   * The initial terminal width
+--   * The initial terminal size
 --   * The initial terminal height
 --   * An action that renders a scene
 --   * An action that polls for an event indefinitely
 --
 -- /Throws/: 'InitError'
-run :: (Int -> Int -> (Scene -> IO ()) -> IO Event -> IO a) -> IO a
+run :: (Size -> (Scene -> IO ()) -> IO Event -> IO a) -> IO a
 run action = do
   mask \unmask ->
     Termbox.Bindings.tb_init >>= \case
@@ -176,7 +180,7 @@ run action = do
                 _ <- Termbox.Bindings.tb_select_output_mode Termbox.Bindings.TB_OUTPUT_256
                 width <- Termbox.Bindings.tb_width
                 height <- Termbox.Bindings.tb_height
-                action width height drawScene poll
+                action Size {width, height} drawScene poll
             )
             `onException` shutdown
         shutdown

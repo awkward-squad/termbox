@@ -72,6 +72,7 @@ library
     Termbox.Event
     Termbox.Key
     Termbox.Mouse
+    Termbox.Size
     Termbox.Scene
 
 executable termbox-example-demo

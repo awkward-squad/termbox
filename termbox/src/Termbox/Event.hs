@@ -10,14 +10,15 @@ import Data.Int (Int32)
 import qualified Termbox.Bindings
 import Termbox.Key (Key (KeyChar), parseKey)
 import Termbox.Mouse (Mouse, parseMouse)
+import Termbox.Size (Size (..))
 import Prelude hiding (mod)
 
 -- | A input event.
 data Event
   = -- | Key event
     EventKey !Key
-  | -- | Resize event (width, then height)
-    EventResize !Int !Int
+  | -- | Resize event.
+    EventResize !Size
   | -- | Mouse event (column, then row)
     EventMouse !Mouse !Int !Int
   deriving stock (Eq, Show)
@@ -39,7 +40,7 @@ data PollError
 
 instance Exception PollError
 
--- | Parse an 'Event' from a 'TbEvent'.
+-- Parse an 'Event' from a 'TbEvent'.
 parseEvent :: Termbox.Bindings.Tb_event -> Event
 parseEvent
   Termbox.Bindings.Tb_event
@@ -56,6 +57,10 @@ parseEvent
       Termbox.Bindings.TB_EVENT_KEY ->
         EventKey (if ch == '\0' then parseKey key else KeyChar ch)
       Termbox.Bindings.TB_EVENT_RESIZE ->
-        EventResize (fromIntegral @Int32 @Int w) (fromIntegral @Int32 @Int h)
+        EventResize
+          Size
+            { width = fromIntegral @Int32 @Int w,
+              height = fromIntegral @Int32 @Int h
+            }
       Termbox.Bindings.TB_EVENT_MOUSE ->
         EventMouse (parseMouse key) (fromIntegral @Int32 @Int x) (fromIntegral @Int32 @Int y)
