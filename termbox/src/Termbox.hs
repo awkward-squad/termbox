@@ -15,7 +15,7 @@
 --
 -- main :: IO ()
 -- main =
---   Termbox.'run' \\_width _height render poll -\>
+--   Termbox.'run' \\_pos render poll -\>
 --     loop render poll 0
 --
 -- loop :: (Termbox.'Scene' -> IO ()) -> IO Termbox.'Event' -> Int -> IO ()

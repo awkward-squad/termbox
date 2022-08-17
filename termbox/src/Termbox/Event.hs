@@ -18,9 +18,9 @@ import Prelude hiding (mod)
 data Event
   = -- | Key event
     EventKey !Key
-  | -- | Resize event.
+  | -- | Resize event
     EventResize !Size
-  | -- | Mouse event (column, then row)
+  | -- | Mouse event
     EventMouse !Mouse !Pos
   deriving stock (Eq, Show)
 
@@ -55,8 +55,7 @@ parseEvent
       Termbox.Bindings.y
     } =
     case type_ of
-      Termbox.Bindings.TB_EVENT_KEY ->
-        EventKey (if ch == '\0' then parseKey key else KeyChar ch)
+      Termbox.Bindings.TB_EVENT_KEY -> EventKey (if ch == '\0' then parseKey key else KeyChar ch)
       Termbox.Bindings.TB_EVENT_RESIZE ->
         EventResize
           Size
