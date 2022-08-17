@@ -10,6 +10,7 @@ import Data.Int (Int32)
 import qualified Termbox.Bindings
 import Termbox.Key (Key (KeyChar), parseKey)
 import Termbox.Mouse (Mouse, parseMouse)
+import Termbox.Pos (Pos (..))
 import Termbox.Size (Size (..))
 import Prelude hiding (mod)
 
@@ -20,7 +21,7 @@ data Event
   | -- | Resize event.
     EventResize !Size
   | -- | Mouse event (column, then row)
-    EventMouse !Mouse !Int !Int
+    EventMouse !Mouse !Pos
   deriving stock (Eq, Show)
 
 -- | Block until an 'Event' arrives.
@@ -63,4 +64,9 @@ parseEvent
               height = fromIntegral @Int32 @Int h
             }
       Termbox.Bindings.TB_EVENT_MOUSE ->
-        EventMouse (parseMouse key) (fromIntegral @Int32 @Int x) (fromIntegral @Int32 @Int y)
+        EventMouse
+          (parseMouse key)
+          Pos
+            { row = fromIntegral @Int32 @Int y,
+              col = fromIntegral @Int32 @Int x
+            }

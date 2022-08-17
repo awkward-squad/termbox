@@ -7,7 +7,7 @@ import qualified Termbox
 
 main :: IO ()
 main =
-  Termbox.run \_w _h render poll -> do
+  Termbox.run \_pos render poll -> do
     let loop :: Maybe Termbox.Event -> IO ()
         loop lastEvent = do
           render (scene lastEvent)
@@ -117,9 +117,9 @@ main =
         ]
 
 string :: Int -> Int -> [Termbox.Cell] -> Termbox.Scene
-string x0 y =
-  mconcat . zipWith (\x c -> Termbox.set x y c) [x0 ..]
+string x0 row =
+  mconcat . zipWith (\col c -> Termbox.set Termbox.Pos {col, row} c) [x0 ..]
 
 rectangle :: Int -> Int -> Int -> Int -> Termbox.Cell -> Termbox.Scene
 rectangle x0 y0 x1 y1 c =
-  foldMap (\(x, y) -> Termbox.set x y c) ((,) <$> [x0 .. x1] <*> [y0 .. y1])
+  foldMap (\(col, row) -> Termbox.set Termbox.Pos {col, row} c) ((,) <$> [x0 .. x1] <*> [y0 .. y1])

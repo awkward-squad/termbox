@@ -8,25 +8,27 @@
 -- quits on @Esc@:
 --
 -- @
+-- {-\# LANGUAGE BlockArguments \#-}
 -- {-\# LANGUAGE LambdaCase \#-}
 --
 -- import qualified Termbox
 --
 -- main :: IO ()
 -- main =
---   Termbox.'run' (\\_width _height render poll -> loop render poll 0)
+--   Termbox.'run' \\_width _height render poll -\>
+--     loop render poll 0
 --
 -- loop :: (Termbox.'Scene' -> IO ()) -> IO Termbox.'Event' -> Int -> IO ()
 -- loop render poll n = do
---   render (string 0 0 (show n))
+--   render (string (Termbox.'Pos' 0 0) (show n))
 --
 --   poll >>= \\case
 --     Termbox.'EventKey' Termbox.'KeyEsc' -> pure ()
 --     _ -> loop render poll (n+1)
 --
--- string :: Int -> Int -> String -> Termbox.'Scene'
--- string col row cs =
---   foldMap (\\(i, c) -> Termbox.'set' (col + i) row (Termbox.'char' c)) (zip [0..] cs)
+-- string :: Termbox.'Pos' -> String -> Termbox.'Scene'
+-- string (Termbox.'Pos' row col) cs =
+--   foldMap (\\(i, c) -> Termbox.'set' (Termbox.'Pos' row (col + i)) (Termbox.'char' c)) (zip [0..] cs)
 -- @
 --
 -- Other termbox features include cell attributes (style, color), cursor
@@ -103,6 +105,7 @@ module Termbox
     PollError (..),
 
     -- * Miscellaneous types
+    Pos (..),
     Size (..),
   )
 where
@@ -146,6 +149,7 @@ import Termbox.Key
     pattern KeyCtrlUnderscore,
   )
 import Termbox.Mouse (Mouse (..))
+import Termbox.Pos (Pos (..))
 import Termbox.Scene (Scene, cursor, drawScene, fill, set)
 import Termbox.Size (Size (..))
 

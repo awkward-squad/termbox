@@ -11,6 +11,7 @@ import Data.Foldable (for_)
 import qualified Termbox.Bindings
 import Termbox.Cell (Cell, drawCell)
 import Termbox.Color (Color (Color))
+import Termbox.Pos (Pos (..))
 
 -- | A scene, which contains:
 --
@@ -58,11 +59,11 @@ fill color =
   mempty {sceneFill = Just color}
 
 -- | Set a single cell.
-set :: Int -> Int -> Cell -> Scene
-set col row img =
+set :: Pos -> Cell -> Scene
+set Pos {col, row} img =
   mempty {sceneDraw = drawCell col row img}
 
 -- | Set the cursor position.
-cursor :: Int -> Int -> Scene
-cursor col row =
+cursor :: Pos -> Scene
+cursor Pos {col, row} =
   mempty {sceneDraw = Termbox.Bindings.tb_set_cursor (Just (col, row))}
