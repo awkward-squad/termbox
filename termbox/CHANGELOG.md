@@ -1,11 +1,10 @@
-## [0.4.0] - Unreleased
-- Fix off-by-one error in named colors (black, etc) (thanks @seagreen)
+## [1.0.0] - Unreleased
+- Overhaul `Attr`+`Cell`+`Cells`+`Cursor` API; now it's `Cell`+`Color`+`Scene`
 - Add names for bright versions of basic colors (e.g. `brightRed`)
-- Add names for miscellaneous colors (`color0` .. `color215`)
-- Add names for grayscale colors (`gray0` .. `gray23`)
-- Remove `Semigroup`, `Monoid` and `Num` instances of `Attr`
-- Change type of `bold`, `underline` and `reverse` from `Attr` to `Attr -> Attr`
+- Add combinator for miscellaneous colors (`color`)
+- Add combinator for monochrome colors (`gray`)
 - Remove `Termbox.Internal` module (see packages `termbox-bindings` or `termbox-bindings-c` instead)
+- Fix off-by-one error in named colors (black, etc) (thanks @seagreen)
 - Support GHC 9.4
 - Drop support for GHC < 8.8
 

@@ -1,40 +1,99 @@
 module Termbox.Cell
-  ( Cell (..),
+  ( -- * Cell
+    Cell,
+    drawCell,
+    char,
+
+    -- ** Color
+    fg,
+    bg,
+
+    -- ** Style
+    bold,
+    underline,
+    blink,
   )
 where
 
-import Data.Char (chr, ord)
-import Data.Coerce (coerce)
-import Data.Word (Word16, Word32)
-import Foreign.Ptr (Ptr)
-import Foreign.Storable (Storable)
-import qualified Foreign.Storable as Storable
-import Termbox.Attr (Attr (Attr))
+import qualified Data.Char as Char
+import Data.String (IsString (..))
+import Foreign.C.Types (CInt (CInt), CWchar (CWchar))
 import qualified Termbox.Bindings
+import Termbox.Color (Color (Color))
 
--- | A cell contains a character, foreground attribute, and background attribute.
+-- | A single cell.
 data Cell
-  = Cell !Char !Attr !Attr
-  deriving stock (Eq, Show)
+  = CellEmpty
+  | CellNonEmpty NonEmptyCell
 
-instance Storable Cell where
-  sizeOf :: Cell -> Int
-  sizeOf _ =
-    8
+instance {-# OVERLAPS #-} IsString [Cell] where
+  fromString =
+    map char
 
-  alignment :: Cell -> Int
-  alignment _ =
-    4
+data NonEmptyCell = NonEmptyCell
+  { cellChar :: {-# UNPACK #-} !Char, -- invariant: width 1
+    cellFg :: {-# UNPACK #-} !Termbox.Bindings.Tb_color,
+    cellBg :: {-# UNPACK #-} !Termbox.Bindings.Tb_color
+  }
 
-  peek :: Ptr Cell -> IO Cell
-  peek ptr = do
-    Cell
-      <$> (chr . fromIntegral @Word32 @Int <$> Storable.peekByteOff ptr 0)
-      <*> (coerce @(IO Word16) (Storable.peekByteOff ptr 4))
-      <*> (coerce @(IO Word16) (Storable.peekByteOff ptr 6))
+drawCell :: Int -> Int -> Cell -> IO ()
+drawCell col row = \case
+  CellEmpty -> pure ()
+  CellNonEmpty NonEmptyCell {cellChar, cellFg, cellBg} ->
+    Termbox.Bindings.tb_change_cell col row cellChar cellFg cellBg
 
-  poke :: Ptr Cell -> Cell -> IO ()
-  poke ptr (Cell ch fg bg) = do
-    Storable.pokeByteOff ptr 0 (fromIntegral @Int @Word32 (ord ch))
-    Storable.pokeByteOff ptr 4 (coerce @_ @Word16 fg)
-    Storable.pokeByteOff ptr 6 (coerce @_ @Word16 bg)
+-- | Create a cell from a character.
+--
+-- If the character is not 1 character wide, it will not be displayed.
+char :: Char -> Cell
+char c =
+  case wcwidth (charToCWchar c) of
+    1 ->
+      CellNonEmpty
+        NonEmptyCell
+          { cellChar = c,
+            cellFg = Termbox.Bindings.Tb_color 0,
+            cellBg = Termbox.Bindings.Tb_color 0
+          }
+    _ -> CellEmpty
+
+-- | Set the foreground color of a cell.
+fg :: Color -> Cell -> Cell
+fg (Color color) = \case
+  CellEmpty -> CellEmpty
+  CellNonEmpty image -> CellNonEmpty image {cellFg = color}
+
+-- | Set the background color of a cell.
+bg :: Color -> Cell -> Cell
+bg (Color color) = \case
+  CellEmpty -> CellEmpty
+  CellNonEmpty image -> CellNonEmpty image {cellBg = color}
+
+-- | Make a cell bold.
+bold :: Cell -> Cell
+bold = \case
+  CellEmpty -> CellEmpty
+  CellNonEmpty image@NonEmptyCell {cellFg} ->
+    CellNonEmpty image {cellFg = Termbox.Bindings.tb_attr Termbox.Bindings.TB_BOLD cellFg}
+
+-- | Make a cell underlined.
+underline :: Cell -> Cell
+underline = \case
+  CellEmpty -> CellEmpty
+  CellNonEmpty image@NonEmptyCell {cellFg} ->
+    CellNonEmpty image {cellFg = Termbox.Bindings.tb_attr Termbox.Bindings.TB_UNDERLINE cellFg}
+
+-- | Make a cell blink.
+blink :: Cell -> Cell
+blink = \case
+  CellEmpty -> CellEmpty
+  CellNonEmpty image@NonEmptyCell {cellBg} ->
+    -- not a typo; bold background is blink
+    CellNonEmpty image {cellBg = Termbox.Bindings.tb_attr Termbox.Bindings.TB_BOLD cellBg}
+
+charToCWchar :: Char -> CWchar
+charToCWchar =
+  fromIntegral @Int @CWchar . Char.ord
+
+foreign import capi unsafe "wchar.h wcwidth"
+  wcwidth :: CWchar -> CInt

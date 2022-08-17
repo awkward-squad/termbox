@@ -15,7 +15,7 @@ maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>
 name: termbox
 synopsis: termbox
 tested-with: GHC == 9.0.2, GHC == 9.2.4, GHC == 9.4.1
-version: 0.4.0
+version: 1.0.0
 
 extra-source-files:
   CHANGELOG.md
@@ -34,6 +34,7 @@ common component
     CApiFFI
     DerivingStrategies
     DuplicateRecordFields
+    FlexibleInstances
     GeneralizedNewtypeDeriving
     InstanceSigs
     LambdaCase
@@ -66,14 +67,14 @@ library
   exposed-modules: Termbox
   hs-source-dirs: src
   other-modules:
-    Termbox.Attr
     Termbox.Cell
-    Termbox.Cells
+    Termbox.Color
     Termbox.Event
     Termbox.Key
     Termbox.Mouse
+    Termbox.Scene
 
-executable termbox-example-colors
+executable termbox-example-demo
   import: component
   if !flag(build-examples)
     buildable: False
@@ -84,4 +85,4 @@ executable termbox-example-colors
     -rtsopts
     -threaded
   hs-source-dirs: examples
-  main-is: Colors.hs
+  main-is: Demo.hs
