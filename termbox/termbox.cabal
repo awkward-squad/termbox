@@ -32,8 +32,12 @@ common component
   default-extensions:
     BlockArguments
     CApiFFI
+    DeriveAnyClass
+    DeriveFunctor
     DerivingStrategies
+    DerivingVia
     DuplicateRecordFields
+    ExistentialQuantification
     FlexibleInstances
     GeneralizedNewtypeDeriving
     InstanceSigs

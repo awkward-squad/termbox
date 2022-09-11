@@ -36,7 +36,8 @@
 --
 -- This module is intended to be imported qualified.
 module Termbox
-  ( -- * Initialization
+  ( -- * Running a @termbox@ program
+    Program (..),
     run,
     InitError (..),
 
@@ -162,20 +163,34 @@ data InitError
 
 instance Exception InitError
 
--- | Run a @termbox@ program and restore the terminal state afterwards.
+-- | A termbox program.
+data Program s = Program
+  { -- | The initial state, given the initial terminal size.
+    initialize :: Size -> s,
+    -- | Handle an event.
+    handleEvent :: s -> Event -> IO s,
+    -- | Render the current state.
+    render :: s -> Scene,
+    -- | Is the current state finished?
+    finished :: s -> Bool
+  }
+
+-- | Run a @termbox@ program.
 --
 -- The function provided to @run@ is provided:
 --
 --   * The initial terminal size
---   * The initial terminal height
 --   * An action that renders a scene
 --   * An action that polls for an event indefinitely
---
--- /Throws/: 'InitError'
-run :: (Size -> (Scene -> IO ()) -> IO Event -> IO a) -> IO a
-run action = do
+run :: Program s -> IO (Either InitError s)
+run Program {initialize, handleEvent, render, finished} = do
   mask \unmask ->
     Termbox.Bindings.tb_init >>= \case
+      Left err ->
+        (pure . Left) case err of
+          Termbox.Bindings.TB_EFAILED_TO_OPEN_TTY -> FailedToOpenTTY
+          Termbox.Bindings.TB_EPIPE_TRAP_ERROR -> PipeTrapError
+          Termbox.Bindings.TB_EUNSUPPORTED_TERMINAL -> UnsupportedTerminal
       Right () -> do
         result <-
           unmask
@@ -184,16 +199,19 @@ run action = do
                 _ <- Termbox.Bindings.tb_select_output_mode Termbox.Bindings.TB_OUTPUT_256
                 width <- Termbox.Bindings.tb_width
                 height <- Termbox.Bindings.tb_height
-                action Size {width, height} drawScene poll
+                let loop s0 =
+                      if finished s0
+                        then pure s0
+                        else do
+                          drawScene (render s0)
+                          event <- poll
+                          s1 <- handleEvent s0 event
+                          loop s1
+                loop (initialize Size {width, height})
             )
             `onException` shutdown
         shutdown
-        pure result
-      Left err ->
-        throwIO case err of
-          Termbox.Bindings.TB_EFAILED_TO_OPEN_TTY -> FailedToOpenTTY
-          Termbox.Bindings.TB_EPIPE_TRAP_ERROR -> PipeTrapError
-          Termbox.Bindings.TB_EUNSUPPORTED_TERMINAL -> UnsupportedTerminal
+        pure (Right result)
 
 shutdown :: IO ()
 shutdown = do
