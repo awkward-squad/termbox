@@ -8,6 +8,11 @@ copyright: (c) 2018-2022, Mitchell Rosen
 description:
   This package provides a high-level wrapper around @termbox@, a simple C
   library for writing text-based user interfaces: <https://github.com/termbox/termbox>
+  .
+  See also:
+  .
+  * @<https://hackage.haskell.org/package/termbox-bindings termbox-bindings>@ for lower-level bindings.
+  * @<https://hackage.haskell.org/package/termbox-bindings-c termbox-bindings-c>@ for even lower-level bindings.
 homepage: https://github.com/termbox/termbox-haskell
 license-file: LICENSE
 license: BSD-3-Clause

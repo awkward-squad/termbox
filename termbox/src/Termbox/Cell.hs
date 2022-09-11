@@ -22,6 +22,10 @@ import qualified Termbox.Bindings
 import Termbox.Color (Color (Color))
 
 -- | A single cell.
+--
+-- * Create a cell with 'char', or with a string literal.
+-- * Set a cell's color with 'fg', 'bg'.
+-- * Style a cell with 'bold', 'underline', 'blink'.
 data Cell
   = CellEmpty
   | CellNonEmpty NonEmptyCell

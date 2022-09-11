@@ -1,42 +1,98 @@
 -- |
--- A @termbox@ program is typically constructed as an infinite loop that:
 --
--- 1. Renders a scene.
--- 2. Polls for an event.
---
--- For example, this progam simply displays the number of keys pressed, and
--- quits on @Esc@:
---
--- @
--- {-\# LANGUAGE BlockArguments \#-}
--- {-\# LANGUAGE LambdaCase \#-}
---
--- import qualified Termbox
---
--- main :: IO ()
--- main =
---   Termbox.'run' \\_pos render poll -\>
---     loop render poll 0
---
--- loop :: (Termbox.'Scene' -> IO ()) -> IO Termbox.'Event' -> Int -> IO ()
--- loop render poll n = do
---   render (string (Termbox.'Pos' 0 0) (show n))
---
---   poll >>= \\case
---     Termbox.'EventKey' Termbox.'KeyEsc' -> pure ()
---     _ -> loop render poll (n+1)
---
--- string :: Termbox.'Pos' -> String -> Termbox.'Scene'
--- string (Termbox.'Pos' row col) cs =
---   foldMap (\\(i, c) -> Termbox.'set' (Termbox.'Pos' row (col + i)) (Termbox.'char' c)) (zip [0..] cs)
--- @
---
--- Other termbox features include cell attributes (style, color), cursor
--- display, and mouse click handling.
+-- This module provides a high-level wrapper around @termbox@, a simple C library for writing text-based user
+-- interfaces: <https://github.com/termbox/termbox>
 --
 -- This module is intended to be imported qualified.
+--
+-- ==== __👉 Quick start example__
+--
+-- This @termbox@ program displays the number of keys pressed.
+--
+-- @
+-- {-\# LANGUAGE DerivingStrategies \#-}
+-- {-\# LANGUAGE DuplicateRecordFields \#-}
+-- {-\# LANGUAGE ImportQualifiedPost \#-}
+-- {-\# LANGUAGE LambdaCase \#-}
+-- {-\# LANGUAGE OverloadedRecordDot \#-}
+-- {-\# LANGUAGE OverloadedStrings \#-}
+-- {-\# LANGUAGE NoFieldSelectors \#-}
+--
+-- import Data.Foldable (fold)
+-- import Foreign.C.Error (Errno)
+-- import Termbox qualified
+--
+-- main :: IO ()
+-- main = do
+--   result <-
+--     Termbox.'run'
+--       Termbox.'Program'
+--         { initialize,
+--           handleEvent,
+--           handleEventError,
+--           render,
+--           finished
+--         }
+--   case result of
+--     Left err -> putStrLn ("Termbox program failed to initialize: " ++ show err)
+--     Right state -> putStrLn ("Final state: " ++ show state)
+--
+-- data MyState = MyState
+--   { keysPressed :: Int,
+--     pressedEsc :: Bool
+--   }
+--   deriving stock (Show)
+--
+-- initialize :: Termbox.'Size' -> MyState
+-- initialize _size =
+--   MyState
+--     { keysPressed = 0,
+--       pressedEsc = False
+--     }
+--
+-- handleEvent :: MyState -> Termbox.'Event' -> IO MyState
+-- handleEvent state = \\case
+--   Termbox.'EventKey' key ->
+--     pure
+--       MyState
+--         { keysPressed = state.keysPressed + 1,
+--           pressedEsc =
+--             case key of
+--               Termbox.'KeyEsc' -> True
+--               _ -> False
+--         }
+--   _ -> pure state
+--
+-- handleEventError :: MyState -> Errno -> IO MyState
+-- handleEventError state _errno =
+--   pure state
+--
+-- render :: MyState -> Termbox.'Scene'
+-- render state =
+--   fold
+--     [ string
+--         Termbox.'Pos' {row = 2, col = 4}
+--         ("Number of keys pressed: " ++ map Termbox.'char' (show state.keysPressed))
+--     , string
+--         Termbox.'Pos' {row = 4, col = 4}
+--         ("Press " ++ map (Termbox.'bold' . Termbox.'char') "Esc" ++ " to quit.")
+--     ]
+--
+-- finished :: MyState -> Bool
+-- finished state =
+--   state.pressedEsc
+--
+-- string :: Termbox.'Pos' -> [Termbox.'Cell'] -> Termbox.'Scene'
+-- string pos cells =
+--   foldMap
+--     (\\(i, cell) ->
+--       Termbox.'set'
+--         Termbox.'Pos' {row = pos.row, col = pos.col + i}
+--         cell)
+--     (zip [0 ..] cells)
+-- @
 module Termbox
-  ( -- * Running a @termbox@ program
+  ( -- * Termbox
     Program (..),
     run,
     InitError (..),
@@ -164,27 +220,22 @@ data InitError
 instance Exception InitError
 
 -- | A termbox program.
-data Program s = Program
+data Program a = Program
   { -- | The initial state, given the initial terminal size.
-    initialize :: Size -> s,
+    initialize :: Size -> a,
     -- | Handle an event.
-    handleEvent :: s -> Event -> IO s,
+    handleEvent :: a -> Event -> IO a,
     -- | Handle an error that occurred during polling.
-    handleEventError :: s -> Errno -> IO s,
+    handleEventError :: a -> Errno -> IO a,
     -- | Render the current state.
-    render :: s -> Scene,
+    render :: a -> Scene,
     -- | Is the current state finished?
-    finished :: s -> Bool
+    finished :: a -> Bool
   }
 
--- | Run a @termbox@ program.
---
--- The function provided to @run@ is provided:
---
---   * The initial terminal size
---   * An action that renders a scene
---   * An action that polls for an event indefinitely
-run :: Program s -> IO (Either InitError s)
+-- | Run a @termbox@ program, which either returns immediately with an 'InitError', or once the program state is
+-- finished.
+run :: Program a -> IO (Either InitError a)
 run Program {initialize, handleEvent, handleEventError, render, finished} = do
   mask \unmask ->
     Termbox.Bindings.tb_init >>= \case

@@ -25,7 +25,13 @@ import Data.Coerce (coerce)
 import Data.Word (Word16)
 import qualified Termbox.Bindings
 
--- A color.
+-- | A color.
+--
+-- There are three classes of colors:
+--
+-- * Basic named colors and their \"bright\" variants, such as 'red' and 'brightBlue'.
+-- * Miscellaneous colors, such as @'color' 33@.
+-- * Monochrome colors that range from black (@'gray' 0@) to white (@'gray' 23).
 newtype Color
   = Color Termbox.Bindings.Tb_color
 
