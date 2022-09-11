@@ -103,7 +103,6 @@ module Termbox
         KeyCtrlUnderscore
       ),
     Mouse (..),
-    PollError (..),
 
     -- * Miscellaneous types
     Pos (..),
@@ -112,6 +111,7 @@ module Termbox
 where
 
 import Control.Exception
+import Foreign.C.Error (Errno)
 import qualified Termbox.Bindings
 import Termbox.Cell (Cell, bg, blink, bold, char, fg, underline)
 import Termbox.Color
@@ -135,7 +135,7 @@ import Termbox.Color
     white,
     yellow,
   )
-import Termbox.Event (Event (..), PollError (..), poll)
+import Termbox.Event (Event (..), poll)
 import Termbox.Key
   ( Key (..),
     pattern KeyCtrl2,
@@ -169,6 +169,8 @@ data Program s = Program
     initialize :: Size -> s,
     -- | Handle an event.
     handleEvent :: s -> Event -> IO s,
+    -- | Handle an error that occurred during polling.
+    handleEventError :: s -> Errno -> IO s,
     -- | Render the current state.
     render :: s -> Scene,
     -- | Is the current state finished?
@@ -183,7 +185,7 @@ data Program s = Program
 --   * An action that renders a scene
 --   * An action that polls for an event indefinitely
 run :: Program s -> IO (Either InitError s)
-run Program {initialize, handleEvent, render, finished} = do
+run Program {initialize, handleEvent, handleEventError, render, finished} = do
   mask \unmask ->
     Termbox.Bindings.tb_init >>= \case
       Left err ->
@@ -204,8 +206,11 @@ run Program {initialize, handleEvent, render, finished} = do
                         then pure s0
                         else do
                           drawScene (render s0)
-                          event <- poll
-                          s1 <- handleEvent s0 event
+                          result <- poll
+                          s1 <-
+                            case result of
+                              Left errno -> handleEventError s0 errno
+                              Right event -> handleEvent s0 event
                           loop s1
                 loop (initialize Size {width, height})
             )

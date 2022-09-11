@@ -1,12 +1,11 @@
 module Termbox.Event
   ( Event (..),
     poll,
-    PollError (..),
   )
 where
 
-import Control.Exception (Exception, throwIO)
 import Data.Int (Int32)
+import Foreign.C.Error (Errno)
 import qualified Termbox.Bindings
 import Termbox.Key (Key (KeyChar), parseKey)
 import Termbox.Mouse (Mouse, parseMouse)
@@ -24,22 +23,13 @@ data Event
     EventMouse !Mouse !Pos
   deriving stock (Eq, Show)
 
--- | Block until an 'Event' arrives.
---
--- /Throws/: 'PollError'
-poll :: IO Event
-poll =
-  Termbox.Bindings.tb_poll_event >>= \case
-    Left _errno -> throwIO PollError
-    Right event -> pure (parseEvent event)
-
--- | An error occurred when polling, due to mysterious circumstances that are not well-documented in the original C
--- codebase.
-data PollError
-  = PollError
-  deriving stock (Show)
-
-instance Exception PollError
+-- Block until an 'Event' arrives.
+poll :: IO (Either Errno Event)
+poll = do
+  result <- Termbox.Bindings.tb_poll_event
+  pure case result of
+    Left errno -> Left errno
+    Right event -> Right (parseEvent event)
 
 -- Parse an 'Event' from a 'TbEvent'.
 parseEvent :: Termbox.Bindings.Tb_event -> Event
