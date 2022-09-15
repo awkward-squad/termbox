@@ -1,6 +1,6 @@
 module Termbox.Internal.Cell
   ( -- * Cell
-    Cell,
+    Cell (..),
     drawCell,
     char,
 
@@ -28,72 +28,84 @@ import Termbox.Internal.Color (Color (Color))
 -- * Style a cell with 'bold', 'underline', 'blink'.
 data Cell
   = CellEmpty
-  | CellNonEmpty NonEmptyCell
+  | CellFg
+      {-# UNPACK #-} !Char -- invariant: char is width 1
+      {-# UNPACK #-} !Termbox.Bindings.Tb_color -- fg
+  | CellFgBlink
+      {-# UNPACK #-} !Char -- invariant: char is width 1
+      {-# UNPACK #-} !Termbox.Bindings.Tb_color -- fg
+  | CellFgBg
+      {-# UNPACK #-} !Char -- invariant: char is width 1
+      {-# UNPACK #-} !Termbox.Bindings.Tb_color -- fg
+      {-# UNPACK #-} !Termbox.Bindings.Tb_color -- bg
 
 instance {-# OVERLAPS #-} IsString [Cell] where
   fromString =
     map char
 
-data NonEmptyCell = NonEmptyCell
-  { cellChar :: {-# UNPACK #-} !Char, -- invariant: width 1
-    cellFg :: {-# UNPACK #-} !Termbox.Bindings.Tb_color,
-    cellBg :: {-# UNPACK #-} !Termbox.Bindings.Tb_color
-  }
-
-drawCell :: Int -> Int -> Cell -> IO ()
-drawCell col row = \case
+drawCell :: Termbox.Bindings.Tb_color -> Int -> Int -> Cell -> IO ()
+drawCell bg0 col row = \case
   CellEmpty -> pure ()
-  CellNonEmpty NonEmptyCell {cellChar, cellFg, cellBg} ->
-    Termbox.Bindings.tb_change_cell col row cellChar cellFg cellBg
+  CellFg ch fg_ -> Termbox.Bindings.tb_change_cell col row ch fg_ bg0
+  CellFgBlink ch fg_ -> Termbox.Bindings.tb_change_cell col row ch fg_ (makeBold bg0) -- bold background = blink
+  CellFgBg ch fg_ bg_ -> Termbox.Bindings.tb_change_cell col row ch fg_ bg_
 
 -- | Create a cell from a character.
 --
 -- If the character is not 1 character wide, it will not be displayed.
 char :: Char -> Cell
-char c =
-  case wcwidth (charToCWchar c) of
-    1 ->
-      CellNonEmpty
-        NonEmptyCell
-          { cellChar = c,
-            cellFg = Termbox.Bindings.TB_DEFAULT,
-            cellBg = Termbox.Bindings.TB_DEFAULT
-          }
+char ch =
+  case wcwidth (charToCWchar ch) of
+    1 -> CellFg ch Termbox.Bindings.TB_DEFAULT
     _ -> CellEmpty
 
 -- | Set the foreground color of a cell.
 fg :: Color -> Cell -> Cell
 fg (Color color) = \case
   CellEmpty -> CellEmpty
-  CellNonEmpty image -> CellNonEmpty image {cellFg = color}
+  CellFg ch _ -> CellFg ch color
+  CellFgBlink ch _ -> CellFgBlink ch color
+  CellFgBg ch _ bg_ -> CellFgBg ch color bg_
 
 -- | Set the background color of a cell.
 bg :: Color -> Cell -> Cell
 bg (Color color) = \case
   CellEmpty -> CellEmpty
-  CellNonEmpty image -> CellNonEmpty image {cellBg = color}
+  CellFg ch fg_ -> CellFgBg ch fg_ color
+  CellFgBlink ch fg_ -> CellFgBg ch fg_ (makeBold color) -- bold background = blink
+  CellFgBg ch fg_ _ -> CellFgBg ch fg_ color
 
 -- | Make a cell bold.
 bold :: Cell -> Cell
 bold = \case
   CellEmpty -> CellEmpty
-  CellNonEmpty image@NonEmptyCell {cellFg} ->
-    CellNonEmpty image {cellFg = Termbox.Bindings.tb_attr Termbox.Bindings.TB_BOLD cellFg}
+  CellFg ch fg_ -> CellFg ch (makeBold fg_)
+  CellFgBlink ch fg_ -> CellFgBlink ch (makeBold fg_)
+  CellFgBg ch fg_ bg_ -> CellFgBg ch (makeBold fg_) bg_
 
 -- | Make a cell underlined.
 underline :: Cell -> Cell
 underline = \case
   CellEmpty -> CellEmpty
-  CellNonEmpty image@NonEmptyCell {cellFg} ->
-    CellNonEmpty image {cellFg = Termbox.Bindings.tb_attr Termbox.Bindings.TB_UNDERLINE cellFg}
+  CellFg ch fg_ -> CellFg ch (makeUnderline fg_)
+  CellFgBlink ch fg_ -> CellFgBlink ch (makeUnderline fg_)
+  CellFgBg ch fg_ bg_ -> CellFgBg ch (makeUnderline fg_) bg_
 
 -- | Make a cell blink.
 blink :: Cell -> Cell
 blink = \case
   CellEmpty -> CellEmpty
-  CellNonEmpty image@NonEmptyCell {cellBg} ->
-    -- not a typo; bold background is blink
-    CellNonEmpty image {cellBg = Termbox.Bindings.tb_attr Termbox.Bindings.TB_BOLD cellBg}
+  CellFg ch fg_ -> CellFgBlink ch fg_
+  CellFgBlink ch fg_ -> CellFgBlink ch fg_
+  CellFgBg ch fg_ bg_ -> CellFgBg ch fg_ (makeBold bg_) -- bold background = blink
+
+makeBold :: Termbox.Bindings.Tb_color -> Termbox.Bindings.Tb_color
+makeBold =
+  Termbox.Bindings.tb_attr Termbox.Bindings.TB_BOLD
+
+makeUnderline :: Termbox.Bindings.Tb_color -> Termbox.Bindings.Tb_color
+makeUnderline =
+  Termbox.Bindings.tb_attr Termbox.Bindings.TB_UNDERLINE
 
 charToCWchar :: Char -> CWchar
 charToCWchar =

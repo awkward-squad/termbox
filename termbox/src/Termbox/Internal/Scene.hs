@@ -8,7 +8,7 @@ module Termbox.Internal.Scene
 where
 
 import qualified Termbox.Bindings
-import Termbox.Internal.Cell (Cell, drawCell)
+import Termbox.Internal.Cell (Cell (..), drawCell)
 import Termbox.Internal.Color (Color (Color))
 import Termbox.Internal.Pos (Pos (..))
 
@@ -50,7 +50,6 @@ drawScene Scene {sceneFill, sceneDraw} = do
         case sceneFill of
           Nothing -> Termbox.Bindings.TB_DEFAULT
           Just color -> color
-
   Termbox.Bindings.tb_set_clear_attributes Termbox.Bindings.TB_DEFAULT background
   Termbox.Bindings.tb_clear
   sceneDraw background
@@ -64,7 +63,7 @@ fill (Color color) =
 -- | Set a single cell.
 set :: Pos -> Cell -> Scene
 set Pos {col, row} img =
-  mempty {sceneDraw = \_ -> drawCell col row img}
+  mempty {sceneDraw = \bg -> drawCell bg col row img}
 
 -- | Set the cursor position.
 cursor :: Pos -> Scene
