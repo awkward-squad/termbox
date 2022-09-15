@@ -1,4 +1,4 @@
-module Termbox.Mouse
+module Termbox.Internal.Mouse
   ( Mouse (..),
     parseMouse,
   )

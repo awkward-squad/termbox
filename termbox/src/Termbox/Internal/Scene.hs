@@ -1,4 +1,4 @@
-module Termbox.Scene
+module Termbox.Internal.Scene
   ( Scene,
     drawScene,
     set,
@@ -9,9 +9,9 @@ where
 
 import Data.Foldable (for_)
 import qualified Termbox.Bindings
-import Termbox.Cell (Cell, drawCell)
-import Termbox.Color (Color (Color))
-import Termbox.Pos (Pos (..))
+import Termbox.Internal.Cell (Cell, drawCell)
+import Termbox.Internal.Color (Color (Color))
+import Termbox.Internal.Pos (Pos (..))
 
 -- | A scene.
 --

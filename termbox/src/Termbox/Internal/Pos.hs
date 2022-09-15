@@ -1,4 +1,4 @@
-module Termbox.Pos
+module Termbox.Internal.Pos
   ( Pos (..),
   )
 where

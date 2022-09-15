@@ -1,4 +1,4 @@
-module Termbox.Cell
+module Termbox.Internal.Cell
   ( -- * Cell
     Cell,
     drawCell,
@@ -19,7 +19,7 @@ import qualified Data.Char as Char
 import Data.String (IsString (..))
 import Foreign.C.Types (CInt (CInt), CWchar (CWchar))
 import qualified Termbox.Bindings
-import Termbox.Color (Color (Color))
+import Termbox.Internal.Color (Color (Color))
 
 -- | A single cell.
 --

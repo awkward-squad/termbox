@@ -1,4 +1,4 @@
-module Termbox.Size
+module Termbox.Internal.Size
   ( Size (..),
   )
 where

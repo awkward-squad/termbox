@@ -1,4 +1,4 @@
-module Termbox.Event
+module Termbox.Internal.Event
   ( Event (..),
     poll,
   )
@@ -7,10 +7,10 @@ where
 import Data.Int (Int32)
 import Foreign.C.Error (Errno)
 import qualified Termbox.Bindings
-import Termbox.Key (Key (KeyChar), parseKey)
-import Termbox.Mouse (Mouse, parseMouse)
-import Termbox.Pos (Pos (..))
-import Termbox.Size (Size (..))
+import Termbox.Internal.Key (Key (KeyChar), parseKey)
+import Termbox.Internal.Mouse (Mouse, parseMouse)
+import Termbox.Internal.Pos (Pos (..))
+import Termbox.Internal.Size (Size (..))
 import Prelude hiding (mod)
 
 -- | A input event.

@@ -1,4 +1,4 @@
-module Termbox.Key
+module Termbox.Internal.Key
   ( Key (..),
     parseKey,
     pattern KeyCtrlH,

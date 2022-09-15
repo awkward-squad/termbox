@@ -1,4 +1,4 @@
-module Termbox.Color
+module Termbox.Internal.Color
   ( Color (..),
     defaultColor,
     red,

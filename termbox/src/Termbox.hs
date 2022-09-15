@@ -169,8 +169,8 @@ where
 import Control.Exception
 import Foreign.C.Error (Errno)
 import qualified Termbox.Bindings
-import Termbox.Cell (Cell, bg, blink, bold, char, fg, underline)
-import Termbox.Color
+import Termbox.Internal.Cell (Cell, bg, blink, bold, char, fg, underline)
+import Termbox.Internal.Color
   ( Color,
     blue,
     brightBlue,
@@ -191,8 +191,8 @@ import Termbox.Color
     white,
     yellow,
   )
-import Termbox.Event (Event (..), poll)
-import Termbox.Key
+import Termbox.Internal.Event (Event (..), poll)
+import Termbox.Internal.Key
   ( Key (..),
     pattern KeyCtrl2,
     pattern KeyCtrl3,
@@ -205,10 +205,10 @@ import Termbox.Key
     pattern KeyCtrlM,
     pattern KeyCtrlUnderscore,
   )
-import Termbox.Mouse (Mouse (..))
-import Termbox.Pos (Pos (..))
-import Termbox.Scene (Scene, cursor, drawScene, fill, set)
-import Termbox.Size (Size (..))
+import Termbox.Internal.Mouse (Mouse (..))
+import Termbox.Internal.Pos (Pos (..))
+import Termbox.Internal.Scene (Scene, cursor, drawScene, fill, set)
+import Termbox.Internal.Size (Size (..))
 
 -- | Termbox initialization errors.
 data InitError

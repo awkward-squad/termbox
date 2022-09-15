@@ -76,14 +76,14 @@ library
   exposed-modules: Termbox
   hs-source-dirs: src
   other-modules:
-    Termbox.Cell
-    Termbox.Color
-    Termbox.Event
-    Termbox.Key
-    Termbox.Mouse
-    Termbox.Pos
-    Termbox.Size
-    Termbox.Scene
+    Termbox.Internal.Cell
+    Termbox.Internal.Color
+    Termbox.Internal.Event
+    Termbox.Internal.Key
+    Termbox.Internal.Mouse
+    Termbox.Internal.Pos
+    Termbox.Internal.Size
+    Termbox.Internal.Scene
 
 executable termbox-example-demo
   import: component
