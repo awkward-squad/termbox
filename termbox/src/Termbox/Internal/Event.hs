@@ -14,25 +14,27 @@ import Termbox.Internal.Size (Size (..))
 import Prelude hiding (mod)
 
 -- | A input event.
-data Event
+data Event e
   = -- | Key event
     EventKey !Key
   | -- | Resize event
     EventResize !Size
   | -- | Mouse event
     EventMouse !Mouse !Pos
+  | -- | User event
+    EventUser e
   deriving stock (Eq, Show)
 
--- Block until an 'Event' arrives.
-poll :: IO (Either Errno Event)
+-- Block until an Event arrives.
+poll :: IO (Either Errno (Event e))
 poll = do
   result <- Termbox.Bindings.tb_poll_event
   pure case result of
     Left errno -> Left errno
     Right event -> Right (parseEvent event)
 
--- Parse an 'Event' from a 'TbEvent'.
-parseEvent :: Termbox.Bindings.Tb_event -> Event
+-- Parse an Event from a TbEvent.
+parseEvent :: Termbox.Bindings.Tb_event -> Event e
 parseEvent
   Termbox.Bindings.Tb_event
     { Termbox.Bindings.type_,

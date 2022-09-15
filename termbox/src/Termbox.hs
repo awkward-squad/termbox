@@ -19,6 +19,7 @@
 -- {-\# LANGUAGE NoFieldSelectors \#-}
 --
 -- import Data.Foldable (fold)
+-- import Data.Void (Void)
 -- import Foreign.C.Error (Errno)
 -- import Termbox qualified
 --
@@ -28,6 +29,7 @@
 --     Termbox.'run'
 --       Termbox.'Program'
 --         { initialize,
+--           pollEvent,
 --           handleEvent,
 --           handleEventError,
 --           render,
@@ -50,7 +52,11 @@
 --       pressedEsc = False
 --     }
 --
--- handleEvent :: MyState -> Termbox.'Event' -> IO MyState
+-- pollEvent :: Maybe (IO Void)
+-- pollEvent =
+--   Nothing
+--
+-- handleEvent :: MyState -> Termbox.'Event' Void -> IO MyState
 -- handleEvent state = \\case
 --   Termbox.'EventKey' key ->
 --     pure
@@ -166,8 +172,11 @@ module Termbox
   )
 where
 
+import Control.Concurrent.MVar
 import Control.Exception
+import Control.Monad (forever)
 import Foreign.C.Error (Errno)
+import qualified Ki
 import qualified Termbox.Bindings
 import Termbox.Internal.Cell (Cell, bg, blink, bold, char, fg, underline)
 import Termbox.Internal.Color
@@ -220,22 +229,24 @@ data InitError
 instance Exception InitError
 
 -- | A termbox program.
-data Program a = Program
+data Program e s = Program
   { -- | The initial state, given the initial terminal size.
-    initialize :: Size -> a,
+    initialize :: Size -> s,
+    -- | Poll for a user event. Every value that this @IO@ action returns is provided to @handleEvent@.
+    pollEvent :: Maybe (IO e),
     -- | Handle an event.
-    handleEvent :: a -> Event -> IO a,
+    handleEvent :: s -> Event e -> IO s,
     -- | Handle an error that occurred during polling.
-    handleEventError :: a -> Errno -> IO a,
+    handleEventError :: s -> Errno -> IO s,
     -- | Render the current state.
-    render :: a -> Scene,
+    render :: s -> Scene,
     -- | Is the current state finished?
-    finished :: a -> Bool
+    finished :: s -> Bool
   }
 
 -- | Run a @termbox@ program, which either returns immediately with an 'InitError', or once the program state is
 -- finished.
-run :: Program a -> IO (Either InitError a)
+run :: Program e s -> IO (Either InitError s)
 run program = do
   mask \unmask ->
     Termbox.Bindings.tb_init >>= \case
@@ -249,25 +260,47 @@ run program = do
         shutdown
         pure (Right result)
 
-runProgram :: Program a -> IO a
-runProgram Program {initialize, handleEvent, handleEventError, render, finished} = do
+runProgram :: Program e s -> IO s
+runProgram Program {initialize, pollEvent, handleEvent, handleEventError, render, finished} = do
   _ <- Termbox.Bindings.tb_select_input_mode Termbox.Bindings.TB_INPUT_MOUSE
   _ <- Termbox.Bindings.tb_select_output_mode Termbox.Bindings.TB_OUTPUT_256
   width <- Termbox.Bindings.tb_width
   height <- Termbox.Bindings.tb_height
-  loop (initialize Size {width, height})
-  where
-    loop s0 =
-      if finished s0
-        then pure s0
-        else do
-          drawScene (render s0)
-          result <- poll
-          s1 <-
-            case result of
-              Left errno -> handleEventError s0 errno
-              Right event -> handleEvent s0 event
-          loop s1
+
+  let state0 =
+        initialize Size {width, height}
+
+  let loop0 doPoll =
+        let loop s0 =
+              if finished s0
+                then pure s0
+                else do
+                  drawScene (render s0)
+                  result <- doPoll
+                  s1 <-
+                    case result of
+                      Left errno -> handleEventError s0 errno
+                      Right event -> handleEvent s0 event
+                  loop s1
+         in loop
+
+  case pollEvent of
+    Nothing -> loop0 poll state0
+    Just pollEvent1 -> do
+      eventVar <- newEmptyMVar
+
+      Ki.scoped \scope -> do
+        Ki.fork_ scope do
+          forever do
+            event <- pollEvent1
+            putMVar eventVar (Right (EventUser event))
+
+        Ki.fork_ scope do
+          forever do
+            event <- poll
+            putMVar eventVar event
+
+        loop0 (takeMVar eventVar) state0
 
 shutdown :: IO ()
 shutdown = do

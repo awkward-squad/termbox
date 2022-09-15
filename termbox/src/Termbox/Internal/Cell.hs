@@ -56,8 +56,8 @@ char c =
       CellNonEmpty
         NonEmptyCell
           { cellChar = c,
-            cellFg = Termbox.Bindings.Tb_color 0,
-            cellBg = Termbox.Bindings.Tb_color 0
+            cellFg = Termbox.Bindings.TB_DEFAULT,
+            cellBg = Termbox.Bindings.TB_DEFAULT
           }
     _ -> CellEmpty
 

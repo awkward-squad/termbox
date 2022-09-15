@@ -47,7 +47,7 @@ instance Semigroup Scene where
 drawScene :: Scene -> IO ()
 drawScene Scene {sceneFill, sceneDraw} = do
   for_ sceneFill \(Color color) ->
-    Termbox.Bindings.tb_set_clear_attributes 0 color
+    Termbox.Bindings.tb_set_clear_attributes Termbox.Bindings.TB_DEFAULT color
   Termbox.Bindings.tb_clear
   sceneDraw
   Termbox.Bindings.tb_present
