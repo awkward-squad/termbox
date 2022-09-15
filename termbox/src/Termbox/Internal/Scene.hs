@@ -7,7 +7,6 @@ module Termbox.Internal.Scene
   )
 where
 
-import Data.Foldable (for_)
 import qualified Termbox.Bindings
 import Termbox.Internal.Cell (Cell, drawCell)
 import Termbox.Internal.Color (Color (Color))
@@ -20,15 +19,15 @@ import Termbox.Internal.Pos (Pos (..))
 -- * Set the cursor position with 'cursor'.
 -- * Combine scenes together with @<>@.
 data Scene = Scene
-  { sceneFill :: Maybe Color,
-    sceneDraw :: IO ()
+  { sceneFill :: Maybe Termbox.Bindings.Tb_color,
+    sceneDraw :: Termbox.Bindings.Tb_color -> IO ()
   }
 
 instance Monoid Scene where
   mempty =
     Scene
       { sceneFill = Nothing,
-        sceneDraw = pure ()
+        sceneDraw = \_ -> pure ()
       }
 
 instance Semigroup Scene where
@@ -38,31 +37,36 @@ instance Semigroup Scene where
           case fill1 of
             Nothing -> fill0
             Just _ -> fill1,
-        sceneDraw = do
-          draw0
-          draw1
+        sceneDraw =
+          \color -> do
+            draw0 color
+            draw1 color
       }
 
 -- Draw a scene.
 drawScene :: Scene -> IO ()
 drawScene Scene {sceneFill, sceneDraw} = do
-  for_ sceneFill \(Color color) ->
-    Termbox.Bindings.tb_set_clear_attributes Termbox.Bindings.TB_DEFAULT color
+  let background =
+        case sceneFill of
+          Nothing -> Termbox.Bindings.TB_DEFAULT
+          Just color -> color
+
+  Termbox.Bindings.tb_set_clear_attributes Termbox.Bindings.TB_DEFAULT background
   Termbox.Bindings.tb_clear
-  sceneDraw
+  sceneDraw background
   Termbox.Bindings.tb_present
 
 -- | Set the background fill color.
 fill :: Color -> Scene
-fill color =
+fill (Color color) =
   mempty {sceneFill = Just color}
 
 -- | Set a single cell.
 set :: Pos -> Cell -> Scene
 set Pos {col, row} img =
-  mempty {sceneDraw = drawCell col row img}
+  mempty {sceneDraw = \_ -> drawCell col row img}
 
 -- | Set the cursor position.
 cursor :: Pos -> Scene
 cursor Pos {col, row} =
-  mempty {sceneDraw = Termbox.Bindings.tb_set_cursor (Just (col, row))}
+  mempty {sceneDraw = \_ -> Termbox.Bindings.tb_set_cursor (Just (col, row))}
