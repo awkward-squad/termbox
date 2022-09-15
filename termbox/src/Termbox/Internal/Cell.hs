@@ -1,6 +1,6 @@
 module Termbox.Internal.Cell
   ( -- * Cell
-    Cell (..),
+    Cell,
     drawCell,
     char,
 

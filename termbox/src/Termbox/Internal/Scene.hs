@@ -8,7 +8,7 @@ module Termbox.Internal.Scene
 where
 
 import qualified Termbox.Bindings
-import Termbox.Internal.Cell (Cell (..), drawCell)
+import Termbox.Internal.Cell (Cell, drawCell)
 import Termbox.Internal.Color (Color (Color))
 import Termbox.Internal.Pos (Pos (..))
 
