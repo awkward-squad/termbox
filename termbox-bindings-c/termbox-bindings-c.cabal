@@ -12,7 +12,8 @@ description:
   The full source of @termbox v1.1.4@ is bundled; you do not need to install any system packages to use this library.
   .
   See also:
-  * @<https://hackage.haskell.org/package/termbox-bindings termbox-bindings-c>@ for higher-level bindings.
+  .
+  * @<https://hackage.haskell.org/package/termbox-bindings termbox-bindings>@ for higher-level bindings.
   * @<https://hackage.haskell.org/package/termbox termbox>@ for even higher-level bindings.
 homepage: https://github.com/termbox/termbox-haskell
 license-file: LICENSE
@@ -20,7 +21,7 @@ license: BSD-3-Clause
 maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>
 name: termbox-bindings-c
 synopsis: termbox bindings
-tested-with: GHC == 9.0.2, GHC == 9.2.4, GHC == 9.4.1
+tested-with: GHC == 9.0.2, GHC == 9.2.4, GHC == 9.4.2
 version: 0.1.0
 
 extra-source-files:

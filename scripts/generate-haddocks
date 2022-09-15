@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cabal haddock all | grep 'index.html$'

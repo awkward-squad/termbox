@@ -19,7 +19,7 @@ license: BSD-3-Clause
 maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>
 name: termbox
 synopsis: termbox
-tested-with: GHC == 9.0.2, GHC == 9.2.4, GHC == 9.4.1
+tested-with: GHC == 9.0.2, GHC == 9.2.4, GHC == 9.4.2
 version: 1.0.0
 
 extra-source-files:

@@ -101,8 +101,8 @@ module Termbox
 
     -- ** Scene
     Scene,
-    fill,
     set,
+    fill,
     cursor,
 
     -- ** Cell
@@ -118,7 +118,7 @@ module Termbox
     Color,
 
     -- *** Basic colors
-    black,
+    defaultColor,
     red,
     green,
     yellow,
@@ -128,7 +128,7 @@ module Termbox
     white,
 
     -- *** Bright basic colors
-    brightBlack,
+    brightDefaultColor,
     brightRed,
     brightGreen,
     brightYellow,
@@ -172,11 +172,10 @@ import qualified Termbox.Bindings
 import Termbox.Cell (Cell, bg, blink, bold, char, fg, underline)
 import Termbox.Color
   ( Color,
-    black,
     blue,
-    brightBlack,
     brightBlue,
     brightCyan,
+    brightDefaultColor,
     brightGreen,
     brightMagenta,
     brightRed,
@@ -184,6 +183,7 @@ import Termbox.Color
     brightYellow,
     color,
     cyan,
+    defaultColor,
     gray,
     green,
     magenta,
@@ -236,7 +236,7 @@ data Program a = Program
 -- | Run a @termbox@ program, which either returns immediately with an 'InitError', or once the program state is
 -- finished.
 run :: Program a -> IO (Either InitError a)
-run Program {initialize, handleEvent, handleEventError, render, finished} = do
+run program = do
   mask \unmask ->
     Termbox.Bindings.tb_init >>= \case
       Left err ->
@@ -245,29 +245,29 @@ run Program {initialize, handleEvent, handleEventError, render, finished} = do
           Termbox.Bindings.TB_EPIPE_TRAP_ERROR -> PipeTrapError
           Termbox.Bindings.TB_EUNSUPPORTED_TERMINAL -> UnsupportedTerminal
       Right () -> do
-        result <-
-          unmask
-            ( do
-                _ <- Termbox.Bindings.tb_select_input_mode Termbox.Bindings.TB_INPUT_MOUSE
-                _ <- Termbox.Bindings.tb_select_output_mode Termbox.Bindings.TB_OUTPUT_256
-                width <- Termbox.Bindings.tb_width
-                height <- Termbox.Bindings.tb_height
-                let loop s0 =
-                      if finished s0
-                        then pure s0
-                        else do
-                          drawScene (render s0)
-                          result <- poll
-                          s1 <-
-                            case result of
-                              Left errno -> handleEventError s0 errno
-                              Right event -> handleEvent s0 event
-                          loop s1
-                loop (initialize Size {width, height})
-            )
-            `onException` shutdown
+        result <- unmask (runProgram program) `onException` shutdown
         shutdown
         pure (Right result)
+
+runProgram :: Program a -> IO a
+runProgram Program {initialize, handleEvent, handleEventError, render, finished} = do
+  _ <- Termbox.Bindings.tb_select_input_mode Termbox.Bindings.TB_INPUT_MOUSE
+  _ <- Termbox.Bindings.tb_select_output_mode Termbox.Bindings.TB_OUTPUT_256
+  width <- Termbox.Bindings.tb_width
+  height <- Termbox.Bindings.tb_height
+  loop (initialize Size {width, height})
+  where
+    loop s0 =
+      if finished s0
+        then pure s0
+        else do
+          drawScene (render s0)
+          result <- poll
+          s1 <-
+            case result of
+              Left errno -> handleEventError s0 errno
+              Right event -> handleEvent s0 event
+          loop s1
 
 shutdown :: IO ()
 shutdown = do

@@ -1,6 +1,6 @@
 module Termbox.Color
   ( Color (..),
-    black,
+    defaultColor,
     red,
     green,
     yellow,
@@ -8,7 +8,7 @@ module Termbox.Color
     magenta,
     cyan,
     white,
-    brightBlack,
+    brightDefaultColor,
     brightRed,
     brightGreen,
     brightYellow,
@@ -35,8 +35,8 @@ import qualified Termbox.Bindings
 newtype Color
   = Color Termbox.Bindings.Tb_color
 
-black :: Color
-black =
+defaultColor :: Color
+defaultColor =
   Color 0
 
 red :: Color
@@ -67,8 +67,8 @@ white :: Color
 white =
   Color 7
 
-brightBlack :: Color
-brightBlack =
+brightDefaultColor :: Color
+brightDefaultColor =
   Color 8
 
 brightRed :: Color

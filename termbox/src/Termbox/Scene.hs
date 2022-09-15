@@ -1,8 +1,8 @@
 module Termbox.Scene
   ( Scene,
     drawScene,
-    fill,
     set,
+    fill,
     cursor,
   )
 where
@@ -13,13 +13,12 @@ import Termbox.Cell (Cell, drawCell)
 import Termbox.Color (Color (Color))
 import Termbox.Pos (Pos (..))
 
--- | A scene, which contains:
+-- | A scene.
 --
--- * At most one background fill color ('fill')
--- * Zero or more of characters ('set')
--- * At most one cursor ('cursor')
---
--- A scene can be composed from smaller scenes using @<>@, which is right-biased.
+-- * Set individual characters with 'set'.
+-- * Set the background fill color with 'fill'.
+-- * Set the cursor position with 'cursor'.
+-- * Combine scenes together with @<>@.
 data Scene = Scene
   { sceneFill :: Maybe Color,
     sceneDraw :: IO ()
