@@ -29,9 +29,9 @@ import qualified Termbox.Bindings
 --
 -- There are three classes of colors:
 --
--- * Basic named colors and their \"bright\" variants, such as 'red' and 'brightBlue'.
+-- * Basic named colors and their bright variants, such as 'red' and 'brightBlue'.
 -- * Miscellaneous colors, such as @'color' 33@.
--- * Monochrome colors that range from black (@'gray' 0@) to white (@'gray' 23).
+-- * Monochrome colors that range from black (@'gray' 0@) to white (@'gray' 23@).
 newtype Color
   = Color Termbox.Bindings.Tb_color
 
