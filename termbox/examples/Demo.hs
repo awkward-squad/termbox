@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Main (main) where
 
 import Data.Foldable (fold)
@@ -140,8 +138,8 @@ finished = \case
 
 string :: Int -> Int -> [Termbox.Cell] -> Termbox.Scene
 string x0 row =
-  mconcat . zipWith (\col c -> Termbox.set Termbox.Pos {col, row} c) [x0 ..]
+  mconcat . zipWith (\col c -> Termbox.cell Termbox.Pos {col, row} c) [x0 ..]
 
 rectangle :: Int -> Int -> Int -> Int -> Termbox.Cell -> Termbox.Scene
 rectangle x0 y0 x1 y1 c =
-  foldMap (\(col, row) -> Termbox.set Termbox.Pos {col, row} c) ((,) <$> [x0 .. x1] <*> [y0 .. y1])
+  foldMap (\(col, row) -> Termbox.cell Termbox.Pos {col, row} c) ((,) <$> [x0 .. x1] <*> [y0 .. y1])

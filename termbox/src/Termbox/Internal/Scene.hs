@@ -1,7 +1,7 @@
 module Termbox.Internal.Scene
   ( Scene,
     drawScene,
-    set,
+    cell,
     fill,
     cursor,
   )
@@ -14,7 +14,7 @@ import Termbox.Internal.Pos (Pos (..))
 
 -- | A scene.
 --
--- * Set individual characters with 'set'.
+-- * Set individual cells with 'cell'.
 -- * Set the background fill color with 'fill'.
 -- * Set the cursor position with 'cursor'.
 -- * Combine scenes together with @<>@.
@@ -61,8 +61,8 @@ fill (Color color) =
   mempty {sceneFill = Just color}
 
 -- | Set a single cell.
-set :: Pos -> Cell -> Scene
-set Pos {col, row} img =
+cell :: Pos -> Cell -> Scene
+cell Pos {col, row} img =
   mempty {sceneDraw = \bg -> drawCell bg col row img}
 
 -- | Set the cursor position.

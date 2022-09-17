@@ -92,7 +92,7 @@
 -- string pos cells =
 --   foldMap
 --     (\\(i, cell) ->
---       Termbox.'set'
+--       Termbox.'cell'
 --         Termbox.'Pos' {row = pos.row, col = pos.col + i}
 --         cell)
 --     (zip [0 ..] cells)
@@ -107,7 +107,7 @@ module Termbox
 
     -- ** Scene
     Scene,
-    set,
+    cell,
     fill,
     cursor,
 
@@ -216,7 +216,7 @@ import Termbox.Internal.Key
   )
 import Termbox.Internal.Mouse (Mouse (..))
 import Termbox.Internal.Pos (Pos (..))
-import Termbox.Internal.Scene (Scene, cursor, drawScene, fill, set)
+import Termbox.Internal.Scene (Scene, cell, cursor, drawScene, fill)
 import Termbox.Internal.Size (Size (..))
 
 -- | Termbox initialization errors.

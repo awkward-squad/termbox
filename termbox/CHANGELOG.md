@@ -2,6 +2,7 @@
 - Rework `run`; add `Program` record of callbacks
 - Add user events to `Event` type
 - Overhaul `Attr`+`Cell`+`Cells`+`Cursor` API; now it's `Cell`+`Color`+`Scene`
+- Rename `set` to `cell`
 - Add names for bright versions of basic colors (e.g. `brightRed`)
 - Add combinator for miscellaneous colors (`color`)
 - Add combinator for monochrome colors (`gray`)
