@@ -132,16 +132,7 @@ module Termbox
     magenta,
     cyan,
     white,
-
-    -- *** Bright basic colors
-    brightDefaultColor,
-    brightRed,
-    brightGreen,
-    brightYellow,
-    brightBlue,
-    brightMagenta,
-    brightCyan,
-    brightWhite,
+    bright,
 
     -- *** 216 miscellaneous colors
     color,
@@ -182,14 +173,7 @@ import Termbox.Internal.Cell (Cell, bg, blink, bold, char, fg, underline)
 import Termbox.Internal.Color
   ( Color,
     blue,
-    brightBlue,
-    brightCyan,
-    brightDefaultColor,
-    brightGreen,
-    brightMagenta,
-    brightRed,
-    brightWhite,
-    brightYellow,
+    bright,
     color,
     cyan,
     defaultColor,

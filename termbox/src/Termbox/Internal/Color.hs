@@ -8,14 +8,7 @@ module Termbox.Internal.Color
     magenta,
     cyan,
     white,
-    brightDefaultColor,
-    brightRed,
-    brightGreen,
-    brightYellow,
-    brightBlue,
-    brightMagenta,
-    brightCyan,
-    brightWhite,
+    bright,
     color,
     gray,
   )
@@ -29,7 +22,7 @@ import qualified Termbox.Bindings
 --
 -- There are three classes of colors:
 --
--- * Basic named colors and their bright variants, such as 'red' and 'brightBlue'.
+-- * Basic named colors and their bright variants, such as 'red' and 'bright' 'blue'.
 -- * Miscellaneous colors, such as @'color' 33@.
 -- * Monochrome colors that range from black (@'gray' 0@) to white (@'gray' 23@).
 newtype Color
@@ -67,37 +60,15 @@ white :: Color
 white =
   Color 7
 
-brightDefaultColor :: Color
-brightDefaultColor =
-  Color 8
+-- | Make a basic color brighter.
+bright :: Color -> Color
+bright =
+  coerce bright_
 
-brightRed :: Color
-brightRed =
-  Color 9
-
-brightGreen :: Color
-brightGreen =
-  Color 10
-
-brightYellow :: Color
-brightYellow =
-  Color 11
-
-brightBlue :: Color
-brightBlue =
-  Color 12
-
-brightMagenta :: Color
-brightMagenta =
-  Color 13
-
-brightCyan :: Color
-brightCyan =
-  Color 14
-
-brightWhite :: Color
-brightWhite =
-  Color 15
+bright_ :: Termbox.Bindings.Tb_color -> Termbox.Bindings.Tb_color
+bright_ c
+  | c <= 7 = c + 8
+  | otherwise = c
 
 -- | A miscellaneous color.
 --

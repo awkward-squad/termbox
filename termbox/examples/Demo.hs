@@ -12,134 +12,140 @@ main = do
     Left err -> print err
     Right _state -> pure ()
 
-type State =
-  Maybe (Termbox.Event Void)
+data State = State
+  { lastEvent :: Maybe (Termbox.Event Void),
+    bright :: Bool
+  }
 
 initialize :: Termbox.Size -> State
 initialize _size =
-  Nothing
+  State
+    { lastEvent = Nothing,
+      bright = False
+    }
 
 pollEvent :: Maybe (IO Void)
 pollEvent =
   Nothing
 
 handleEvent :: State -> Termbox.Event Void -> IO State
-handleEvent _lastEvent event =
-  pure (Just event)
+handleEvent State {bright} event =
+  pure
+    State
+      { lastEvent = Just event,
+        bright =
+          case event of
+            Termbox.EventKey (Termbox.KeyChar '*') -> not bright
+            _ -> bright
+      }
 
 handleEventError :: State -> Errno -> IO State
-handleEventError lastEvent _err =
-  pure lastEvent
+handleEventError state _err =
+  pure state
 
 render :: State -> Termbox.Scene
-render maybeEvent =
+render State {lastEvent, bright} =
   fold
-    [ string 2 1 "Try typing, clicking, and resizing the terminal!",
-      fold
-        [ string 2 3 "Here's the latest event I processed:",
-          case maybeEvent of
-            Nothing -> mempty
-            Just event -> string 39 3 (map (Termbox.bold . Termbox.char) (show event))
-        ],
-      string 2 7 "Let's check out what colors and styles Termbox has to offer.",
+    [ string Termbox.Pos {row = 1, col = 2} "Welcome to Termbox. Try typing, clicking, and resizing the terminal!",
+      string Termbox.Pos {row = 3, col = 2} "Latest event: ",
+      case lastEvent of
+        Nothing -> mempty
+        Just event -> string Termbox.Pos {row = 3, col = 16} (map (Termbox.bold . Termbox.char) (show event)),
+      string Termbox.Pos {row = 5, col = 2} "default, red, green, yellow, blue, magenta, cyan, white",
       foldMap
-        ( \(i, color, name) ->
-            let col = 2 + (i * w)
-                row = 9
-                w = 14
-                h = 4
-             in fold
-                  [ string col row name,
-                    rectangle col (row + 1) (col + w - 1) (row + h) (Termbox.bg color (Termbox.char ' '))
-                  ]
+        ( \(i, color) ->
+            let width = 4
+             in rect
+                  Rect
+                    { pos = Termbox.Pos {row = 6, col = 2 + (i * width)},
+                      size = Termbox.Size {width, height = 2},
+                      color = if bright then Termbox.bright color else color
+                    }
         )
-        [ ((0 :: Int), Termbox.defaultColor, "defaultColor"),
-          (1, Termbox.red, "red"),
-          (2, Termbox.green, "green"),
-          (3, Termbox.yellow, "yellow"),
-          (4, Termbox.blue, "blue"),
-          (5, Termbox.magenta, "magenta"),
-          (6, Termbox.cyan, "cyan"),
-          (7, Termbox.white, "white")
-        ],
-      foldMap
-        ( \(i, color, name) ->
-            let col = 2 + ((i - 8) * w)
-                row = 15
-                w = 20
-                h = 4
-             in fold
-                  [ string col row name,
-                    rectangle col (row + 1) (col + w - 1) (row + h) (Termbox.bg color (Termbox.char ' '))
-                  ]
-        )
-        [ ((8 :: Int), Termbox.brightDefaultColor, "brightDefaultColor"),
-          (9, Termbox.brightRed, "brightRed"),
-          (10, Termbox.brightGreen, "brightGreen"),
-          (11, Termbox.brightYellow, "brightYellow"),
-          (12, Termbox.brightBlue, "brightBlue"),
-          (13, Termbox.brightMagenta, "brightMagenta"),
-          (14, Termbox.brightCyan, "brightCyan"),
-          (15, Termbox.brightWhite, "brightWhite")
-        ],
-      string 2 21 "color0 .. color215",
-      let coords :: [(Int, Int)]
+        ( zip
+            [0 :: Int ..]
+            [ Termbox.defaultColor,
+              Termbox.red,
+              Termbox.green,
+              Termbox.yellow,
+              Termbox.blue,
+              Termbox.magenta,
+              Termbox.cyan,
+              Termbox.white
+            ]
+        ),
+      string
+        Termbox.Pos {row = 6, col = 35}
+        ("Press " ++ [Termbox.bold (Termbox.char '*')] ++ " to toggle brightness."),
+      string
+        Termbox.Pos {row = 7, col = 35}
+        ( let selected = map (Termbox.bg (Termbox.gray 20) . Termbox.fg (Termbox.gray 0))
+           in if bright
+                then "normal " ++ selected "bright"
+                else selected "normal" ++ " bright"
+        ),
+      string Termbox.Pos {row = 9, col = 2} "color 0 .. color 215",
+      let coords :: [Termbox.Pos]
           coords = do
-            row <- [22, 24 ..]
+            row <- [10, 12 ..]
             col <- take 32 [2, 6 ..]
-            pure (col, row)
+            pure Termbox.Pos {row, col}
        in fold
             ( zipWith
-                ( \i (col, row) ->
+                ( \i pos ->
                     fold
-                      [ rectangle col row (col + 3) (row + 1) (Termbox.bg (Termbox.color i) (Termbox.char ' ')),
-                        string col row (map (Termbox.bg (Termbox.color i) . Termbox.char) (show i))
+                      [ rect
+                          Rect
+                            { pos,
+                              size = Termbox.Size {width = 4, height = 2},
+                              color = Termbox.color i
+                            },
+                        string pos (map (Termbox.bg (Termbox.color i) . Termbox.char) (show i))
                       ]
                 )
                 [(0 :: Int) .. 215]
                 coords
             ),
-      string 2 37 "gray0 .. gray23",
-      let w :: Int
-          w = 9
-          h :: Int
-          h = 5
-          coords :: [(Int, Int)]
-          coords = do
-            row <- [38, 38 + h ..]
-            col <- take 12 [2, 2 + w ..]
-            pure (col, row)
-       in fold
-            ( zipWith
-                ( \i (col, row) ->
-                    fold
-                      [ rectangle
-                          col
-                          row
-                          (col + w - 1)
-                          (row + h - 1)
-                          (Termbox.bg (Termbox.gray i) (Termbox.char ' ')),
-                        string col row (map (Termbox.bg (Termbox.gray i) . Termbox.char) (show i))
-                      ]
-                )
-                [(0 :: Int) .. 23]
-                coords
-            ),
-      string 2 49 (map Termbox.bold "This text is bold."),
-      string 21 49 (map Termbox.underline "This text is underlined."),
-      string 46 49 (map Termbox.blink "This text is blinking (maybe)."),
-      string 2 53 "Press Esc to quit!"
+      string Termbox.Pos {row = 25, col = 2} "gray 0 .. gray 23",
+      foldMap
+        ( \i ->
+            let pos = Termbox.Pos {row = 26, col = 2 + (i * width)}
+                width = 4
+             in fold
+                  [ rect
+                      Rect
+                        { pos,
+                          size = Termbox.Size {width, height = 2},
+                          color = Termbox.gray i
+                        },
+                    string pos (map (Termbox.bg (Termbox.gray i) . Termbox.char) (show i))
+                  ]
+        )
+        [0 .. 23],
+      string Termbox.Pos {row = 29, col = 2} (map Termbox.bold "This text is bold."),
+      string Termbox.Pos {row = 29, col = 21} (map Termbox.underline "This text is underlined."),
+      string Termbox.Pos {row = 29, col = 46} (map Termbox.blink "This text is blinking (maybe)."),
+      string Termbox.Pos {row = 31, col = 2} "Press Esc to quit!"
     ]
 
 finished :: State -> Bool
-finished = \case
-  Just (Termbox.EventKey Termbox.KeyEsc) -> True
-  _ -> False
+finished State {lastEvent} =
+  case lastEvent of
+    Just (Termbox.EventKey Termbox.KeyEsc) -> True
+    _ -> False
 
-string :: Int -> Int -> [Termbox.Cell] -> Termbox.Scene
-string x0 row =
-  mconcat . zipWith (\col c -> Termbox.cell Termbox.Pos {col, row} c) [x0 ..]
+string :: Termbox.Pos -> [Termbox.Cell] -> Termbox.Scene
+string Termbox.Pos {row, col = col0} =
+  mconcat . zipWith (\col c -> Termbox.cell Termbox.Pos {col, row} c) [col0 ..]
 
-rectangle :: Int -> Int -> Int -> Int -> Termbox.Cell -> Termbox.Scene
-rectangle x0 y0 x1 y1 c =
-  foldMap (\(col, row) -> Termbox.cell Termbox.Pos {col, row} c) ((,) <$> [x0 .. x1] <*> [y0 .. y1])
+data Rect = Rect
+  { pos :: Termbox.Pos,
+    size :: Termbox.Size,
+    color :: Termbox.Color
+  }
+
+rect :: Rect -> Termbox.Scene
+rect Rect {pos = Termbox.Pos {row = row0, col = col0}, size = Termbox.Size {width, height}, color} =
+  foldMap
+    (\(col, row) -> Termbox.cell Termbox.Pos {row, col} (Termbox.bg color (Termbox.char ' ')))
+    ((,) <$> [col0 .. col0 + width - 1] <*> [row0 .. row0 + height - 1])
