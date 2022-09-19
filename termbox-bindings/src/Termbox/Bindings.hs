@@ -164,7 +164,6 @@ import qualified Data.Char as Char
 import Data.Coerce (coerce)
 import Data.Int (Int32)
 import Data.Word (Word16, Word32, Word8)
-import Foreign.C.Error (Errno, getErrno)
 import Foreign.C.String (withCString)
 import Foreign.C.Types (CInt)
 import Foreign.Marshal.Alloc (alloca)
@@ -236,24 +235,24 @@ tb_init_file file = do
       else Left (Tb_init_error code)
 
 -- | Wait up to a number of milliseconds for an event.
-tb_peek_event :: Int -> IO (Either Errno (Maybe Tb_event))
+tb_peek_event :: Int -> IO (Either () (Maybe Tb_event))
 tb_peek_event timeout =
   alloca \c_event -> do
     result <- Termbox.Bindings.C.tb_peek_event c_event (intToCInt timeout)
     if result < 0
-      then Left <$> getErrno
+      then pure (Left ())
       else
         if result == 0
           then pure (Right Nothing)
           else Right . Just . ceventToEvent <$> Storable.peek c_event
 
 -- | Wait for an event.
-tb_poll_event :: IO (Either Errno Tb_event)
+tb_poll_event :: IO (Either () Tb_event)
 tb_poll_event =
   alloca \c_event -> do
     result <- Termbox.Bindings.C.tb_poll_event c_event
     if result < 0
-      then Left <$> getErrno
+      then pure (Left ())
       else Right . ceventToEvent <$> Storable.peek c_event
 
 -- | Set a cell value in the back buffer.

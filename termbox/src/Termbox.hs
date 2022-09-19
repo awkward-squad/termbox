@@ -20,7 +20,6 @@
 --
 -- import Data.Foldable (fold)
 -- import Data.Void (Void)
--- import Foreign.C.Error (Errno)
 -- import Termbox qualified
 --
 -- main :: IO ()
@@ -69,8 +68,8 @@
 --         }
 --   _ -> pure state
 --
--- handleEventError :: MyState -> Errno -> IO MyState
--- handleEventError state _errno =
+-- handleEventError :: MyState -> IO MyState
+-- handleEventError state =
 --   pure state
 --
 -- render :: MyState -> Termbox.'Scene'
@@ -170,7 +169,6 @@ where
 import Control.Concurrent.MVar
 import Control.Exception
 import Control.Monad (forever)
-import Foreign.C.Error (Errno)
 import qualified Ki
 import qualified Termbox.Bindings
 import Termbox.Internal.Cell (Cell, bg, blink, bold, char, fg, underline)
@@ -225,7 +223,7 @@ data Program e s = Program
     -- | Handle an event.
     handleEvent :: s -> Event e -> IO s,
     -- | Handle an error that occurred during polling.
-    handleEventError :: s -> Errno -> IO s,
+    handleEventError :: s -> IO s,
     -- | Render the current state.
     render :: s -> Scene,
     -- | Is the current state finished?
@@ -267,7 +265,7 @@ runProgram Program {initialize, pollEvent, handleEvent, handleEventError, render
                   result <- doPoll
                   s1 <-
                     case result of
-                      Left errno -> handleEventError s0 errno
+                      Left () -> handleEventError s0
                       Right event -> handleEvent s0 event
                   loop s1
          in loop

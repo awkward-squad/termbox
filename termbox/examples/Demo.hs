@@ -3,7 +3,6 @@ module Main (main) where
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.MVar
 import Control.Monad (forever)
-import Foreign.C.Error (Errno)
 import GHC.Clock (getMonotonicTime)
 import qualified Ki
 import qualified Termbox
@@ -79,8 +78,8 @@ handleEvent State {elapsed, lastKey, bright} = \case
           bright
         }
 
-handleEventError :: State -> Errno -> IO State
-handleEventError state _err =
+handleEventError :: State -> IO State
+handleEventError state =
   pure state
 
 render :: State -> Termbox.Scene

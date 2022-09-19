@@ -5,7 +5,6 @@ module Termbox.Internal.Event
 where
 
 import Data.Int (Int32)
-import Foreign.C.Error (Errno)
 import qualified Termbox.Bindings
 import Termbox.Internal.Key (Key (KeyChar), parseKey)
 import Termbox.Internal.Mouse (Mouse, parseMouse)
@@ -26,12 +25,10 @@ data Event e
   deriving stock (Eq, Show)
 
 -- Block until an Event arrives.
-poll :: IO (Either Errno (Event e))
+poll :: IO (Either () (Event e))
 poll = do
   result <- Termbox.Bindings.tb_poll_event
-  pure case result of
-    Left errno -> Left errno
-    Right event -> Right (parseEvent event)
+  pure (parseEvent <$> result)
 
 -- Parse an Event from a TbEvent.
 parseEvent :: Termbox.Bindings.Tb_event -> Event e
