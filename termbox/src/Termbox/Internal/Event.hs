@@ -7,7 +7,7 @@ where
 import Data.Int (Int32)
 import qualified Termbox.Bindings
 import Termbox.Internal.Key (Key (KeyChar), parseKey)
-import Termbox.Internal.Mouse (Mouse, parseMouse)
+import Termbox.Internal.Mouse (Mouse (Mouse))
 import Termbox.Internal.Pos (Pos (..))
 import Termbox.Internal.Size (Size (..))
 import Prelude hiding (mod)
@@ -53,7 +53,7 @@ parseEvent
             }
       Termbox.Bindings.TB_EVENT_MOUSE ->
         EventMouse
-          (parseMouse key)
+          (Mouse key)
           Pos
             { row = fromIntegral @Int32 @Int y,
               col = fromIntegral @Int32 @Int x

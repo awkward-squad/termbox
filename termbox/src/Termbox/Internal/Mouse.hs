@@ -1,27 +1,48 @@
 module Termbox.Internal.Mouse
-  ( Mouse (..),
-    parseMouse,
+  ( Mouse
+      ( Mouse,
+        MouseLeft,
+        MouseMiddle,
+        MouseRelease,
+        MouseRight,
+        MouseWheelUp,
+        MouseWheelDown
+      ),
   )
 where
 
 import qualified Termbox.Bindings
 
 -- | A mouse event.
-data Mouse
-  = MouseLeft
-  | MouseMiddle
-  | MouseRelease
-  | MouseRight
-  | MouseWheelDown
-  | MouseWheelUp
-  deriving stock (Eq, Ord, Show)
+newtype Mouse
+  = Mouse Termbox.Bindings.Tb_key
+  deriving stock (Eq, Ord)
 
-parseMouse :: Termbox.Bindings.Tb_key -> Mouse
-parseMouse = \case
-  Termbox.Bindings.TB_KEY_MOUSE_LEFT -> MouseLeft
-  Termbox.Bindings.TB_KEY_MOUSE_MIDDLE -> MouseMiddle
-  Termbox.Bindings.TB_KEY_MOUSE_RELEASE -> MouseRelease
-  Termbox.Bindings.TB_KEY_MOUSE_RIGHT -> MouseRight
-  Termbox.Bindings.TB_KEY_MOUSE_WHEEL_DOWN -> MouseWheelDown
-  Termbox.Bindings.TB_KEY_MOUSE_WHEEL_UP -> MouseWheelUp
-  key -> error ("unknown mouse: " ++ show key)
+instance Show Mouse where
+  show = \case
+    MouseLeft -> "MouseLeft"
+    MouseMiddle -> "MouseMiddle"
+    MouseRelease -> "MouseRelease"
+    MouseRight -> "MouseRight"
+    MouseWheelDown -> "MouseWheelDown"
+    MouseWheelUp -> "MouseWheelUp"
+
+pattern MouseLeft :: Mouse
+pattern MouseLeft = Mouse Termbox.Bindings.TB_KEY_MOUSE_LEFT
+
+pattern MouseMiddle :: Mouse
+pattern MouseMiddle = Mouse Termbox.Bindings.TB_KEY_MOUSE_MIDDLE
+
+pattern MouseRelease :: Mouse
+pattern MouseRelease = Mouse Termbox.Bindings.TB_KEY_MOUSE_RELEASE
+
+pattern MouseRight :: Mouse
+pattern MouseRight = Mouse Termbox.Bindings.TB_KEY_MOUSE_RIGHT
+
+pattern MouseWheelDown :: Mouse
+pattern MouseWheelDown = Mouse Termbox.Bindings.TB_KEY_MOUSE_WHEEL_DOWN
+
+pattern MouseWheelUp :: Mouse
+pattern MouseWheelUp = Mouse Termbox.Bindings.TB_KEY_MOUSE_WHEEL_UP
+
+{-# COMPLETE MouseLeft, MouseMiddle, MouseRelease, MouseRight, MouseWheelDown, MouseWheelUp #-}
