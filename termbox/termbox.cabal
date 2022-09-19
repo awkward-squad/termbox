@@ -48,6 +48,7 @@ common component
     InstanceSigs
     LambdaCase
     NamedFieldPuns
+    NumericUnderscores
     OverloadedStrings
     PatternSynonyms
     TypeApplications
@@ -93,6 +94,7 @@ executable termbox-example-demo
     buildable: False
   build-depends:
     base,
+    ki ^>= 1.0,
     termbox,
   ghc-options:
     -rtsopts
