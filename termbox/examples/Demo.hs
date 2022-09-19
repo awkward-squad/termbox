@@ -5,9 +5,9 @@ import Control.Concurrent.MVar
 import Control.Monad (forever)
 import Foreign.C.Error (Errno)
 import GHC.Clock (getMonotonicTime)
-import GHC.Conc (atomically)
 import qualified Ki
 import qualified Termbox
+import Text.Printf (printf)
 
 main :: IO ()
 main = do
@@ -91,7 +91,7 @@ render State {elapsed, lastKey, bright} =
         string " ",
         hcat
           [ string "Elapsed time: ",
-            string (map Termbox.char (show elapsed))
+            string (map Termbox.char (printf "%.1fs" elapsed))
           ],
         hcat
           [ string "Latest key press: ",
@@ -100,28 +100,55 @@ render State {elapsed, lastKey, bright} =
               Just event -> string (map (Termbox.bold . Termbox.char) (show event))
           ],
         string " ",
-        string "default, red, green, yellow, blue, magenta, cyan, white",
+        string "default red green yellow blue magenta cyan white",
         hcat
-          [ hcat
-              ( map
-                  ( \color ->
-                      let width = 4
-                       in rect
-                            Rect
-                              { size = Termbox.Size {width, height = 2},
-                                color = if bright then Termbox.bright color else color
-                              }
-                  )
-                  [ Termbox.defaultColor,
-                    Termbox.red,
-                    Termbox.green,
-                    Termbox.yellow,
-                    Termbox.blue,
-                    Termbox.magenta,
-                    Termbox.cyan,
-                    Termbox.white
-                  ]
-              ),
+          [ rect
+              Rect
+                { size = Termbox.Size {width = 7, height = 2},
+                  color = brighten Termbox.defaultColor
+                },
+            string " ",
+            rect
+              Rect
+                { size = Termbox.Size {width = 3, height = 2},
+                  color = brighten Termbox.red
+                },
+            string " ",
+            rect
+              Rect
+                { size = Termbox.Size {width = 5, height = 2},
+                  color = brighten Termbox.green
+                },
+            string " ",
+            rect
+              Rect
+                { size = Termbox.Size {width = 6, height = 2},
+                  color = brighten Termbox.yellow
+                },
+            string " ",
+            rect
+              Rect
+                { size = Termbox.Size {width = 4, height = 2},
+                  color = brighten Termbox.blue
+                },
+            string " ",
+            rect
+              Rect
+                { size = Termbox.Size {width = 7, height = 2},
+                  color = brighten Termbox.magenta
+                },
+            string " ",
+            rect
+              Rect
+                { size = Termbox.Size {width = 4, height = 2},
+                  color = brighten Termbox.cyan
+                },
+            string " ",
+            rect
+              Rect
+                { size = Termbox.Size {width = 5, height = 2},
+                  color = brighten Termbox.white
+                },
             string " ",
             vcat
               [ string ("Press " ++ [Termbox.bold (Termbox.char '*')] ++ " to toggle brightness."),
@@ -186,6 +213,12 @@ render State {elapsed, lastKey, bright} =
             string " to quit!"
           ]
       ]
+  where
+    brighten :: Termbox.Color -> Termbox.Color
+    brighten =
+      if bright
+        then Termbox.bright
+        else id
 
 finished :: State -> Bool
 finished State {lastKey} =
