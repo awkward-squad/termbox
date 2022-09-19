@@ -22,8 +22,7 @@ main = do
         Termbox.Program
           { initialize,
             pollEvent = pollEvent t0 timeVar,
-            handleEvent = handleEvent,
-            handleEventError,
+            handleEvent,
             render,
             finished
           }
@@ -77,10 +76,6 @@ handleEvent State {elapsed, lastKey, bright} = \case
           lastKey,
           bright
         }
-
-handleEventError :: State -> IO State
-handleEventError state =
-  pure state
 
 render :: State -> Termbox.Scene
 render State {elapsed, lastKey, bright} =

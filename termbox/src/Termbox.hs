@@ -222,8 +222,6 @@ data Program e s = Program
     pollEvent :: Maybe (IO e),
     -- | Handle an event.
     handleEvent :: s -> Event e -> IO s,
-    -- | Handle an error that occurred during polling.
-    handleEventError :: s -> IO s,
     -- | Render the current state.
     render :: s -> Scene,
     -- | Is the current state finished?
@@ -247,7 +245,7 @@ run program = do
         pure (Right result)
 
 runProgram :: Program e s -> IO s
-runProgram Program {initialize, pollEvent, handleEvent, handleEventError, render, finished} = do
+runProgram Program {initialize, pollEvent, handleEvent, render, finished} = do
   _ <- Termbox.Bindings.tb_select_input_mode Termbox.Bindings.TB_INPUT_MOUSE
   _ <- Termbox.Bindings.tb_select_output_mode Termbox.Bindings.TB_OUTPUT_256
   width <- Termbox.Bindings.tb_width
@@ -262,16 +260,13 @@ runProgram Program {initialize, pollEvent, handleEvent, handleEventError, render
                 then pure s0
                 else do
                   drawScene (render s0)
-                  result <- doPoll
-                  s1 <-
-                    case result of
-                      Left () -> handleEventError s0
-                      Right event -> handleEvent s0 event
+                  event <- doPoll
+                  s1 <- handleEvent s0 event
                   loop s1
          in loop
 
   case pollEvent of
-    Nothing -> loop0 poll state0
+    Nothing -> loop0 pollIgnoringErrors state0
     Just pollEvent1 -> do
       eventVar <- newEmptyMVar
 
@@ -279,14 +274,20 @@ runProgram Program {initialize, pollEvent, handleEvent, handleEventError, render
         Ki.fork_ scope do
           forever do
             event <- pollEvent1
-            putMVar eventVar (Right (EventUser event))
+            putMVar eventVar (EventUser event)
 
         Ki.fork_ scope do
           forever do
-            event <- poll
+            event <- pollIgnoringErrors
             putMVar eventVar event
 
         loop0 (takeMVar eventVar) state0
+
+pollIgnoringErrors :: IO (Event e)
+pollIgnoringErrors =
+  poll >>= \case
+    Left () -> pollIgnoringErrors
+    Right event -> pure event
 
 shutdown :: IO ()
 shutdown = do
