@@ -215,11 +215,11 @@ foreign import capi unsafe "termbox.h tb_init_fd"
   tb_init_fd :: CInt -> IO CInt
 
 -- | Wait up to a number of milliseconds for an event.
-foreign import capi safe "termbox.h tb_peek_event"
+foreign import capi interruptible "termbox.h tb_peek_event"
   tb_peek_event :: Ptr Tb_event -> CInt -> IO CInt
 
 -- | Wait for an event.
-foreign import capi safe "termbox.h tb_poll_event"
+foreign import capi interruptible "termbox.h tb_poll_event"
   tb_poll_event :: Ptr Tb_event -> IO CInt
 
 -- | Synchronize the back buffer with the terminal.
