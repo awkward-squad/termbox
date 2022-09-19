@@ -21,7 +21,7 @@ data Event e
   | -- | Mouse event
     EventMouse !Mouse !Pos
   | -- | User event
-    EventUser e
+    EventUser !e
   deriving stock (Eq, Show)
 
 -- Block until an Event arrives.
