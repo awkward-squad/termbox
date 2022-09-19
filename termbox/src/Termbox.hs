@@ -159,6 +159,10 @@ module Termbox
 
     -- * Miscellaneous types
     Pos (..),
+    posUp,
+    posDown,
+    posLeft,
+    posRight,
     Size (..),
   )
 where
@@ -199,7 +203,7 @@ import Termbox.Internal.Key
     pattern KeyCtrlUnderscore,
   )
 import Termbox.Internal.Mouse (Mouse (..))
-import Termbox.Internal.Pos (Pos (..))
+import Termbox.Internal.Pos (Pos (..), posDown, posLeft, posRight, posUp)
 import Termbox.Internal.Scene (Scene, cell, cursor, drawScene, fill)
 import Termbox.Internal.Size (Size (..))
 
