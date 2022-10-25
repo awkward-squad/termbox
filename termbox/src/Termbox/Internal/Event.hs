@@ -5,6 +5,7 @@ module Termbox.Internal.Event
 where
 
 import Data.Int (Int32)
+import GHC.Generics (Generic)
 import qualified Termbox.Bindings.Hs
 import Termbox.Internal.Key (Key (KeyChar), parseKey)
 import Termbox.Internal.Mouse (Mouse (Mouse))
@@ -12,7 +13,7 @@ import Termbox.Internal.Pos (Pos (..))
 import Termbox.Internal.Size (Size (..))
 import Prelude hiding (mod)
 
--- | A input event.
+-- | An input event.
 data Event e
   = -- | Key event
     EventKey !Key
@@ -22,7 +23,7 @@ data Event e
     EventMouse !Mouse !Pos
   | -- | User event
     EventUser !e
-  deriving stock (Eq, Show)
+  deriving stock (Eq, Generic, Show)
 
 -- Block until an Event arrives.
 poll :: IO (Either () (Event e))

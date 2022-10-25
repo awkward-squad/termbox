@@ -7,12 +7,14 @@ module Termbox.Internal.Pos
   )
 where
 
--- | A position.
+import GHC.Generics (Generic)
+
+-- | A terminal position.
 data Pos = Pos
   { row :: {-# UNPACK #-} !Int,
     col :: {-# UNPACK #-} !Int
   }
-  deriving stock (Eq, Ord, Show)
+  deriving stock (Eq, Generic, Ord, Show)
 
 -- | Move a position up.
 posUp :: Int -> Pos -> Pos

@@ -35,6 +35,7 @@ library
     termbox-bindings-c ^>= 0.1,
   default-extensions:
     BlockArguments
+    DeriveGeneric,
     DerivingStrategies
     DuplicateRecordFields
     GeneralizedNewtypeDeriving

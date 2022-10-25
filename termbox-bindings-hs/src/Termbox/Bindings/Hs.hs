@@ -169,6 +169,7 @@ import Foreign.C.Types (CInt)
 import Foreign.Marshal.Alloc (alloca)
 import qualified Foreign.Storable as Storable
 import System.Posix.Types (Fd (Fd))
+import GHC.Generics (Generic)
 import qualified Termbox.Bindings.C
 import Prelude hiding (mod)
 
@@ -342,7 +343,7 @@ data Tb_cell = Tb_cell
     -- | Background attribute.
     bg :: {-# UNPACK #-} !Tb_attr
   }
-  deriving stock (Eq, Ord, Show)
+  deriving stock (Eq, Generic, Ord, Show)
 
 cellToCCell :: Tb_cell -> Termbox.Bindings.C.Tb_cell
 cellToCCell Tb_cell {ch, fg = Tb_attr fg, bg = Tb_attr bg} =
@@ -424,7 +425,7 @@ data Tb_event = Tb_event
     x :: {-# UNPACK #-} !Int32,
     y :: {-# UNPACK #-} !Int32
   }
-  deriving stock (Eq, Ord, Show)
+  deriving stock (Eq, Generic, Ord, Show)
 
 ceventToEvent :: Termbox.Bindings.C.Tb_event -> Tb_event
 ceventToEvent Termbox.Bindings.C.Tb_event {type_, mod, key, ch, w, h, x, y} =

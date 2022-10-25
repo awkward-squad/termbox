@@ -39,6 +39,7 @@ common component
     CApiFFI
     DeriveAnyClass
     DeriveFunctor
+    DeriveGeneric
     DerivingStrategies
     DerivingVia
     DuplicateRecordFields

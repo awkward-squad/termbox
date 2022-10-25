@@ -3,9 +3,11 @@ module Termbox.Internal.Size
   )
 where
 
+import GHC.Generics (Generic)
+
 -- | A terminal size.
 data Size = Size
   { width :: {-# UNPACK #-} !Int,
     height :: {-# UNPACK #-} !Int
   }
-  deriving stock (Eq, Ord, Show)
+  deriving stock (Eq, Generic, Ord, Show)

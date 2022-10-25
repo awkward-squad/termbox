@@ -214,7 +214,7 @@ import Termbox.Internal.Pos (Pos (..), posDown, posLeft, posRight, posUp)
 import Termbox.Internal.Scene (Scene, cell, cursor, drawScene, fill)
 import Termbox.Internal.Size (Size (..))
 
--- | Termbox initialization errors.
+-- | @termbox@ initialization errors.
 data InitError
   = FailedToOpenTTY
   | PipeTrapError
@@ -223,8 +223,8 @@ data InitError
 
 instance Exception InitError
 
--- | A termbox program.
-data Program e s = Program
+-- | A @termbox@ program, parameterized by state __@s@__.
+data Program s = forall e. Program
   { -- | The initial state, given the initial terminal size.
     initialize :: Size -> s,
     -- | Poll for a user event. Every value that this @IO@ action returns is provided to @handleEvent@.
@@ -237,9 +237,10 @@ data Program e s = Program
     finished :: s -> Bool
   }
 
--- | Run a @termbox@ program, which either returns immediately with an 'InitError', or once the program state is
--- finished.
-run :: Program e s -> IO (Either InitError s)
+-- | Run a @termbox@ program.
+--
+-- Either returns immediately with an 'InitError', or once the program state is finished with the final state.
+run :: Program s -> IO (Either InitError s)
 run program = do
   mask \unmask ->
     Termbox.Bindings.Hs.tb_init >>= \case
@@ -253,7 +254,7 @@ run program = do
         shutdown
         pure (Right result)
 
-runProgram :: Program e s -> IO s
+runProgram :: Program s -> IO s
 runProgram Program {initialize, pollEvent, handleEvent, render, finished} = do
   _ <- Termbox.Bindings.Hs.tb_select_input_mode Termbox.Bindings.Hs.TB_INPUT_MOUSE
   _ <- Termbox.Bindings.Hs.tb_select_output_mode Termbox.Bindings.Hs.TB_OUTPUT_256

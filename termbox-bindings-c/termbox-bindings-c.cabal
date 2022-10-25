@@ -42,6 +42,7 @@ library
     cbits/utf8.c
   default-extensions:
     CApiFFI
+    DeriveGeneric
     DerivingStrategies
     DuplicateRecordFields
     InstanceSigs

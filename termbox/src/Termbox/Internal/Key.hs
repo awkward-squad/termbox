@@ -18,8 +18,9 @@ import qualified Termbox.Bindings.Hs
 
 -- | A key event.
 --
--- In a few cases, distinct key sequences map to equivalent key events. Pattern synonyms below are provided for an
--- alternate syntax in these cases, if desired.
+-- Some distinct key sequences map to the same key event. For example, to a @termbox@ program, @Enter@ is
+-- indistinguishable from @Ctrl+M@. Pattern synonyms below are provided for an alternate syntax in these cases, if
+-- desired.
 data Key
   = KeyChar Char
   | KeyArrowDown
