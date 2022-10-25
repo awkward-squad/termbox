@@ -5,7 +5,7 @@ module Termbox.Internal.Event
 where
 
 import Data.Int (Int32)
-import qualified Termbox.Bindings
+import qualified Termbox.Bindings.Hs
 import Termbox.Internal.Key (Key (KeyChar), parseKey)
 import Termbox.Internal.Mouse (Mouse (Mouse))
 import Termbox.Internal.Pos (Pos (..))
@@ -27,31 +27,31 @@ data Event e
 -- Block until an Event arrives.
 poll :: IO (Either () (Event e))
 poll = do
-  result <- Termbox.Bindings.tb_poll_event
+  result <- Termbox.Bindings.Hs.tb_poll_event
   pure (parseEvent <$> result)
 
 -- Parse an Event from a TbEvent.
-parseEvent :: Termbox.Bindings.Tb_event -> Event e
+parseEvent :: Termbox.Bindings.Hs.Tb_event -> Event e
 parseEvent
-  Termbox.Bindings.Tb_event
-    { Termbox.Bindings.type_,
-      Termbox.Bindings.mod = _,
-      Termbox.Bindings.key,
-      Termbox.Bindings.ch,
-      Termbox.Bindings.w,
-      Termbox.Bindings.h,
-      Termbox.Bindings.x,
-      Termbox.Bindings.y
+  Termbox.Bindings.Hs.Tb_event
+    { Termbox.Bindings.Hs.type_,
+      Termbox.Bindings.Hs.mod = _,
+      Termbox.Bindings.Hs.key,
+      Termbox.Bindings.Hs.ch,
+      Termbox.Bindings.Hs.w,
+      Termbox.Bindings.Hs.h,
+      Termbox.Bindings.Hs.x,
+      Termbox.Bindings.Hs.y
     } =
     case type_ of
-      Termbox.Bindings.TB_EVENT_KEY -> EventKey (if ch == '\0' then parseKey key else KeyChar ch)
-      Termbox.Bindings.TB_EVENT_RESIZE ->
+      Termbox.Bindings.Hs.TB_EVENT_KEY -> EventKey (if ch == '\0' then parseKey key else KeyChar ch)
+      Termbox.Bindings.Hs.TB_EVENT_RESIZE ->
         EventResize
           Size
             { width = fromIntegral @Int32 @Int w,
               height = fromIntegral @Int32 @Int h
             }
-      Termbox.Bindings.TB_EVENT_MOUSE ->
+      Termbox.Bindings.Hs.TB_EVENT_MOUSE ->
         EventMouse
           (Mouse key)
           Pos

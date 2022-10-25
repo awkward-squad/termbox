@@ -170,7 +170,7 @@ import Control.Concurrent.MVar
 import Control.Exception
 import Control.Monad (forever)
 import qualified Ki
-import qualified Termbox.Bindings
+import qualified Termbox.Bindings.Hs
 import Termbox.Internal.Cell (Cell, bg, blink, bold, char, fg, underline)
 import Termbox.Internal.Color
   ( Color,
@@ -242,12 +242,12 @@ data Program e s = Program
 run :: Program e s -> IO (Either InitError s)
 run program = do
   mask \unmask ->
-    Termbox.Bindings.tb_init >>= \case
+    Termbox.Bindings.Hs.tb_init >>= \case
       Left err ->
         (pure . Left) case err of
-          Termbox.Bindings.TB_EFAILED_TO_OPEN_TTY -> FailedToOpenTTY
-          Termbox.Bindings.TB_EPIPE_TRAP_ERROR -> PipeTrapError
-          Termbox.Bindings.TB_EUNSUPPORTED_TERMINAL -> UnsupportedTerminal
+          Termbox.Bindings.Hs.TB_EFAILED_TO_OPEN_TTY -> FailedToOpenTTY
+          Termbox.Bindings.Hs.TB_EPIPE_TRAP_ERROR -> PipeTrapError
+          Termbox.Bindings.Hs.TB_EUNSUPPORTED_TERMINAL -> UnsupportedTerminal
       Right () -> do
         result <- unmask (runProgram program) `onException` shutdown
         shutdown
@@ -255,10 +255,10 @@ run program = do
 
 runProgram :: Program e s -> IO s
 runProgram Program {initialize, pollEvent, handleEvent, render, finished} = do
-  _ <- Termbox.Bindings.tb_select_input_mode Termbox.Bindings.TB_INPUT_MOUSE
-  _ <- Termbox.Bindings.tb_select_output_mode Termbox.Bindings.TB_OUTPUT_256
-  width <- Termbox.Bindings.tb_width
-  height <- Termbox.Bindings.tb_height
+  _ <- Termbox.Bindings.Hs.tb_select_input_mode Termbox.Bindings.Hs.TB_INPUT_MOUSE
+  _ <- Termbox.Bindings.Hs.tb_select_output_mode Termbox.Bindings.Hs.TB_OUTPUT_256
+  width <- Termbox.Bindings.Hs.tb_width
+  height <- Termbox.Bindings.Hs.tb_height
 
   let state0 =
         initialize Size {width, height}
@@ -300,5 +300,5 @@ pollIgnoringErrors =
 
 shutdown :: IO ()
 shutdown = do
-  _ <- Termbox.Bindings.tb_select_output_mode Termbox.Bindings.TB_OUTPUT_NORMAL
-  Termbox.Bindings.tb_shutdown
+  _ <- Termbox.Bindings.Hs.tb_select_output_mode Termbox.Bindings.Hs.TB_OUTPUT_NORMAL
+  Termbox.Bindings.Hs.tb_shutdown

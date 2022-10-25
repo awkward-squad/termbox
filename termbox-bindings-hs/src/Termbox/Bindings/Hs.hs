@@ -1,4 +1,4 @@
-module Termbox.Bindings
+module Termbox.Bindings.Hs
   ( -- * Functions
 
     -- ** Initialize / shutdown

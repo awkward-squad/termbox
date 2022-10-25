@@ -11,7 +11,7 @@ description:
   .
   See also:
   .
-  * @<https://hackage.haskell.org/package/termbox-bindings termbox-bindings>@ for lower-level bindings.
+  * @<https://hackage.haskell.org/package/termbox-bindings-hs termbox-bindings-hs>@ for lower-level bindings.
   * @<https://hackage.haskell.org/package/termbox-bindings-c termbox-bindings-c>@ for even lower-level bindings.
 homepage: https://github.com/termbox/termbox-haskell
 license-file: LICENSE
@@ -74,7 +74,7 @@ library
   import: component
   build-depends:
     base ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17,
-    termbox-bindings ^>= 0.1,
+    termbox-bindings-hs ^>= 0.1,
     ki ^>= 1.0,
   exposed-modules: Termbox
   hs-source-dirs: src

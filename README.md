@@ -1,7 +1,7 @@
-| `termbox` | `termbox-bindings` | `termbox-bindings-c` |
+| `termbox` | `termbox-bindings-hs` | `termbox-bindings-c` |
 | --- | --- | --- |
 | [![GitHub CI](https://github.com/termbox/termbox-haskell/workflows/CI/badge.svg)](https://github.com/termbox/termbox-haskell/actions) | | |
-| [![Hackage](https://img.shields.io/hackage/v/termbox.svg)](https://hackage.haskell.org/package/termbox) | | |
-| [![Stackage LTS](https://stackage.org/package/termbox/badge/lts)](https://www.stackage.org/lts/package/termbox) | | |
-| [![Stackage Nightly](https://stackage.org/package/termbox/badge/nightly)](https://www.stackage.org/nightly/package/termbox) | | |
-| [![Dependencies](https://img.shields.io/hackage-deps/v/termbox)](https://packdeps.haskellers.com/reverse/termbox) | | |
+| [![Hackage](https://img.shields.io/hackage/v/termbox.svg)](https://hackage.haskell.org/package/termbox) | [![Hackage](https://img.shields.io/hackage/v/termbox-bindings-hs.svg)](https://hackage.haskell.org/package/termbox-bindings-hs) | [![Hackage](https://img.shields.io/hackage/v/termbox-bindings-c.svg)](https://hackage.haskell.org/package/termbox-bindings-c) |
+| [![Stackage LTS](https://stackage.org/package/termbox/badge/lts)](https://www.stackage.org/lts/package/termbox) | [![Stackage LTS](https://stackage.org/package/termbox-bindings-hs/badge/lts)](https://www.stackage.org/lts/package/termbox-bindings-hs) | [![Stackage LTS](https://stackage.org/package/termbox-bindings-c/badge/lts)](https://www.stackage.org/lts/package/termbox-bindings-c) |
+| [![Stackage Nightly](https://stackage.org/package/termbox/badge/nightly)](https://www.stackage.org/nightly/package/termbox) | [![Stackage Nightly](https://stackage.org/package/termbox-bindings-hs/badge/nightly)](https://www.stackage.org/nightly/package/termbox-bindings-hs) | [![Stackage Nightly](https://stackage.org/package/termbox-bindings-c/badge/nightly)](https://www.stackage.org/nightly/package/termbox-bindings-c) |
+| [![Dependencies](https://img.shields.io/hackage-deps/v/termbox)](https://packdeps.haskellers.com/reverse/termbox) | [![Dependencies](https://img.shields.io/hackage-deps/v/termbox-bindings-hs)](https://packdeps.haskellers.com/reverse/termbox-bindings-hs) | [![Dependencies](https://img.shields.io/hackage-deps/v/termbox-bindings-c)](https://packdeps.haskellers.com/reverse/termbox-bindings-c) |

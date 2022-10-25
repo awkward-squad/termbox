@@ -8,7 +8,7 @@
 - Add combinator for monochrome colors (`gray`)
 - Add `Pos` type
 - Add `Size` type
-- Remove `Termbox.Internal` module (see packages `termbox-bindings` or `termbox-bindings-c` instead)
+- Remove `Termbox.Internal` module (see packages `termbox-bindings-hs` or `termbox-bindings-c` instead)
 - Fix off-by-one error in named colors (black, etc) (thanks @seagreen)
 - Support GHC 9.4
 - Drop support for GHC < 8.8

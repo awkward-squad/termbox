@@ -1,4 +1,4 @@
 packages:
   termbox,
-  termbox-bindings,
+  termbox-bindings-hs,
   termbox-bindings-c

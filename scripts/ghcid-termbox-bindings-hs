@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+ghcid \
+  --command 'cabal repl termbox-bindings-hs --repl-options=-fno-code' \
+  --restart termbox-bindings-hs/termbox-bindings-hs.cabal \
+  --restart termbox-bindings-c/

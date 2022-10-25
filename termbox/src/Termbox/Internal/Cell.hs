@@ -18,7 +18,7 @@ where
 import qualified Data.Char as Char
 import Data.String (IsString (..))
 import Foreign.C.Types (CInt (CInt), CWchar (CWchar))
-import qualified Termbox.Bindings
+import qualified Termbox.Bindings.Hs
 import Termbox.Internal.Color (Color (Color))
 
 -- | A single cell.
@@ -30,25 +30,25 @@ data Cell
   = CellEmpty
   | CellFg
       {-# UNPACK #-} !Char -- invariant: char is width 1
-      {-# UNPACK #-} !Termbox.Bindings.Tb_color -- fg
+      {-# UNPACK #-} !Termbox.Bindings.Hs.Tb_color -- fg
   | CellFgBlink
       {-# UNPACK #-} !Char -- invariant: char is width 1
-      {-# UNPACK #-} !Termbox.Bindings.Tb_color -- fg
+      {-# UNPACK #-} !Termbox.Bindings.Hs.Tb_color -- fg
   | CellFgBg
       {-# UNPACK #-} !Char -- invariant: char is width 1
-      {-# UNPACK #-} !Termbox.Bindings.Tb_color -- fg
-      {-# UNPACK #-} !Termbox.Bindings.Tb_color -- bg
+      {-# UNPACK #-} !Termbox.Bindings.Hs.Tb_color -- fg
+      {-# UNPACK #-} !Termbox.Bindings.Hs.Tb_color -- bg
 
 instance {-# OVERLAPS #-} IsString [Cell] where
   fromString =
     map char
 
-drawCell :: Termbox.Bindings.Tb_color -> Int -> Int -> Cell -> IO ()
+drawCell :: Termbox.Bindings.Hs.Tb_color -> Int -> Int -> Cell -> IO ()
 drawCell bg0 col row = \case
   CellEmpty -> pure ()
-  CellFg ch fg_ -> Termbox.Bindings.tb_change_cell col row ch fg_ bg0
-  CellFgBlink ch fg_ -> Termbox.Bindings.tb_change_cell col row ch fg_ (makeBold bg0) -- bold background = blink
-  CellFgBg ch fg_ bg_ -> Termbox.Bindings.tb_change_cell col row ch fg_ bg_
+  CellFg ch fg_ -> Termbox.Bindings.Hs.tb_change_cell col row ch fg_ bg0
+  CellFgBlink ch fg_ -> Termbox.Bindings.Hs.tb_change_cell col row ch fg_ (makeBold bg0) -- bold background = blink
+  CellFgBg ch fg_ bg_ -> Termbox.Bindings.Hs.tb_change_cell col row ch fg_ bg_
 
 -- | Create a cell from a character.
 --
@@ -56,7 +56,7 @@ drawCell bg0 col row = \case
 char :: Char -> Cell
 char ch =
   case wcwidth (charToCWchar ch) of
-    1 -> CellFg ch Termbox.Bindings.TB_DEFAULT
+    1 -> CellFg ch Termbox.Bindings.Hs.TB_DEFAULT
     _ -> CellEmpty
 
 -- | Set the foreground color of a cell.
@@ -99,13 +99,13 @@ blink = \case
   CellFgBlink ch fg_ -> CellFgBlink ch fg_
   CellFgBg ch fg_ bg_ -> CellFgBg ch fg_ (makeBold bg_) -- bold background = blink
 
-makeBold :: Termbox.Bindings.Tb_color -> Termbox.Bindings.Tb_color
+makeBold :: Termbox.Bindings.Hs.Tb_color -> Termbox.Bindings.Hs.Tb_color
 makeBold =
-  Termbox.Bindings.tb_attr Termbox.Bindings.TB_BOLD
+  Termbox.Bindings.Hs.tb_attr Termbox.Bindings.Hs.TB_BOLD
 
-makeUnderline :: Termbox.Bindings.Tb_color -> Termbox.Bindings.Tb_color
+makeUnderline :: Termbox.Bindings.Hs.Tb_color -> Termbox.Bindings.Hs.Tb_color
 makeUnderline =
-  Termbox.Bindings.tb_attr Termbox.Bindings.TB_UNDERLINE
+  Termbox.Bindings.Hs.tb_attr Termbox.Bindings.Hs.TB_UNDERLINE
 
 charToCWchar :: Char -> CWchar
 charToCWchar =

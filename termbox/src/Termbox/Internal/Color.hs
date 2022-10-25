@@ -16,7 +16,7 @@ where
 
 import Data.Coerce (coerce)
 import Data.Word (Word16)
-import qualified Termbox.Bindings
+import qualified Termbox.Bindings.Hs
 
 -- | A color.
 --
@@ -26,7 +26,7 @@ import qualified Termbox.Bindings
 -- * Miscellaneous colors, such as @'color' 33@.
 -- * Monochrome colors that range from black (@'gray' 0@) to white (@'gray' 23@).
 newtype Color
-  = Color Termbox.Bindings.Tb_color
+  = Color Termbox.Bindings.Hs.Tb_color
 
 defaultColor :: Color
 defaultColor =
@@ -65,7 +65,7 @@ bright :: Color -> Color
 bright =
   coerce bright_
 
-bright_ :: Termbox.Bindings.Tb_color -> Termbox.Bindings.Tb_color
+bright_ :: Termbox.Bindings.Hs.Tb_color -> Termbox.Bindings.Hs.Tb_color
 bright_ c
   | c <= 7 = c + 8
   | otherwise = c

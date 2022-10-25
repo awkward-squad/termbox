@@ -13,7 +13,7 @@ description:
   .
   See also:
   .
-  * @<https://hackage.haskell.org/package/termbox-bindings termbox-bindings>@ for higher-level bindings.
+  * @<https://hackage.haskell.org/package/termbox-bindings-hs termbox-bindings-hs>@ for higher-level bindings.
   * @<https://hackage.haskell.org/package/termbox termbox>@ for even higher-level bindings.
 homepage: https://github.com/termbox/termbox-haskell
 license-file: LICENSE
