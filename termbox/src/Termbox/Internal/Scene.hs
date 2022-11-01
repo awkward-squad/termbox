@@ -1,6 +1,6 @@
 module Termbox.Internal.Scene
   ( Scene,
-    drawScene,
+    render,
     cell,
     fill,
     cursor,
@@ -43,9 +43,9 @@ instance Semigroup Scene where
             draw1 color
       }
 
--- Draw a scene.
-drawScene :: Scene -> IO ()
-drawScene Scene {sceneFill, sceneDraw} = do
+-- | Render a scene.
+render :: Scene -> IO ()
+render Scene {sceneFill, sceneDraw} = do
   let background =
         case sceneFill of
           Nothing -> Termbox.Bindings.Hs.TB_DEFAULT

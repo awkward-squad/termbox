@@ -25,9 +25,15 @@ data Event e
     EventUser !e
   deriving stock (Eq, Generic, Show)
 
--- Block until an Event arrives.
-poll :: IO (Either () (Event e))
-poll = do
+-- | Poll for an event.
+poll :: IO (Event e)
+poll =
+  poll_ >>= \case
+    Left () -> poll
+    Right event -> pure event
+
+poll_ :: IO (Either () (Event e))
+poll_ = do
   result <- Termbox.Bindings.Hs.tb_poll_event
   pure (parseEvent <$> result)
 
