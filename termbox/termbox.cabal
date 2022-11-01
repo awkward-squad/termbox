@@ -6,12 +6,13 @@ bug-reports: https://github.com/termbox/termbox-haskell/issues
 build-type: Simple
 copyright: (c) 2018-2022, Mitchell Rosen
 description:
-  TODO
   This package provides a high-level wrapper around @termbox@, a simple C
   library for writing text-based user interfaces: <https://github.com/termbox/termbox>
   .
   See also:
   .
+  * @<https://hackage.haskell.org/package/termbox-banana termbox-banana>@ for a @reactive-banana@ FRP interface.
+  * @<https://hackage.haskell.org/package/termbox-tea termbox-tea>@ for an Elm Architecture interface.
   * @<https://hackage.haskell.org/package/termbox-bindings-hs termbox-bindings-hs>@ for lower-level bindings.
   * @<https://hackage.haskell.org/package/termbox-bindings-c termbox-bindings-c>@ for even lower-level bindings.
 homepage: https://github.com/termbox/termbox-haskell

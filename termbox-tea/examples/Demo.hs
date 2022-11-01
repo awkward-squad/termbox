@@ -5,7 +5,7 @@ import Control.Concurrent.MVar
 import Control.Monad (forever)
 import GHC.Clock (getMonotonicTime)
 import qualified Ki
-import qualified Termbox
+import qualified Termbox.Tea as Termbox
 import Text.Printf (printf)
 
 main :: IO ()

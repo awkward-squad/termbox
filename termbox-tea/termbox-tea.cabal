@@ -1,19 +1,19 @@
 cabal-version: 2.4
 
-category: User Interfaces
 author: Mitchell Rosen
 bug-reports: https://github.com/termbox/termbox-haskell/issues
 build-type: Simple
+category: User Interfaces
 copyright: (c) 2018-2022, Mitchell Rosen
 description:
   This package provides an Elm Architecture interface to @termbox@ programs.
   .
   See also:
   .
-  * @<https://hackage.haskell.org/package/termbox-banana termbox-banana>@ for a @reactive-banana@ interface.
+  * @<https://hackage.haskell.org/package/termbox-banana termbox-banana>@ for a @reactive-banana@ FRP interface.
 homepage: https://github.com/termbox/termbox-haskell
-license-file: LICENSE
 license: BSD-3-Clause
+license-file: LICENSE
 maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>
 name: termbox-tea
 synopsis: termbox + The Elm Architecture

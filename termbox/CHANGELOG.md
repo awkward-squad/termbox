@@ -1,3 +1,6 @@
+## [1.1.0] - Unreleased
+- Split off Elm Architecture wrapper (`Program` / `run`) into `termbox-tea` package.
+
 ## [1.0.0] - 2022-10-25
 - Rework `run`; add `Program` record of callbacks
 - Add user events to `Event` type

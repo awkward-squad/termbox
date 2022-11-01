@@ -1,5 +1,6 @@
 packages:
   termbox,
+  termbox-banana,
   termbox-bindings-hs,
   termbox-bindings-c,
   termbox-tea
