@@ -1,4 +1,4 @@
-## [1.0.0] - Unreleased
+## [1.0.0] - 2022-10-25
 - Rework `run`; add `Program` record of callbacks
 - Add user events to `Event` type
 - Overhaul `Attr`+`Cell`+`Cells`+`Cursor` API; now it's `Cell`+`Color`+`Scene`
