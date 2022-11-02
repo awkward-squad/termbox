@@ -1,5 +1,5 @@
 ## [1.1.0] - Unreleased
-- Split off Elm Architecture wrapper (`Program` / `run`) into `termbox-tea` package.
+- Split off Elm Architecture wrapper into `termbox-tea` package, and expose `run`/`initialize`/`finalize` instead.
 - Rename `Mouse` to `MouseButton`, rename its constructors, and add `Mouse` type (`MouseButton` + `Pos`)
 
 ## [1.0.0] - 2022-10-25
