@@ -29,13 +29,12 @@
 --         { initialize,
 --           pollEvent,
 --           handleEvent,
---           handleEventError,
 --           render,
 --           finished
 --         }
 --   case result of
---     Left err -> putStrLn ("Termbox program failed to initialize: " ++ show err)
---     Right state -> putStrLn ("Final state: " ++ show state)
+--     Left err -> putStrLn (\"Termbox program failed to initialize: \" ++ show err)
+--     Right state -> putStrLn (\"Final state: \" ++ show state)
 --
 -- data MyState = MyState
 --   { keysPressed :: Int,
@@ -67,19 +66,15 @@
 --         }
 --   _ -> pure state
 --
--- handleEventError :: MyState -> IO MyState
--- handleEventError state =
---   pure state
---
 -- render :: MyState -> Termbox.'Scene'
 -- render state =
 --   fold
 --     [ string
 --         Termbox.'Pos' {row = 2, col = 4}
---         ("Number of keys pressed: " ++ map Termbox.'char' (show state.keysPressed))
+--         (\"Number of keys pressed: \" ++ map Termbox.'char' (show state.keysPressed))
 --     , string
 --         Termbox.'Pos' {row = 4, col = 4}
---         ("Press " ++ map (Termbox.'bold' . Termbox.'char') "Esc" ++ " to quit.")
+--         (\"Press \" ++ map (Termbox.'bold' . Termbox.'char') \"Esc\" ++ \" to quit.\")
 --     ]
 --
 -- finished :: MyState -> Bool
