@@ -155,7 +155,6 @@ module Termbox.Banana
 where
 
 import Control.Concurrent.MVar
-import Control.Exception (mask, onException)
 import Control.Monad.IO.Class (liftIO)
 import Data.Void (Void)
 import qualified Reactive.Banana as Banana
@@ -181,19 +180,18 @@ data Outputs a = Outputs
   }
 
 -- | Run a @termbox@ FRP network.
+--
+-- @run@ either:
+--
+--   * Returns immediately with an 'InitError'.
+--   * Returns the first value emitted by @doneEvent@.
 run ::
   -- | The FRP network.
   (Inputs -> Banana.MomentIO (Outputs a)) ->
   -- | The result of the FRP network.
   IO (Either Termbox.InitError a)
 run program =
-  mask \unmask ->
-    Termbox.initialize >>= \case
-      Left err -> pure (Left err)
-      Right () -> do
-        result <- unmask (run_ program) `onException` Termbox.shutdown
-        Termbox.shutdown
-        pure (Right result)
+  Termbox.run (run_ program)
 
 run_ :: (Inputs -> Banana.MomentIO (Outputs a)) -> IO a
 run_ program = do

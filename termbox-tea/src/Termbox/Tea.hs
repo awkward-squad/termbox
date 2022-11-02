@@ -96,7 +96,7 @@
 --     (zip [0 ..] cells)
 -- @
 module Termbox.Tea
-  ( -- * Termbox
+  ( -- * Main
     Program (..),
     run,
     Termbox.InitError (..),
@@ -154,7 +154,6 @@ module Termbox.Tea
 where
 
 import Control.Concurrent.MVar
-import Control.Exception
 import Control.Monad (forever)
 import qualified Ki
 import qualified Termbox
@@ -176,16 +175,13 @@ data Program s = forall e.
 
 -- | Run a @termbox@ program.
 --
--- Either returns immediately with an 'InitError', or once the program state is finished with the final state.
+-- @run@ either:
+--
+--   * Returns immediately with an 'InitError'.
+--   * Returns the final state, once it's @finished@.
 run :: Program s -> IO (Either Termbox.InitError s)
-run program = do
-  mask \unmask ->
-    Termbox.initialize >>= \case
-      Left err -> pure (Left err)
-      Right () -> do
-        result <- unmask (run_ program) `onException` Termbox.shutdown
-        Termbox.shutdown
-        pure (Right result)
+run program =
+  Termbox.run (run_ program)
 
 run_ :: Program s -> IO s
 run_ Program {initialize, pollEvent, handleEvent, render, finished} = do

@@ -10,9 +10,10 @@
 --
 -- This module is intended to be imported qualified.
 module Termbox
-  ( -- * Termbox
+  ( -- * Main
+    run,
     initialize,
-    shutdown,
+    finalize,
     InitError (..),
 
     -- * Terminal contents
@@ -112,7 +113,7 @@ import Termbox.Internal.Key
     pattern KeyCtrlM,
     pattern KeyCtrlUnderscore,
   )
-import Termbox.Internal.Main (InitError (..), initialize, shutdown)
+import Termbox.Internal.Main (InitError (..), finalize, initialize, run)
 import Termbox.Internal.Mouse
   ( Mouse (..),
     MouseButton
