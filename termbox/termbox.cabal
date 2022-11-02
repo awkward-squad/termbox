@@ -16,8 +16,8 @@ description:
   * @<https://hackage.haskell.org/package/termbox-bindings-hs termbox-bindings-hs>@ for lower-level bindings.
   * @<https://hackage.haskell.org/package/termbox-bindings-c termbox-bindings-c>@ for even lower-level bindings.
 homepage: https://github.com/termbox/termbox-haskell
-license-file: LICENSE
 license: BSD-3-Clause
+license-file: LICENSE
 maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>
 name: termbox
 synopsis: termbox
