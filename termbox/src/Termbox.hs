@@ -69,6 +69,7 @@ module Termbox
         KeyCtrlUnderscore
       ),
     Mouse (..),
+    MouseButton (..),
     poll,
 
     -- * Miscellaneous types
@@ -113,13 +114,14 @@ import Termbox.Internal.Key
   )
 import Termbox.Internal.Main (InitError (..), initialize, shutdown)
 import Termbox.Internal.Mouse
-  ( Mouse
-      ( MouseLeft,
-        MouseMiddle,
-        MouseRelease,
-        MouseRight,
-        MouseWheelDown,
-        MouseWheelUp
+  ( Mouse (..),
+    MouseButton
+      ( LeftClick,
+        MiddleClick,
+        ReleaseClick,
+        RightClick,
+        WheelDown,
+        WheelUp
       ),
   )
 import Termbox.Internal.Pos (Pos (..), posDown, posLeft, posRight, posUp)

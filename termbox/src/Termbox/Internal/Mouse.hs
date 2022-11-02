@@ -1,48 +1,58 @@
 module Termbox.Internal.Mouse
-  ( Mouse
-      ( Mouse,
-        MouseLeft,
-        MouseMiddle,
-        MouseRelease,
-        MouseRight,
-        MouseWheelUp,
-        MouseWheelDown
+  ( Mouse (..),
+    MouseButton
+      ( MouseButton,
+        LeftClick,
+        MiddleClick,
+        RightClick,
+        ReleaseClick,
+        WheelDown,
+        WheelUp
       ),
   )
 where
 
+import GHC.Generics (Generic)
 import qualified Termbox.Bindings.Hs
+import Termbox.Internal.Pos (Pos)
 
 -- | A mouse event.
-newtype Mouse
-  = Mouse Termbox.Bindings.Hs.Tb_key
+data Mouse = Mouse
+  { button :: !MouseButton,
+    pos :: !Pos
+  }
+  deriving stock (Eq, Generic, Ord, Show)
+
+-- | A mouse button.
+newtype MouseButton
+  = MouseButton Termbox.Bindings.Hs.Tb_key
   deriving stock (Eq, Ord)
 
-instance Show Mouse where
+instance Show MouseButton where
   show = \case
-    MouseLeft -> "MouseLeft"
-    MouseMiddle -> "MouseMiddle"
-    MouseRelease -> "MouseRelease"
-    MouseRight -> "MouseRight"
-    MouseWheelDown -> "MouseWheelDown"
-    MouseWheelUp -> "MouseWheelUp"
+    LeftClick -> "LeftClick"
+    MiddleClick -> "MiddleClick"
+    ReleaseClick -> "ReleaseClick"
+    RightClick -> "RightClick"
+    WheelDown -> "WheelDown"
+    WheelUp -> "WheelUp"
 
-pattern MouseLeft :: Mouse
-pattern MouseLeft = Mouse Termbox.Bindings.Hs.TB_KEY_MOUSE_LEFT
+pattern LeftClick :: MouseButton
+pattern LeftClick = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_LEFT
 
-pattern MouseMiddle :: Mouse
-pattern MouseMiddle = Mouse Termbox.Bindings.Hs.TB_KEY_MOUSE_MIDDLE
+pattern MiddleClick :: MouseButton
+pattern MiddleClick = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_MIDDLE
 
-pattern MouseRelease :: Mouse
-pattern MouseRelease = Mouse Termbox.Bindings.Hs.TB_KEY_MOUSE_RELEASE
+pattern RightClick :: MouseButton
+pattern RightClick = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_RIGHT
 
-pattern MouseRight :: Mouse
-pattern MouseRight = Mouse Termbox.Bindings.Hs.TB_KEY_MOUSE_RIGHT
+pattern ReleaseClick :: MouseButton
+pattern ReleaseClick = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_RELEASE
 
-pattern MouseWheelDown :: Mouse
-pattern MouseWheelDown = Mouse Termbox.Bindings.Hs.TB_KEY_MOUSE_WHEEL_DOWN
+pattern WheelDown :: MouseButton
+pattern WheelDown = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_WHEEL_DOWN
 
-pattern MouseWheelUp :: Mouse
-pattern MouseWheelUp = Mouse Termbox.Bindings.Hs.TB_KEY_MOUSE_WHEEL_UP
+pattern WheelUp :: MouseButton
+pattern WheelUp = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_WHEEL_UP
 
-{-# COMPLETE MouseLeft, MouseMiddle, MouseRelease, MouseRight, MouseWheelDown, MouseWheelUp #-}
+{-# COMPLETE LeftClick, MiddleClick, ReleaseClick, RightClick, WheelDown, WheelUp #-}

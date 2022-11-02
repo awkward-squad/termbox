@@ -8,7 +8,7 @@ import Data.Int (Int32)
 import GHC.Generics (Generic)
 import qualified Termbox.Bindings.Hs
 import Termbox.Internal.Key (Key (KeyChar), parseKey)
-import Termbox.Internal.Mouse (Mouse (Mouse))
+import Termbox.Internal.Mouse (Mouse (..), MouseButton (..))
 import Termbox.Internal.Pos (Pos (..))
 import Termbox.Internal.Size (Size (..))
 import Prelude hiding (mod)
@@ -20,7 +20,7 @@ data Event e
   | -- | Resize event
     EventResize !Size
   | -- | Mouse event
-    EventMouse !Mouse !Pos
+    EventMouse !Mouse
   | -- | User event
     EventUser !e
   deriving stock (Eq, Generic, Show)
@@ -60,8 +60,11 @@ parseEvent
             }
       Termbox.Bindings.Hs.TB_EVENT_MOUSE ->
         EventMouse
-          (Mouse key)
-          Pos
-            { row = fromIntegral @Int32 @Int y,
-              col = fromIntegral @Int32 @Int x
+          Mouse
+            { button = MouseButton key,
+              pos =
+                Pos
+                  { row = fromIntegral @Int32 @Int y,
+                    col = fromIntegral @Int32 @Int x
+                  }
             }

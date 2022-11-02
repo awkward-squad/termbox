@@ -171,7 +171,7 @@ data Inputs = Inputs
     -- | Resize events.
     resizeEvents :: Banana.Event Termbox.Size,
     -- | Mouse events.
-    mouseEvents :: Banana.Event (Termbox.Mouse, Termbox.Pos)
+    mouseEvents :: Banana.Event Termbox.Mouse
   }
 
 -- | The outputs from a @termbox@ FRP network.
@@ -226,7 +226,7 @@ run_ program = do
         Termbox.poll @Void >>= \case
           Termbox.EventKey key -> fireKeyEvent key
           Termbox.EventResize size -> fireResizeEvent size
-          Termbox.EventMouse mouse pos -> fireMouseEvent (mouse, pos)
+          Termbox.EventMouse mouse -> fireMouseEvent mouse
         tryReadMVar doneVar >>= \case
           Nothing -> loop
           Just result -> pure result
