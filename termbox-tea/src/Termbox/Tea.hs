@@ -183,12 +183,12 @@ run program = do
     Termbox.initialize >>= \case
       Left err -> pure (Left err)
       Right () -> do
-        result <- unmask (runProgram program) `onException` Termbox.shutdown
+        result <- unmask (run_ program) `onException` Termbox.shutdown
         Termbox.shutdown
         pure (Right result)
 
-runProgram :: Program s -> IO s
-runProgram Program {initialize, pollEvent, handleEvent, render, finished} = do
+run_ :: Program s -> IO s
+run_ Program {initialize, pollEvent, handleEvent, render, finished} = do
   state0 <- initialize <$> Termbox.getSize
 
   let loop0 doPoll =
