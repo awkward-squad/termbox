@@ -96,7 +96,7 @@
 --     (zip [0 ..] cells)
 -- @
 module Termbox.Banana
-  ( -- * Termbox
+  ( -- * Main
     Inputs (..),
     Outputs (..),
     run,
