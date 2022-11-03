@@ -1,4 +1,3 @@
-
 -- |
 -- This module provides a @reactive-banana@ FRP interface to @termbox@, a simple C library for writing text-based user
 -- interfaces: <https://github.com/termbox/termbox>
@@ -141,7 +140,11 @@ data Inputs = Inputs
 
 -- | The outputs from a @termbox@ FRP network.
 data Outputs a = Outputs
-  { scene :: !(Banana.Behavior Termbox.Scene),
+  { -- | The scene to render.
+    scene :: !(Banana.Behavior Termbox.Scene),
+    -- | The events of arbitrary values, on the first of which is relevant, which causes 'run' to return.
+    --
+    -- /Note/: Wrapping this event in 'Banana.once' is not necessary, as this library does so internally.
     done :: !(Banana.Event a)
   }
 
@@ -150,7 +153,7 @@ data Outputs a = Outputs
 -- @run@ either:
 --
 --   * Returns immediately with an 'InitError'.
---   * Returns the first value emitted by @doneEvent@.
+--   * Returns the first value emitted by @done@.
 run ::
   -- | The FRP network.
   (Inputs -> Banana.MomentIO (Outputs a)) ->
@@ -182,7 +185,8 @@ run_ program = do
       Banana.reactimate' =<< Banana.changes renderBehavior
 
       -- Smuggle `done` values out via `doneVar` (only the first matters)
-      Banana.reactimate (putMVar doneVar <$> done)
+      done1 <- Banana.once done
+      Banana.reactimate (putMVar doneVar <$> done1)
 
   Banana.actuate network
 

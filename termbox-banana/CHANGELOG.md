@@ -1,6 +1,6 @@
 ## [0.5.0] - Unreleased
 
-- Rework `run` type
+- Rework `run` type.
 
 ## [0.4.0] - 2022-07-16
 
