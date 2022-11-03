@@ -2,6 +2,10 @@
 -- This module provides an Elm Architecture interface to @termbox@, a simple C library for writing text-based user
 -- interfaces: <https://github.com/termbox/termbox>
 --
+-- See also:
+--
+-- * @<https://hackage.haskell.org/package/termbox-banana termbox-banana>@, a @reactive-banana@ FRP interface.
+--
 -- This module is intended to be imported qualified.
 --
 -- ==== __👉 Quick start example__
@@ -25,7 +29,7 @@
 -- main = do
 --   result <-
 --     Termbox.'run'
---       Termbox.'Program'
+--       Termbox.'Termbox.Tea.Program'
 --         { initialize,
 --           pollEvent,
 --           handleEvent,
@@ -33,8 +37,8 @@
 --           finished
 --         }
 --   case result of
---     Left err -> putStrLn (\"Termbox program failed to initialize: \" ++ show err)
---     Right state -> putStrLn (\"Final state: \" ++ show state)
+--     Left err -\> putStrLn (\"Termbox program failed to initialize: \" ++ show err)
+--     Right state -\> putStrLn (\"Final state: \" ++ show state)
 --
 -- data MyState = MyState
 --   { keysPressed :: Int,
@@ -42,7 +46,7 @@
 --   }
 --   deriving stock (Show)
 --
--- initialize :: Termbox.'Size' -> MyState
+-- initialize :: Termbox.'Termbox.Tea.Size' -\> MyState
 -- initialize _size =
 --   MyState
 --     { keysPressed = 0,
@@ -53,42 +57,37 @@
 -- pollEvent =
 --   Nothing
 --
--- handleEvent :: MyState -> Termbox.'Event' Void -> IO MyState
+-- handleEvent :: MyState -\> Termbox.'Termbox.Tea.Event' Void -\> IO MyState
 -- handleEvent state = \\case
---   Termbox.'EventKey' key ->
+--   Termbox.'Termbox.Tea.EventKey' key -\>
 --     pure
 --       MyState
 --         { keysPressed = state.keysPressed + 1,
 --           pressedEsc =
 --             case key of
---               Termbox.'KeyEsc' -> True
---               _ -> False
+--               Termbox.'Termbox.Tea.KeyEsc' -\> True
+--               _ -\> False
 --         }
---   _ -> pure state
+--   _ -\> pure state
 --
--- render :: MyState -> Termbox.'Scene'
+-- render :: MyState -\> Termbox.'Termbox.Tea.Scene'
 -- render state =
 --   fold
 --     [ string
---         Termbox.'Pos' {row = 2, col = 4}
---         (\"Number of keys pressed: \" ++ map Termbox.'char' (show state.keysPressed))
+--         Termbox.'Termbox.Tea.Pos' {row = 2, col = 4}
+--         (\"Number of keys pressed: \" ++ map Termbox.'Termbox.Tea.char' (show state.keysPressed))
 --     , string
---         Termbox.'Pos' {row = 4, col = 4}
---         (\"Press \" ++ map (Termbox.'bold' . Termbox.'char') \"Esc\" ++ \" to quit.\")
+--         Termbox.'Termbox.Tea.Pos' {row = 4, col = 4}
+--         (\"Press \" ++ map (Termbox.'Termbox.Tea.bold' . Termbox.'Termbox.Tea.char') \"Esc\" ++ \" to quit.\")
 --     ]
 --
--- finished :: MyState -> Bool
+-- finished :: MyState -\> Bool
 -- finished state =
 --   state.pressedEsc
 --
--- string :: Termbox.'Pos' -> [Termbox.'Cell'] -> Termbox.'Scene'
+-- string :: Termbox.'Termbox.Tea.Pos' -\> [Termbox.'Termbox.Tea.Cell'] -\> Termbox.'Termbox.Tea.Scene'
 -- string pos cells =
---   foldMap
---     (\\(i, cell) ->
---       Termbox.'cell'
---         Termbox.'Pos' {row = pos.row, col = pos.col + i}
---         cell)
---     (zip [0 ..] cells)
+--   foldMap (\\(i, cell) -\> Termbox.'Termbox.Tea.cell' (Termbox.'Termbox.Tea.posRight' i pos) cell) (zip [0 ..] cells)
 -- @
 module Termbox.Tea
   ( -- * Main
@@ -137,6 +136,7 @@ module Termbox.Tea
     Termbox.Event (..),
     Termbox.Key (..),
     Termbox.Mouse (..),
+    Termbox.MouseButton (..),
 
     -- * Miscellaneous types
     Termbox.Pos (..),

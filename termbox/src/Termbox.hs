@@ -1,5 +1,4 @@
 -- |
---
 -- This module provides a high-level wrapper around @termbox@, a simple C library for writing text-based user
 -- interfaces: <https://github.com/termbox/termbox>
 --

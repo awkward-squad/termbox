@@ -1,6 +1,11 @@
+
 -- |
--- This module provides an Elm Architecture interface to @termbox@, a simple C library for writing text-based user
+-- This module provides a @reactive-banana@ FRP interface to @termbox@, a simple C library for writing text-based user
 -- interfaces: <https://github.com/termbox/termbox>
+--
+-- See also:
+--
+-- * @<https://hackage.haskell.org/package/termbox-tea termbox-tea>@, an Elm Architecture interface.
 --
 -- This module is intended to be imported qualified.
 --
@@ -9,7 +14,6 @@
 -- This @termbox@ program displays the number of keys pressed.
 --
 -- @
--- {-\# LANGUAGE DerivingStrategies \#-}
 -- {-\# LANGUAGE DuplicateRecordFields \#-}
 -- {-\# LANGUAGE ImportQualifiedPost \#-}
 -- {-\# LANGUAGE LambdaCase \#-}
@@ -18,82 +22,44 @@
 -- {-\# LANGUAGE NoFieldSelectors \#-}
 --
 -- import Data.Foldable (fold)
--- import Data.Void (Void)
--- import Termbox.Tea qualified as Termbox
+-- import Reactive.Banana ((\<\@\>))
+-- import Reactive.Banana qualified as Banana
+-- import Termbox.Banana qualified as Termbox
 --
 -- main :: IO ()
--- main = do
---   result <-
---     Termbox.'run'
---       Termbox.'Program'
---         { initialize,
---           pollEvent,
---           handleEvent,
---           handleEventError,
---           render,
---           finished
---         }
---   case result of
---     Left err -> putStrLn ("Termbox program failed to initialize: " ++ show err)
---     Right state -> putStrLn ("Final state: " ++ show state)
+-- main =
+--   Termbox.'run' network \>\>= \\case
+--     Left err -\> putStrLn (\"Termbox program failed to initialize: \" ++ show err)
+--     Right n -\> putStrLn (\"Pressed \" ++ show n ++ \" keys.\")
 --
--- data MyState = MyState
---   { keysPressed :: Int,
---     pressedEsc :: Bool
---   }
---   deriving stock (Show)
+-- network :: Banana.MonadMoment m =\> Termbox.'Inputs' -\> m (Termbox.'Outputs' Int)
+-- network inputs = do
+--   keysPressed <- Banana.accumB 0 ((+ 1) \<$ inputs.keys)
+--   pure
+--     Termbox.'Outputs'
+--       { scene = render \<$\> keysPressed,
+--         done = Banana.filterJust (isDone \<$\> keysPressed \<\@\> inputs.keys)
+--       }
+--   where
+--     isDone :: Int -\> Termbox.'Termbox.Banana.Key' -\> Maybe Int
+--     isDone n = \\case
+--       Termbox.'Termbox.Banana.KeyEsc' -\> Just n
+--       _ -\> Nothing
 --
--- initialize :: Termbox.'Size' -> MyState
--- initialize _size =
---   MyState
---     { keysPressed = 0,
---       pressedEsc = False
---     }
---
--- pollEvent :: Maybe (IO Void)
--- pollEvent =
---   Nothing
---
--- handleEvent :: MyState -> Termbox.'Event' Void -> IO MyState
--- handleEvent state = \\case
---   Termbox.'EventKey' key ->
---     pure
---       MyState
---         { keysPressed = state.keysPressed + 1,
---           pressedEsc =
---             case key of
---               Termbox.'KeyEsc' -> True
---               _ -> False
---         }
---   _ -> pure state
---
--- handleEventError :: MyState -> IO MyState
--- handleEventError state =
---   pure state
---
--- render :: MyState -> Termbox.'Scene'
--- render state =
+-- render :: Int -\> Termbox.'Termbox.Banana.Scene'
+-- render keysPressed =
 --   fold
 --     [ string
---         Termbox.'Pos' {row = 2, col = 4}
---         ("Number of keys pressed: " ++ map Termbox.'char' (show state.keysPressed))
---     , string
---         Termbox.'Pos' {row = 4, col = 4}
---         ("Press " ++ map (Termbox.'bold' . Termbox.'char') "Esc" ++ " to quit.")
+--         Termbox.'Termbox.Banana.Pos' {row = 2, col = 4}
+--         (\"Number of keys pressed: \" ++ map Termbox.'Termbox.Banana.char' (show keysPressed)),
+--       string
+--         Termbox.'Termbox.Banana.Pos' {row = 4, col = 4}
+--         (\"Press \" ++ map (Termbox.'Termbox.Banana.bold' . Termbox.'Termbox.Banana.char') \"Esc\" ++ \" to quit.\")
 --     ]
 --
--- finished :: MyState -> Bool
--- finished state =
---   state.pressedEsc
---
--- string :: Termbox.'Pos' -> [Termbox.'Cell'] -> Termbox.'Scene'
+-- string :: Termbox.'Termbox.Banana.Pos' -\> [Termbox.'Termbox.Banana.Cell'] -\> Termbox.'Termbox.Banana.Scene'
 -- string pos cells =
---   foldMap
---     (\\(i, cell) ->
---       Termbox.'cell'
---         Termbox.'Pos' {row = pos.row, col = pos.col + i}
---         cell)
---     (zip [0 ..] cells)
+--   foldMap (\\(i, cell) -\> Termbox.'Termbox.Banana.cell' (Termbox.'Termbox.Banana.posRight' i pos) cell) (zip [0 ..] cells)
 -- @
 module Termbox.Banana
   ( -- * Main
@@ -140,9 +106,9 @@ module Termbox.Banana
     Termbox.gray,
 
     -- * Event handling
-    Termbox.Event (..),
     Termbox.Key (..),
     Termbox.Mouse (..),
+    Termbox.MouseButton (..),
 
     -- * Miscellaneous types
     Termbox.Pos (..),
@@ -164,19 +130,19 @@ import qualified Termbox
 -- | The inputs to a @termbox@ FRP network.
 data Inputs = Inputs
   { -- | The initial terminal size.
-    initialSize :: Termbox.Size,
+    initialSize :: !Termbox.Size,
     -- | Key events.
-    keyEvents :: Banana.Event Termbox.Key,
+    keys :: !(Banana.Event Termbox.Key),
     -- | Resize events.
-    resizeEvents :: Banana.Event Termbox.Size,
+    resizes :: !(Banana.Event Termbox.Size),
     -- | Mouse events.
-    mouseEvents :: Banana.Event Termbox.Mouse
+    mouses :: !(Banana.Event Termbox.Mouse)
   }
 
 -- | The outputs from a @termbox@ FRP network.
 data Outputs a = Outputs
-  { sceneBehavior :: !(Banana.Behavior Termbox.Scene),
-    doneEvent :: !(Banana.Event a)
+  { scene :: !(Banana.Behavior Termbox.Scene),
+    done :: !(Banana.Event a)
   }
 
 -- | Run a @termbox@ FRP network.
@@ -198,33 +164,33 @@ run_ program = do
   initialSize <- Termbox.getSize
 
   doneVar <- newEmptyMVar
-  (keyEventAddHandler, fireKeyEvent) <- Banana.newAddHandler
-  (resizeEventAddHandler, fireResizeEvent) <- Banana.newAddHandler
-  (mouseEventAddHandler, fireMouseEvent) <- Banana.newAddHandler
+  (keysAddHandler, fireKey) <- Banana.newAddHandler
+  (resizesAddHandler, fireResize) <- Banana.newAddHandler
+  (mousesAddHandler, fireMouse) <- Banana.newAddHandler
 
   network <-
     Banana.compile do
-      keyEvents <- Banana.fromAddHandler keyEventAddHandler
-      resizeEvents <- Banana.fromAddHandler resizeEventAddHandler
-      mouseEvents <- Banana.fromAddHandler mouseEventAddHandler
+      keys <- Banana.fromAddHandler keysAddHandler
+      resizes <- Banana.fromAddHandler resizesAddHandler
+      mouses <- Banana.fromAddHandler mousesAddHandler
 
-      Outputs {sceneBehavior, doneEvent} <- program Inputs {initialSize, keyEvents, resizeEvents, mouseEvents}
-      let renderBehavior = Termbox.render <$> sceneBehavior
+      Outputs {scene, done} <- program Inputs {initialSize, keys, resizes, mouses}
+      let renderBehavior = Termbox.render <$> scene
 
       -- Render the first scene, and again every time it changes.
       liftIO =<< Banana.valueB renderBehavior
       Banana.reactimate' =<< Banana.changes renderBehavior
 
-      -- Smuggle `doneEvent` values out via `doneVar` (only the first matters)
-      Banana.reactimate (putMVar doneVar <$> doneEvent)
+      -- Smuggle `done` values out via `doneVar` (only the first matters)
+      Banana.reactimate (putMVar doneVar <$> done)
 
   Banana.actuate network
 
   let loop = do
         Termbox.poll @Void >>= \case
-          Termbox.EventKey key -> fireKeyEvent key
-          Termbox.EventResize size -> fireResizeEvent size
-          Termbox.EventMouse mouse -> fireMouseEvent mouse
+          Termbox.EventKey key -> fireKey key
+          Termbox.EventResize size -> fireResize size
+          Termbox.EventMouse mouse -> fireMouse mouse
         tryReadMVar doneVar >>= \case
           Nothing -> loop
           Just result -> pure result
