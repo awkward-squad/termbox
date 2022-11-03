@@ -178,11 +178,11 @@ run_ program = do
       mouses <- Banana.fromAddHandler mousesAddHandler
 
       Outputs {scene, done} <- program Inputs {initialSize, keys, resizes, mouses}
-      let renderBehavior = Termbox.render <$> scene
+      let render = Termbox.render <$> scene
 
       -- Render the first scene, and again every time it changes.
-      liftIO =<< Banana.valueB renderBehavior
-      Banana.reactimate' =<< Banana.changes renderBehavior
+      liftIO =<< Banana.valueB render
+      Banana.reactimate' =<< Banana.changes render
 
       -- Smuggle `done` values out via `doneVar` (only the first matters)
       done1 <- Banana.once done
