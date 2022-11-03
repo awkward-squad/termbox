@@ -1,8 +1,10 @@
-## [1.1.0] - Unreleased
+## [1.1.0] - 2022-11-03
+
 - Split off Elm Architecture wrapper into `termbox-tea` package, and expose `run`/`initialize`/`finalize` instead.
 - Rename `Mouse` to `MouseButton`, rename its constructors, and add `Mouse` type (`MouseButton` + `Pos`)
 
 ## [1.0.0] - 2022-10-25
+
 - Rework `run`; add `Program` record of callbacks
 - Add user events to `Event` type
 - Overhaul `Attr`+`Cell`+`Cells`+`Cursor` API; now it's `Cell`+`Color`+`Scene`
@@ -18,6 +20,7 @@
 - Drop support for GHC < 8.8
 
 ## [0.3.0] - 2020-09-20
+
 - Add `Cells` and `Cursor` types
 - Export `Termbox.Internal` module that roughly corresponds to the C library
 - Add a few arguments to the action provided to `run`
@@ -33,9 +36,11 @@
 - Remove support for GHC < 8.2
 
 ## [0.2.0.1] - 2020-06-27
+
 - Bump `base` upper bound
 
 ## [0.2.0] - 2019-06-21
+
 - Add `getCells` function
 - Add `run` function
 - Rename `size` to `getSize`
@@ -45,4 +50,5 @@
 - Remove `buffer` function
 
 ## [0.1.0] - 2018-07-18
+
 - Initial release

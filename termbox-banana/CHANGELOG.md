@@ -1,6 +1,7 @@
-## [0.5.0] - Unreleased
+## [1.0.0] - 2022-11-03
 
-- Rework `run` type.
+- Rework `run` type
+- Bump to `termbox-1.1.0`, whose API changes are visible here, too
 
 ## [0.4.0] - 2022-07-16
 
