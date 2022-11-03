@@ -172,7 +172,7 @@ data Program s = forall e.
 --
 -- @run@ either:
 --
---   * Returns immediately with an 'InitError'.
+--   * Returns immediately with an 'Termbox.Tea.InitError'.
 --   * Returns the final state, once it's @finished@.
 run :: Program s -> IO (Either Termbox.InitError s)
 run program =
