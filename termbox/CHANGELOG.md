@@ -1,3 +1,7 @@
+## [1.1.0.1] - 2022-12-01
+
+- Make `char` applied to a wide character result in a space instead of nothing
+
 ## [1.1.0] - 2022-11-03
 
 - Split off Elm Architecture wrapper into `termbox-tea` package, and expose `run`/`initialize`/`finalize` instead.

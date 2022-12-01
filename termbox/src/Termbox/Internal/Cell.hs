@@ -27,8 +27,7 @@ import Termbox.Internal.Color (Color (Color))
 -- * Set a cell's color with 'fg', 'bg'.
 -- * Style a cell with 'bold', 'underline', 'blink'.
 data Cell
-  = CellEmpty
-  | CellFg
+  = CellFg
       {-# UNPACK #-} !Char -- invariant: char is width 1
       {-# UNPACK #-} !Termbox.Bindings.Hs.Tb_color -- fg
   | CellFgBlink
@@ -45,7 +44,6 @@ instance {-# OVERLAPS #-} IsString [Cell] where
 
 drawCell :: Termbox.Bindings.Hs.Tb_color -> Int -> Int -> Cell -> IO ()
 drawCell bg0 col row = \case
-  CellEmpty -> pure ()
   CellFg ch fg_ -> Termbox.Bindings.Hs.tb_change_cell col row ch fg_ bg0
   CellFgBlink ch fg_ -> Termbox.Bindings.Hs.tb_change_cell col row ch fg_ (makeBold bg0) -- bold background = blink
   CellFgBg ch fg_ bg_ -> Termbox.Bindings.Hs.tb_change_cell col row ch fg_ bg_
@@ -55,14 +53,11 @@ drawCell bg0 col row = \case
 -- If the character is not 1 character wide, it will not be displayed.
 char :: Char -> Cell
 char ch =
-  case wcwidth (charToCWchar ch) of
-    1 -> CellFg ch Termbox.Bindings.Hs.TB_DEFAULT
-    _ -> CellEmpty
+  CellFg (if wcwidth (charToCWchar ch) == 1 then ch else ' ') Termbox.Bindings.Hs.TB_DEFAULT
 
 -- | Set the foreground color of a cell.
 fg :: Color -> Cell -> Cell
 fg (Color color) = \case
-  CellEmpty -> CellEmpty
   CellFg ch _ -> CellFg ch color
   CellFgBlink ch _ -> CellFgBlink ch color
   CellFgBg ch _ bg_ -> CellFgBg ch color bg_
@@ -70,7 +65,6 @@ fg (Color color) = \case
 -- | Set the background color of a cell.
 bg :: Color -> Cell -> Cell
 bg (Color color) = \case
-  CellEmpty -> CellEmpty
   CellFg ch fg_ -> CellFgBg ch fg_ color
   CellFgBlink ch fg_ -> CellFgBg ch fg_ (makeBold color) -- bold background = blink
   CellFgBg ch fg_ _ -> CellFgBg ch fg_ color
@@ -78,7 +72,6 @@ bg (Color color) = \case
 -- | Make a cell bold.
 bold :: Cell -> Cell
 bold = \case
-  CellEmpty -> CellEmpty
   CellFg ch fg_ -> CellFg ch (makeBold fg_)
   CellFgBlink ch fg_ -> CellFgBlink ch (makeBold fg_)
   CellFgBg ch fg_ bg_ -> CellFgBg ch (makeBold fg_) bg_
@@ -86,7 +79,6 @@ bold = \case
 -- | Make a cell underlined.
 underline :: Cell -> Cell
 underline = \case
-  CellEmpty -> CellEmpty
   CellFg ch fg_ -> CellFg ch (makeUnderline fg_)
   CellFgBlink ch fg_ -> CellFgBlink ch (makeUnderline fg_)
   CellFgBg ch fg_ bg_ -> CellFgBg ch (makeUnderline fg_) bg_
@@ -94,7 +86,6 @@ underline = \case
 -- | Make a cell blink.
 blink :: Cell -> Cell
 blink = \case
-  CellEmpty -> CellEmpty
   CellFg ch fg_ -> CellFgBlink ch fg_
   CellFgBlink ch fg_ -> CellFgBlink ch fg_
   CellFgBg ch fg_ bg_ -> CellFgBg ch fg_ (makeBold bg_) -- bold background = blink
