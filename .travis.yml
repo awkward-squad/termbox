@@ -8,7 +8,7 @@
 #
 # For more information, see https://github.com/haskell-CI/haskell-ci
 #
-# version: 0.15.20220826
+# version: 0.15.20230312
 #
 version: ~> 1.0
 language: c
@@ -33,14 +33,14 @@ before_cache:
   - rm -rfv $CABALHOME/packages/head.hackage
 jobs:
   include:
-    - compiler: ghc-9.4.2
-      addons: {"apt":{"packages":["ghc-9.4.2","cabal-install-3.6"],"sources":[{"key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286","sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu bionic main"}]}}
+    - compiler: ghc-9.6.1
+      addons: {"apt":{"packages":["ghc-9.6.1","cabal-install-3.10"],"sources":[{"key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286","sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu bionic main"}]}}
       os: linux
-    - compiler: ghc-9.2.4
-      addons: {"apt":{"packages":["ghc-9.2.4","cabal-install-3.6"],"sources":[{"key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286","sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu bionic main"}]}}
+    - compiler: ghc-9.4.4
+      addons: {"apt":{"packages":["ghc-9.4.4","cabal-install-3.10"],"sources":[{"key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286","sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu bionic main"}]}}
       os: linux
-    - compiler: ghc-9.0.2
-      addons: {"apt":{"packages":["ghc-9.0.2","cabal-install-3.6"],"sources":[{"key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286","sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu bionic main"}]}}
+    - compiler: ghc-9.2.7
+      addons: {"apt":{"packages":["ghc-9.2.7","cabal-install-3.10"],"sources":[{"key_url":"https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x063dab2bdc0b3f9fcebc378bff3aeacef6f88286","sourceline":"deb http://ppa.launchpad.net/hvr/ghc/ubuntu bionic main"}]}}
       os: linux
 before_install:
   - HC=$(echo "/opt/$CC/bin/ghc" | sed 's/-/\//')
@@ -90,21 +90,29 @@ install:
   - touch cabal.project
   - |
     echo "packages: termbox" >> cabal.project
-    echo "packages: termbox-bindings" >> cabal.project
+    echo "packages: termbox-banana" >> cabal.project
+    echo "packages: termbox-bindings-hs" >> cabal.project
     echo "packages: termbox-bindings-c" >> cabal.project
+    echo "packages: termbox-tea" >> cabal.project
   - echo 'package termbox' >> cabal.project
   - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
-  - echo 'package termbox-bindings' >> cabal.project
+  - echo 'package termbox-banana' >> cabal.project
+  - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
+  - echo 'package termbox-bindings-hs' >> cabal.project
   - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
   - echo 'package termbox-bindings-c' >> cabal.project
   - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
+  - echo 'package termbox-tea' >> cabal.project
+  - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
   - ""
-  - "for pkg in $($HCPKG list --simple-output); do echo $pkg | sed 's/-[^-]*$//' | (grep -vE -- '^(termbox|termbox-bindings|termbox-bindings-c)$' || true) | sed 's/^/constraints: /' | sed 's/$/ installed/' >> cabal.project.local; done"
+  - "for pkg in $($HCPKG list --simple-output); do echo $pkg | sed 's/-[^-]*$//' | (grep -vE -- '^(termbox|termbox-banana|termbox-bindings-c|termbox-bindings-hs|termbox-tea)$' || true) | sed 's/^/constraints: /' | sed 's/$/ installed/' >> cabal.project.local; done"
   - cat cabal.project || true
   - cat cabal.project.local || true
   - if [ -f "termbox/configure.ac" ]; then (cd "termbox" && autoreconf -i); fi
-  - if [ -f "termbox-bindings/configure.ac" ]; then (cd "termbox-bindings" && autoreconf -i); fi
+  - if [ -f "termbox-banana/configure.ac" ]; then (cd "termbox-banana" && autoreconf -i); fi
+  - if [ -f "termbox-bindings-hs/configure.ac" ]; then (cd "termbox-bindings-hs" && autoreconf -i); fi
   - if [ -f "termbox-bindings-c/configure.ac" ]; then (cd "termbox-bindings-c" && autoreconf -i); fi
+  - if [ -f "termbox-tea/configure.ac" ]; then (cd "termbox-tea" && autoreconf -i); fi
   - ${CABAL} v2-freeze $WITHCOMPILER ${TEST} ${BENCH}
   - "cat cabal.project.freeze | sed -E 's/^(constraints: *| *)//' | sed 's/any.//'"
   - rm  cabal.project.freeze
@@ -120,23 +128,31 @@ script:
   - find . -maxdepth 1 -type f -name '*.tar.gz' -exec tar -xvf '{}' \;
   - find . -maxdepth 1 -type f -name '*.tar.gz' -exec rm       '{}' \;
   - PKGDIR_termbox="$(find . -maxdepth 1 -type d -regex '.*/termbox-[0-9.]*')"
-  - PKGDIR_termbox_bindings="$(find . -maxdepth 1 -type d -regex '.*/termbox-bindings-[0-9.]*')"
+  - PKGDIR_termbox_banana="$(find . -maxdepth 1 -type d -regex '.*/termbox-banana-[0-9.]*')"
+  - PKGDIR_termbox_bindings_hs="$(find . -maxdepth 1 -type d -regex '.*/termbox-bindings-hs-[0-9.]*')"
   - PKGDIR_termbox_bindings_c="$(find . -maxdepth 1 -type d -regex '.*/termbox-bindings-c-[0-9.]*')"
+  - PKGDIR_termbox_tea="$(find . -maxdepth 1 -type d -regex '.*/termbox-tea-[0-9.]*')"
   # Generate cabal.project
   - rm -rf cabal.project cabal.project.local cabal.project.freeze
   - touch cabal.project
   - |
     echo "packages: ${PKGDIR_termbox}" >> cabal.project
-    echo "packages: ${PKGDIR_termbox_bindings}" >> cabal.project
+    echo "packages: ${PKGDIR_termbox_banana}" >> cabal.project
+    echo "packages: ${PKGDIR_termbox_bindings_hs}" >> cabal.project
     echo "packages: ${PKGDIR_termbox_bindings_c}" >> cabal.project
+    echo "packages: ${PKGDIR_termbox_tea}" >> cabal.project
   - echo 'package termbox' >> cabal.project
   - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
-  - echo 'package termbox-bindings' >> cabal.project
+  - echo 'package termbox-banana' >> cabal.project
+  - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
+  - echo 'package termbox-bindings-hs' >> cabal.project
   - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
   - echo 'package termbox-bindings-c' >> cabal.project
   - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
+  - echo 'package termbox-tea' >> cabal.project
+  - "echo '  ghc-options: -Werror=missing-methods' >> cabal.project"
   - ""
-  - "for pkg in $($HCPKG list --simple-output); do echo $pkg | sed 's/-[^-]*$//' | (grep -vE -- '^(termbox|termbox-bindings|termbox-bindings-c)$' || true) | sed 's/^/constraints: /' | sed 's/$/ installed/' >> cabal.project.local; done"
+  - "for pkg in $($HCPKG list --simple-output); do echo $pkg | sed 's/-[^-]*$//' | (grep -vE -- '^(termbox|termbox-banana|termbox-bindings-c|termbox-bindings-hs|termbox-tea)$' || true) | sed 's/^/constraints: /' | sed 's/$/ installed/' >> cabal.project.local; done"
   - cat cabal.project || true
   - cat cabal.project.local || true
   # Building...
@@ -147,13 +163,15 @@ script:
   - ${CABAL} v2-build $WITHCOMPILER ${TEST} ${BENCH} all --write-ghc-environment-files=always
   # cabal check...
   - (cd ${PKGDIR_termbox} && ${CABAL} -vnormal check)
-  - (cd ${PKGDIR_termbox_bindings} && ${CABAL} -vnormal check)
+  - (cd ${PKGDIR_termbox_banana} && ${CABAL} -vnormal check)
+  - (cd ${PKGDIR_termbox_bindings_hs} && ${CABAL} -vnormal check)
   - (cd ${PKGDIR_termbox_bindings_c} && ${CABAL} -vnormal check)
+  - (cd ${PKGDIR_termbox_tea} && ${CABAL} -vnormal check)
   # haddock...
   - ${CABAL} v2-haddock --haddock-all $WITHCOMPILER --with-haddock $HADDOCK ${TEST} ${BENCH} all
   # Building without installed constraints for packages in global-db...
   - rm -f cabal.project.local
   - ${CABAL} v2-build $WITHCOMPILER --disable-tests --disable-benchmarks all
 
-# REGENDATA ("0.15.20220826",["cabal.project"])
+# REGENDATA ("0.15.20230312",["cabal.project"])
 # EOF
