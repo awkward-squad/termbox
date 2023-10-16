@@ -1,3 +1,7 @@
+## [1.1.0.2] - 2023-10-15
+
+- Support GHC 9.8.1
+
 ## [1.1.0.1] - 2022-12-01
 
 - Make `char` applied to a wide character result in a space instead of nothing
