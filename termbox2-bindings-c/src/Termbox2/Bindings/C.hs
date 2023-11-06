@@ -1,40 +1,59 @@
 module Termbox2.Bindings.C
-  ( -- * Functions (TODO organize these)
-    tb_attr_width,
-    tb_cell_buffer,
-    tb_clear,
-    tb_extend_cell,
-    tb_get_fds,
-    tb_has_egc,
-    tb_has_truecolor,
-    tb_height,
-    tb_hide_cursor,
+  ( -- * Functions
+
+    -- ** Initialize / shutdown
     tb_init,
     tb_init_fd,
     tb_init_file,
     tb_init_rwfd,
-    tb_invalidate,
-    tb_last_errno,
-    tb_peek_event,
-    tb_poll_event,
-    tb_present,
-    tb_print,
-    tb_print_ex,
-    tb_send,
-    tb_set_cell,
-    tb_set_cell_ex,
-    tb_set_clear_attrs,
-    tb_set_cursor,
-    tb_set_func,
+    tb_shutdown,
+
+    -- ** Get\/set the input\/output mode
     tb_set_input_mode,
     tb_set_output_mode,
-    tb_shutdown,
-    tb_strerror,
-    tb_utf8_char_length,
-    tb_utf8_char_to_unicode,
-    tb_utf8_unicode_to_char,
-    tb_version,
+
+    -- ** Get terminal dimensions
     tb_width,
+    tb_height,
+
+    -- ** Poll for events
+    tb_peek_event,
+    tb_poll_event,
+    tb_get_fds,
+
+    -- ** Set cell contents
+    tb_set_cell,
+    tb_set_cell_ex,
+    tb_extend_cell,
+    tb_print,
+    tb_print_ex,
+    tb_cell_buffer,
+
+    -- ** Set\/hide the cursor
+    tb_set_cursor,
+    tb_hide_cursor,
+
+    -- ** Send raw bytes
+    tb_send,
+
+    -- ** Clear and synchronize the back buffer
+    tb_clear,
+    tb_set_clear_attrs,
+    tb_present,
+    tb_invalidate,
+
+    -- ** Custom escape sequences
+    tb_set_func,
+
+    -- ** Error utils
+    tb_last_errno,
+    tb_strerror,
+
+    -- ** Query compile-time constants
+    tb_attr_width,
+    tb_has_egc,
+    tb_has_truecolor,
+    tb_version,
 
     -- * Objects
     Tb_cell (..),
@@ -379,9 +398,6 @@ import Termbox2.Bindings.C.Internal.Functions
     tb_set_output_mode,
     tb_shutdown,
     tb_strerror,
-    tb_utf8_char_length,
-    tb_utf8_char_to_unicode,
-    tb_utf8_unicode_to_char,
     tb_version,
     tb_width,
   )
