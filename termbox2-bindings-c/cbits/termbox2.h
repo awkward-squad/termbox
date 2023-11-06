@@ -76,10 +76,6 @@ extern "C" {
  *                    consume more memory in exchange for more features.
  *                    Defaults to 16.
  *
- *        TB_OPT_EGC: If set, enable extended grapheme cluster support
- *                    (tb_extend_cell, tb_set_cell_ex). Consumes more memory.
- *                    Defaults off.
- *
  * TB_OPT_PRINTF_BUF: Write buffer size for printf operations. Represents the
  *                    largest string that can be sent in one call to tb_print*
  *                    and tb_send* functions. Defaults to 4096.
@@ -94,11 +90,9 @@ extern "C" {
 #if defined(TB_LIB_OPTS) || 0 // __tb_lib_opts
 // Ensure consistent compile-time options when using as a shared library
 #undef TB_OPT_ATTR_W
-#undef TB_OPT_EGC
 #undef TB_OPT_PRINTF_BUF
 #undef TB_OPT_READ_BUF
 #define TB_OPT_ATTR_W 64
-#define TB_OPT_EGC
 #endif
 
 // Ensure sane TB_OPT_ATTR_W (16, 32, or 64)
@@ -416,11 +410,9 @@ struct tb_cell {
     uint32_t ch;   /* a Unicode character */
     uintattr_t fg; /* bitwise foreground attributes */
     uintattr_t bg; /* bitwise background attributes */
-#ifdef TB_OPT_EGC
     uint32_t *ech; /* a grapheme cluster of Unicode code points */
     size_t nech;   /* length in bytes of ech, 0 means use ch instead of ech */
     size_t cech;   /* capacity in bytes of ech */
-#endif
 };
 
 /* An incoming event from the tty.
@@ -1614,11 +1606,9 @@ int tb_present(void) {
 
             int w;
             {
-#ifdef TB_OPT_EGC
                 if (back->nech > 0)
                     w = wcswidth((wchar_t *)back->ech, back->nech);
                 else
-#endif
                     /* wcwidth() simply returns -1 on overflow of wchar_t */
                     w = wcwidth((wchar_t)back->ch);
             }
@@ -1636,11 +1626,9 @@ int tb_present(void) {
                     }
                 } else {
                     {
-#ifdef TB_OPT_EGC
                         if (back->nech > 0)
                             send_cluster(x, y, back->ech, back->nech);
                         else
-#endif
                             send_char(x, y, back->ch);
                     }
                     for (i = 1; i < w; i++) {
@@ -1713,7 +1701,6 @@ int tb_set_cell_ex(int x, int y, uint32_t *ch, size_t nch, uintattr_t fg,
 
 int tb_extend_cell(int x, int y, uint32_t ch) {
     if_not_init_return();
-#ifdef TB_OPT_EGC
     int rv;
     struct tb_cell *cell;
     size_t nech;
@@ -1731,12 +1718,6 @@ int tb_extend_cell(int x, int y, uint32_t ch) {
     cell->ech[nech] = '\0';
     cell->nech = nech;
     return TB_OK;
-#else
-    (void)x;
-    (void)y;
-    (void)ch;
-    return TB_ERR;
-#endif
 }
 
 int tb_set_input_mode(int mode) {
@@ -2002,11 +1983,7 @@ int tb_has_truecolor(void) {
 }
 
 int tb_has_egc(void) {
-#ifdef TB_OPT_EGC
     return 1;
-#else
-    return 0;
-#endif
 }
 
 int tb_attr_width(void) {
@@ -3204,22 +3181,18 @@ static int cell_cmp(struct tb_cell *a, struct tb_cell *b) {
     if (a->ch != b->ch || a->fg != b->fg || a->bg != b->bg) {
         return 1;
     }
-#ifdef TB_OPT_EGC
     if (a->nech != b->nech) {
         return 1;
     } else if (a->nech > 0) { // a->nech == b->nech
         return memcmp(a->ech, b->ech, a->nech);
     }
-#endif
     return 0;
 }
 
 static int cell_copy(struct tb_cell *dst, struct tb_cell *src) {
-#ifdef TB_OPT_EGC
     if (src->nech > 0) {
         return cell_set(dst, src->ech, src->nech, src->fg, src->bg);
     }
-#endif
     return cell_set(dst, &src->ch, 1, src->fg, src->bg);
 }
 
@@ -3228,7 +3201,6 @@ static int cell_set(struct tb_cell *cell, uint32_t *ch, size_t nch,
     cell->ch = ch ? *ch : 0;
     cell->fg = fg;
     cell->bg = bg;
-#ifdef TB_OPT_EGC
     if (nch <= 1) {
         cell->nech = 0;
     } else {
@@ -3238,15 +3210,10 @@ static int cell_set(struct tb_cell *cell, uint32_t *ch, size_t nch,
         cell->ech[nch] = '\0';
         cell->nech = nch;
     }
-#else
-    (void)nch;
-    (void)cell_reserve_ech;
-#endif
     return TB_OK;
 }
 
 static int cell_reserve_ech(struct tb_cell *cell, size_t n) {
-#ifdef TB_OPT_EGC
     if (cell->cech >= n) {
         return TB_OK;
     }
@@ -3255,19 +3222,12 @@ static int cell_reserve_ech(struct tb_cell *cell, size_t n) {
     }
     cell->cech = n;
     return TB_OK;
-#else
-    (void)cell;
-    (void)n;
-    return TB_ERR;
-#endif
 }
 
 static int cell_free(struct tb_cell *cell) {
-#ifdef TB_OPT_EGC
     if (cell->ech) {
         tb_free(cell->ech);
     }
-#endif
     memset(cell, 0, sizeof(*cell));
     return TB_OK;
 }
