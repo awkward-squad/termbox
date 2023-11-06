@@ -1,5 +1,8 @@
 module Termbox2.Bindings.C
-  ( -- * Constants
+  ( -- * Objects
+    Tb_cell (..),
+
+    -- * Constants
 
     -- ** Keys
     _TB_KEY_ARROW_DOWN,
@@ -164,6 +167,7 @@ module Termbox2.Bindings.C
   )
 where
 
+import Termbox2.Bindings.C.Internal.Cell (Tb_cell (..))
 import Termbox2.Bindings.C.Internal.Constants
   ( _TB_BLACK,
     _TB_BLINK,

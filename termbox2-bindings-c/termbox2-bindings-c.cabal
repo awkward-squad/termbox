@@ -33,7 +33,8 @@ source-repository head
 
 library
   build-depends: base ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17 || ^>= 4.18 || ^>= 4.19
-  -- Why doesn't this work...? For now I've manually edited termbox2.h to #define TB_LIB_OPTS...
+  -- These cc-options don't get passed when compiling capi wrappers: https://gitlab.haskell.org/ghc/ghc/-/issues/21835
+  -- Rather than use ccall, we just manually define TB_LIB_OPTS in termbox.h instead.
   -- cc-options: -DTB_LIB_OPTS
   default-extensions:
     CApiFFI
@@ -71,3 +72,4 @@ library
   includes: termbox2.h
   other-modules:
     Termbox2.Bindings.C.Internal.Constants
+    Termbox2.Bindings.C.Internal.Cell
