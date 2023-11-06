@@ -24,6 +24,7 @@ extra-doc-files:
   cbits/LICENSE
 
 extra-source-files:
+  cbits/termbox2.c
   cbits/termbox2.h
 
 source-repository head
@@ -31,19 +32,12 @@ source-repository head
   location: git://github.com/awkward-squad/termbox.git
   subdir: termbox2-bindings-c
 
-library
-  build-depends: base ^>= 4.18 || ^>= 4.19
-  -- These cc-options don't get passed when compiling capi wrappers: https://gitlab.haskell.org/ghc/ghc/-/issues/21835
-  -- Rather than use ccall, we just manually define TB_LIB_OPTS in termbox.h instead.
-  -- cc-options: -DTB_LIB_OPTS
-  default-extensions:
-    CApiFFI
-    DerivingStrategies
-    DuplicateRecordFields
-    InterruptibleFFI
+flag build-examples
+  default: False
+  manual: True
+
+common component
   default-language: GHC2021
-  exposed-modules: Termbox2.Bindings.C
-  hs-source-dirs: src
   ghc-options:
     -Weverything
     -Wno-all-missed-specialisations
@@ -59,6 +53,21 @@ library
   if impl(ghc >= 9.8)
     ghc-options:
       -Wno-missing-role-annotations
+
+library
+  import: component
+  build-depends: base ^>= 4.18 || ^>= 4.19
+  c-sources: cbits/termbox2.c
+  -- These cc-options don't get passed when compiling capi wrappers: https://gitlab.haskell.org/ghc/ghc/-/issues/21835
+  -- Rather than use ccall, we just manually define TB_LIB_OPTS in termbox2.h instead.
+  -- cc-options: -DTB_LIB_OPTS
+  default-extensions:
+    CApiFFI
+    DerivingStrategies
+    DuplicateRecordFields
+    InterruptibleFFI
+  exposed-modules: Termbox2.Bindings.C
+  hs-source-dirs: src
   include-dirs: cbits
   -- termbox2.h version:
   --   df4d01bf468853713906cc427c9635380a4c60bb on September 22, 2023
@@ -68,3 +77,13 @@ library
     Termbox2.Bindings.C.Internal.Cell
     Termbox2.Bindings.C.Internal.Event
     Termbox2.Bindings.C.Internal.Functions
+
+executable termbox2-bindings-c-example-demo
+  import: component
+  if !flag(build-examples)
+    buildable: False
+  build-depends:
+    base,
+    termbox2-bindings-c
+  hs-source-dirs: examples
+  main-is: Demo.hs
