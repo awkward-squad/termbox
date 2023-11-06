@@ -9,12 +9,15 @@ description:
   This package provides a high-level wrapper around @termbox@, a simple C
   library for writing text-based user interfaces: <https://github.com/termbox/termbox>
   .
-  See also:
+  See also the higher-level interfaces:
   .
-  * @<https://hackage.haskell.org/package/termbox-banana termbox-banana>@ for a @reactive-banana@ FRP interface.
-  * @<https://hackage.haskell.org/package/termbox-tea termbox-tea>@ for an Elm Architecture interface.
-  * @<https://hackage.haskell.org/package/termbox-bindings-hs termbox-bindings-hs>@ for lower-level bindings.
-  * @<https://hackage.haskell.org/package/termbox-bindings-c termbox-bindings-c>@ for even lower-level bindings.
+  * @<https://hackage.haskell.org/package/termbox-banana termbox-banana>@, a @reactive-banana@ FRP interface.
+  * @<https://hackage.haskell.org/package/termbox-tea termbox-tea>@, an Elm Architecture interface.
+  .
+  And the lower-level interfaces:
+  .
+  * @<https://hackage.haskell.org/package/termbox-bindings-hs termbox-bindings-hs>@, direct Haskell-flavored bindings.
+  * @<https://hackage.haskell.org/package/termbox-bindings-c termbox-bindings-c>@, direct C-flavored bindings.
 homepage: https://github.com/termbox/termbox-haskell
 license: BSD-3-Clause
 license-file: LICENSE
