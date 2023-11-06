@@ -1,6 +1,7 @@
 module Termbox2.Bindings.C
   ( -- * Objects
     Tb_cell (..),
+    Tb_event (..),
 
     -- * Constants
 
@@ -309,3 +310,5 @@ import Termbox2.Bindings.C.Internal.Constants
     _TB_WHITE,
     _TB_YELLOW,
   )
+import Termbox2.Bindings.C.Internal.Event (Tb_event (..))
+
