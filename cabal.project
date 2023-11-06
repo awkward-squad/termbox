@@ -3,4 +3,5 @@ packages:
   termbox-banana,
   termbox-bindings-hs,
   termbox-bindings-c,
-  termbox-tea
+  termbox-tea,
+  termbox2-bindings-c

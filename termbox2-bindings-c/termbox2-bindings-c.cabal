@@ -1,0 +1,69 @@
+cabal-version: 2.4
+
+author: Mitchell Rosen
+bug-reports: https://github.com/awkward-squad/termbox/issues
+build-type: Simple
+category: User Interfaces
+copyright: (c) 2023 Mitchell Rosen, Travis Staton
+description:
+  This package provides bindings to @termbox2@, a simple C library for writing text-based user interfaces:
+  <https://github.com/termbox/termbox>
+  .
+  The full source of @termbox2@ is bundled; you do not need to install any system packages to use this library.
+homepage: https://github.com/awkward-squad/termbox
+license-file: LICENSE
+license: BSD-3-Clause
+maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>, Travis Staton <hello@travisstaton.com>
+name: termbox2-bindings-c
+synopsis: termbox2 bindings
+tested-with: GHC == 9.4.7, GHC == 9.6.3, GHC == 9.8.1
+version: 1.0.0
+
+extra-doc-files:
+  CHANGELOG.md
+  cbits/LICENSE
+
+extra-source-files:
+  cbits/termbox2.h
+
+source-repository head
+  type: git
+  location: git://github.com/awkward-squad/termbox.git
+  subdir: termbox2-bindings-c
+
+library
+  build-depends: base ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17 || ^>= 4.18 || ^>= 4.19
+  default-extensions:
+    CApiFFI
+    DeriveGeneric
+    DerivingStrategies
+    DuplicateRecordFields
+    InstanceSigs
+    InterruptibleFFI
+    NamedFieldPuns
+  default-language: Haskell2010
+  exposed-modules: Termbox2.Bindings.C
+  hs-source-dirs: src
+  ghc-options:
+    -Weverything
+    -Wno-all-missed-specialisations
+    -Wno-implicit-prelude
+    -Wno-missing-import-lists
+    -Wno-missing-local-signatures
+    -Wno-monomorphism-restriction
+    -Wno-safe
+    -Wno-unsafe
+  if impl(ghc >= 8.10)
+    ghc-options:
+      -Wno-missing-safe-haskell-mode
+      -Wno-prepositive-qualified-module
+  if impl(ghc >= 9.2)
+    ghc-options:
+      -Wno-missing-kind-signatures
+  if impl(ghc >= 9.8)
+    ghc-options:
+      -Wno-missing-role-annotations
+  include-dirs: cbits
+  -- termbox2.h version:
+  --   df4d01bf468853713906cc427c9635380a4c60bb on September 22, 2023
+  includes: termbox2.h
