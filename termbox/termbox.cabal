@@ -18,7 +18,7 @@ description:
   .
   * @<https://hackage.haskell.org/package/termbox-bindings-hs termbox-bindings-hs>@, direct Haskell-flavored bindings.
   * @<https://hackage.haskell.org/package/termbox-bindings-c termbox-bindings-c>@, direct C-flavored bindings.
-homepage: https://github.com/termbox/termbox-haskell
+homepage: https://github.com/awkward-squad/termbox
 license: BSD-3-Clause
 license-file: LICENSE
 maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>, Travis Staton <hello@travisstaton.com>
@@ -26,6 +26,7 @@ name: termbox
 synopsis: termbox
 tested-with: GHC == 9.4.7, GHC == 9.6.3, GHC == 9.8.1
 version: 2.0.0
+x-revision: 1
 
 extra-doc-files:
   CHANGELOG.md

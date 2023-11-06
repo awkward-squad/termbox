@@ -1,7 +1,7 @@
 cabal-version: 2.4
 
 author: Mitchell Rosen
-bug-reports: https://github.com/termbox/termbox-haskell/issues
+bug-reports: https://github.com/awkward-squad/termbox/issues
 build-type: Simple
 category: User Interfaces
 copyright: (c) 2018-2023, Mitchell Rosen
@@ -11,7 +11,7 @@ description:
   See also:
   .
   * @<https://hackage.haskell.org/package/termbox-tea termbox-tea>@ for an Elm Architecture interface.
-homepage: https://github.com/termbox/termbox-haskell
+homepage: https://github.com/awkward-squad/termbox
 license: BSD-3-Clause
 license-file: LICENSE
 maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>
@@ -19,6 +19,7 @@ name: termbox-banana
 synopsis: termbox + reactive-banana
 tested-with: GHC == 9.2.7, GHC == 9.4.4, GHC == 9.6.1
 version: 2.0.0
+x-revision: 1
 
 extra-doc-files:
   CHANGELOG.md
