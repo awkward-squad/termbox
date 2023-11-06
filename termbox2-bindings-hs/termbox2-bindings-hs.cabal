@@ -13,32 +13,27 @@ description:
   .
   See also:
   .
-  * @<https://hackage.haskell.org/package/termbox2-bindings-hs termbox2-bindings-hs>@ for higher-level bindings.
+  * @<https://hackage.haskell.org/package/termbox2-bindings-c termbox2-bindings-c>@ for lower-level bindings.
 homepage: https://github.com/awkward-squad/termbox
 license-file: LICENSE
 license: BSD-3-Clause
 maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>, Travis Staton <hello@travisstaton.com>
-name: termbox2-bindings-c
+name: termbox2-bindings-hs
 synopsis: termbox2 bindings
 tested-with: GHC == 9.6.3, GHC == 9.8.1
 version: 1.0.0
 
 extra-doc-files:
   CHANGELOG.md
-  cbits/LICENSE
-
-extra-source-files:
-  cbits/termbox2.c
-  cbits/termbox2.h
 
 source-repository head
   type: git
   location: git://github.com/awkward-squad/termbox.git
-  subdir: termbox2-bindings-c
+  subdir: termbox2-bindings-hs
 
-flag build-examples
-  default: False
-  manual: True
+-- flag build-examples
+--   default: False
+--   manual: True
 
 common component
   default-language: GHC2021
@@ -60,34 +55,18 @@ common component
 
 library
   import: component
-  build-depends: base ^>= 4.18 || ^>= 4.19
-  c-sources: cbits/termbox2.c
-  -- These cc-options don't get passed when compiling capi wrappers: https://gitlab.haskell.org/ghc/ghc/-/issues/21835
-  -- Rather than use ccall, we just manually define TB_LIB_OPTS in termbox2.h instead.
-  -- cc-options: -DTB_LIB_OPTS
-  default-extensions:
-    CApiFFI
-    DerivingStrategies
-    DuplicateRecordFields
-    InterruptibleFFI
-  exposed-modules: Termbox2.Bindings.C
-  hs-source-dirs: src
-  include-dirs: cbits
-  -- termbox2.h version:
-  --   df4d01bf468853713906cc427c9635380a4c60bb on September 22, 2023
-  includes: termbox2.h
-  other-modules:
-    Termbox2.Bindings.C.Internal.Constants
-    Termbox2.Bindings.C.Internal.Cell
-    Termbox2.Bindings.C.Internal.Event
-    Termbox2.Bindings.C.Internal.Functions
-
-executable termbox2-bindings-c-example-demo
-  import: component
-  if !flag(build-examples)
-    buildable: False
   build-depends:
-    base,
-    termbox2-bindings-c
-  hs-source-dirs: examples
-  main-is: Demo.hs
+    base ^>= 4.18 || ^>= 4.19,
+    termbox2-bindings-c ^>= 1.0.0,
+  exposed-modules: Termbox2.Bindings.Hs
+  hs-source-dirs: src
+
+-- executable termbox2-bindings-hs-example-demo
+--   import: component
+--   if !flag(build-examples)
+--     buildable: False
+--   build-depends:
+--     base,
+--     termbox2-bindings-hs
+--   hs-source-dirs: examples
+--   main-is: Demo.hs

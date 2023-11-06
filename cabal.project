@@ -4,4 +4,5 @@ packages:
   termbox-bindings-hs,
   termbox-bindings-c,
   termbox-tea,
-  termbox2-bindings-c
+  termbox2-bindings-c,
+  termbox2-bindings-hs
