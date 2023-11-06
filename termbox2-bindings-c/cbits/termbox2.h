@@ -89,6 +89,7 @@ extern "C" {
  *  TB_OPT_TRUECOLOR: Deprecated. Sets TB_OPT_ATTR_W to 32 if not already set.
  */
 
+#define TB_LIB_OPTS
 #if defined(TB_LIB_OPTS) || 0 // __tb_lib_opts
 // Ensure consistent compile-time options when using as a shared library
 #undef TB_OPT_ATTR_W

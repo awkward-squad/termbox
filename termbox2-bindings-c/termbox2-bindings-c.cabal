@@ -7,7 +7,7 @@ category: User Interfaces
 copyright: (c) 2023 Mitchell Rosen, Travis Staton
 description:
   This package provides bindings to @termbox2@, a simple C library for writing text-based user interfaces:
-  <https://github.com/termbox/termbox>
+  <https://github.com/termbox/termbox2>
   .
   The full source of @termbox2@ is bundled; you do not need to install any system packages to use this library.
 homepage: https://github.com/awkward-squad/termbox
@@ -33,6 +33,8 @@ source-repository head
 
 library
   build-depends: base ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17 || ^>= 4.18 || ^>= 4.19
+  -- Why doesn't this work...? For now I've manually edited termbox2.h to #define TB_LIB_OPTS...
+  -- cc-options: -DTB_LIB_OPTS
   default-extensions:
     CApiFFI
     DeriveGeneric
@@ -67,3 +69,5 @@ library
   -- termbox2.h version:
   --   df4d01bf468853713906cc427c9635380a4c60bb on September 22, 2023
   includes: termbox2.h
+  other-modules:
+    Termbox2.Bindings.C.Internal.Constants
