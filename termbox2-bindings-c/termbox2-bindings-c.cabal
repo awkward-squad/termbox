@@ -74,3 +74,4 @@ library
     Termbox2.Bindings.C.Internal.Constants
     Termbox2.Bindings.C.Internal.Cell
     Termbox2.Bindings.C.Internal.Event
+    Termbox2.Bindings.C.Internal.Functions
