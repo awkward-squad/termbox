@@ -58,8 +58,14 @@ library
   build-depends:
     base ^>= 4.18 || ^>= 4.19,
     termbox2-bindings-c ^>= 1.0.0,
+  default-extensions:
+    DerivingStrategies
+    PatternSynonyms
+    ViewPatterns
   exposed-modules: Termbox2.Bindings.Hs
   hs-source-dirs: src
+  other-modules:
+    Termbox2.Bindings.Hs.Internal.Attr
 
 -- executable termbox2-bindings-hs-example-demo
 --   import: component
