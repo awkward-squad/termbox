@@ -1,0 +1,89 @@
+cabal-version: 2.4
+
+author: Mitchell Rosen
+bug-reports: https://github.com/awkward-squad/termbox/issues
+build-type: Simple
+category: User Interfaces
+copyright: (c) 2023 Mitchell Rosen, Travis Staton
+description:
+  This package provides bindings to @termbox2@, a simple C library for writing text-based user interfaces:
+  <https://github.com/termbox/termbox2>
+  .
+  The full source of @termbox2@ is bundled; you do not need to install any system packages to use this library.
+homepage: https://github.com/awkward-squad/termbox
+license-file: LICENSE
+license: BSD-3-Clause
+maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>, Travis Staton <hello@travisstaton.com>
+name: termbox2-bindings-c
+synopsis: termbox2 bindings
+tested-with: GHC == 9.6.3, GHC == 9.8.1
+version: 1.0.0
+
+extra-doc-files:
+  CHANGELOG.md
+  cbits/LICENSE
+
+extra-source-files:
+  cbits/termbox2.c
+  cbits/termbox2.h
+
+source-repository head
+  type: git
+  location: git://github.com/awkward-squad/termbox.git
+  subdir: termbox2-bindings-c
+
+flag build-examples
+  default: False
+  manual: True
+
+common component
+  default-language: GHC2021
+  ghc-options:
+    -Weverything
+    -Wno-all-missed-specialisations
+    -Wno-implicit-prelude
+    -Wno-missing-import-lists
+    -Wno-missing-kind-signatures
+    -Wno-missing-local-signatures
+    -Wno-missing-safe-haskell-mode
+    -Wno-monomorphism-restriction
+    -Wno-prepositive-qualified-module
+    -Wno-safe
+    -Wno-unsafe
+  if impl(ghc >= 9.8)
+    ghc-options:
+      -Wno-missing-role-annotations
+
+library
+  import: component
+  build-depends: base ^>= 4.18 || ^>= 4.19
+  c-sources: cbits/termbox2.c
+  -- These cc-options don't get passed when compiling capi wrappers: https://gitlab.haskell.org/ghc/ghc/-/issues/21835
+  -- Rather than use ccall, we just manually define TB_LIB_OPTS in termbox2.h instead.
+  -- cc-options: -DTB_LIB_OPTS
+  default-extensions:
+    CApiFFI
+    DerivingStrategies
+    DuplicateRecordFields
+    InterruptibleFFI
+  exposed-modules: Termbox2.Bindings.C
+  hs-source-dirs: src
+  include-dirs: cbits
+  -- termbox2.h version:
+  --   df4d01bf468853713906cc427c9635380a4c60bb on September 22, 2023
+  includes: termbox2.h
+  other-modules:
+    Termbox2.Bindings.C.Internal.Constants
+    Termbox2.Bindings.C.Internal.Cell
+    Termbox2.Bindings.C.Internal.Event
+    Termbox2.Bindings.C.Internal.Functions
+
+executable termbox2-bindings-c-example-demo
+  import: component
+  if !flag(build-examples)
+    buildable: False
+  build-depends:
+    base,
+    termbox2-bindings-c
+  hs-source-dirs: examples
+  main-is: Demo.hs
