@@ -1,71 +1,55 @@
 module Termbox.Internal.Scene
   ( Scene,
     render,
-    cell,
+    image,
     fill,
     cursor,
   )
 where
 
-import qualified Termbox.Bindings.Hs
-import Termbox.Internal.Cell (Cell, drawCell)
-import Termbox.Internal.Color (Color (Color))
+import Termbox.Bindings.Hs hiding (bg)
+import Termbox.Internal.Color (Color, MaybeColor, justColor, nothingColor, unMaybeColor)
+import Termbox.Internal.Image (Image (..))
 import Termbox.Internal.Pos (Pos (..))
+import qualified Termbox.Internal.Style as Style
 
--- | A scene.
+-- | A scene, which contains an image, an optional background fill color, and an optional cursor.
 --
--- * Set individual cells with 'cell'.
--- * Set the background fill color with 'fill'.
--- * Set the cursor position with 'cursor'.
--- * Combine scenes together with @<>@.
+-- * Create a scene with 'image'.
+-- * Set a scene\'s background fill color with 'fill'.
+-- * Set a scene\'s cursor position with 'cursor'.
 data Scene = Scene
-  { sceneFill :: Maybe Termbox.Bindings.Hs.Tb_color,
-    sceneDraw :: Termbox.Bindings.Hs.Tb_color -> IO ()
+  { sceneDraw :: !(MaybeColor -> IO ()),
+    sceneFill :: {-# UNPACK #-} !MaybeColor
   }
-
-instance Monoid Scene where
-  mempty =
-    Scene
-      { sceneFill = Nothing,
-        sceneDraw = \_ -> pure ()
-      }
-
-instance Semigroup Scene where
-  Scene fill0 draw0 <> Scene fill1 draw1 =
-    Scene
-      { sceneFill =
-          case fill1 of
-            Nothing -> fill0
-            Just _ -> fill1,
-        sceneDraw =
-          \color -> do
-            draw0 color
-            draw1 color
-      }
 
 -- | Render a scene.
 render :: Scene -> IO ()
 render Scene {sceneFill, sceneDraw} = do
-  let background =
-        case sceneFill of
-          Nothing -> Termbox.Bindings.Hs.TB_DEFAULT
-          Just color -> color
-  Termbox.Bindings.Hs.tb_set_clear_attributes Termbox.Bindings.Hs.TB_DEFAULT background
-  Termbox.Bindings.Hs.tb_clear
-  sceneDraw background
-  Termbox.Bindings.Hs.tb_present
+  tb_set_cursor Nothing
+  tb_set_clear_attributes TB_DEFAULT (unMaybeColor sceneFill)
+  tb_clear
+  sceneDraw sceneFill
+  tb_present
 
--- | Set the background fill color.
-fill :: Color -> Scene
-fill (Color color) =
-  mempty {sceneFill = Just color}
+-- | Create a scene from an image.
+image :: Image -> Scene
+image (Image draw) =
+  Scene
+    { sceneDraw = draw mempty . Style.maybeFill,
+      sceneFill = nothingColor
+    }
 
--- | Set a single cell.
-cell :: Pos -> Cell -> Scene
-cell Pos {col, row} img =
-  mempty {sceneDraw = \bg -> drawCell bg col row img}
+-- | Set a scene's background fill color.
+fill :: Color -> Scene -> Scene
+fill color scene =
+  scene {sceneFill = justColor color}
 
--- | Set the cursor position.
-cursor :: Pos -> Scene
-cursor Pos {col, row} =
-  mempty {sceneDraw = \_ -> Termbox.Bindings.Hs.tb_set_cursor (Just (col, row))}
+-- | Set a scene's cursor position.
+cursor :: Pos -> Scene -> Scene
+cursor Pos {col, row} scene =
+  scene
+    { sceneDraw = \background -> do
+        sceneDraw scene background
+        tb_set_cursor (Just (col, row))
+    }

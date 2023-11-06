@@ -6,8 +6,6 @@
 --
 -- * @<https://hackage.haskell.org/package/termbox-banana termbox-banana>@, a @reactive-banana@ FRP interface.
 -- * @<https://hackage.haskell.org/package/termbox-tea termbox-tea>@, an Elm Architecture interface.
---
--- This module is intended to be imported qualified.
 module Termbox
   ( -- * Main
     run,
@@ -19,19 +17,28 @@ module Termbox
 
     -- ** Scene
     Scene,
-    render,
-    cell,
+    image,
     fill,
     cursor,
+    render,
 
-    -- ** Cell
-    Cell,
+    -- ** Image
+    Image,
     char,
+
+    -- *** Color
     fg,
     bg,
+
+    -- *** Style
     bold,
     underline,
     blink,
+
+    -- *** Translation
+    at,
+    atRow,
+    atCol,
 
     -- ** Colors
     Color,
@@ -83,7 +90,6 @@ module Termbox
   )
 where
 
-import Termbox.Internal.Cell (Cell, bg, blink, bold, char, fg, underline)
 import Termbox.Internal.Color
   ( Color,
     blue,
@@ -99,6 +105,7 @@ import Termbox.Internal.Color
     yellow,
   )
 import Termbox.Internal.Event (Event (..), poll)
+import Termbox.Internal.Image (Image, at, atCol, atRow, bg, blink, bold, char, fg, underline)
 import Termbox.Internal.Key
   ( Key (..),
     pattern KeyCtrl2,
@@ -125,5 +132,5 @@ import Termbox.Internal.Mouse
       ),
   )
 import Termbox.Internal.Pos (Pos (..), posDown, posLeft, posRight, posUp)
-import Termbox.Internal.Scene (Scene, cell, cursor, fill, render)
+import Termbox.Internal.Scene (Scene, cursor, fill, image, render)
 import Termbox.Internal.Size (Size (..), getSize)

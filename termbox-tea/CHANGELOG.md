@@ -1,7 +1,11 @@
-## [0.1.0.1] - 2023-10-15
+## [1.0.0] - November 5, 2023
+
+- Update to `termbox-2.0.0`
+
+## [0.1.0.1] - October 15, 2023
 
 - Support GHC 9.8
 
-## [0.1.0] - 2022-11-03
+## [0.1.0] - November 3, 2022
 
 - Initial release

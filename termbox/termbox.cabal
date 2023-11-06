@@ -22,9 +22,9 @@ maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>, Travis Staton <hello@trav
 name: termbox
 synopsis: termbox
 tested-with: GHC == 9.4.7, GHC == 9.6.3, GHC == 9.8.1
-version: 1.1.0.2
+version: 2.0.0
 
-extra-source-files:
+extra-doc-files:
   CHANGELOG.md
 
 source-repository head
@@ -77,16 +77,17 @@ library
   import: component
   build-depends:
     base ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17 || ^>= 4.18 || ^>= 4.19,
-    termbox-bindings-hs ^>= 0.1,
+    termbox-bindings-hs ^>= 0.1.1,
   exposed-modules: Termbox
   hs-source-dirs: src
   other-modules:
-    Termbox.Internal.Cell
     Termbox.Internal.Color
     Termbox.Internal.Event
+    Termbox.Internal.Image
     Termbox.Internal.Key
     Termbox.Internal.Main
     Termbox.Internal.Mouse
     Termbox.Internal.Pos
     Termbox.Internal.Size
     Termbox.Internal.Scene
+    Termbox.Internal.Style

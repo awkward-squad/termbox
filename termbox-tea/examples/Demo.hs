@@ -1,11 +1,21 @@
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE ImportQualifiedPost #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE OverloadedRecordDot #-}
+
 module Main (main) where
 
 import Control.Concurrent (threadDelay)
-import Control.Concurrent.MVar
-import Control.Monad (forever)
+import Control.Concurrent.MVar (MVar, newEmptyMVar, putMVar, takeMVar)
+import Control.Monad (forever, guard)
+import Data.Function ((&))
 import GHC.Clock (getMonotonicTime)
-import qualified Ki
-import qualified Termbox.Tea as Termbox
+import Ki qualified
+import Termbox.Tea qualified as Termbox
 import Text.Printf (printf)
 
 main :: IO ()
@@ -26,21 +36,28 @@ main = do
             render,
             finished
           }
-  case result of
-    Left err -> print err
-    Right _state -> pure ()
+  putStrLn case result of
+    Left err -> "Termbox program failed to initialize: " ++ show err
+    Right state -> "Final state: " ++ show state
 
 data State = State
-  { elapsed :: Double,
-    lastKey :: Maybe Termbox.Key,
-    bright :: Bool
+  { elapsed :: !Double,
+    terminalSize :: !Termbox.Size,
+    lastKey :: !(Maybe Termbox.Key),
+    lastMouse :: !(Maybe Termbox.Mouse),
+    cursor :: !(Maybe (Termbox.Pos, Double)),
+    bright :: !Bool
   }
+  deriving stock (Show)
 
 initialize :: Termbox.Size -> State
-initialize _size =
+initialize terminalSize =
   State
     { elapsed = 0,
+      terminalSize,
       lastKey = Nothing,
+      lastMouse = Nothing,
+      cursor = Nothing,
       bright = False
     }
 
@@ -50,167 +67,134 @@ pollEvent t0 timeVar =
     t1 <- takeMVar timeVar
     pure (t1 - t0)
 
-handleEvent :: State -> Termbox.Event Double -> IO State
-handleEvent State {elapsed, lastKey, bright} = \case
+handleEvent :: (Applicative m) => State -> Termbox.Event Double -> m State
+handleEvent state = \case
   Termbox.EventKey key ->
     pure
-      State
-        { elapsed,
-          lastKey = Just key,
+      state
+        { lastKey = Just key,
           bright =
             case key of
-              Termbox.KeyChar '*' -> not bright
-              _ -> bright
+              Termbox.KeyChar '*' -> not state.bright
+              _ -> state.bright
         }
-  Termbox.EventUser elapsed1 ->
+  Termbox.EventMouse mouse ->
     pure
-      State
-        { elapsed = elapsed1,
-          lastKey,
-          bright
+      state
+        { lastMouse = Just mouse,
+          cursor =
+            case mouse.button of
+              Termbox.ReleaseClick -> Just (mouse.pos, state.elapsed + 1)
+              _ -> state.cursor
         }
-  _ ->
+  Termbox.EventResize terminalSize -> pure state {terminalSize}
+  Termbox.EventUser elapsed ->
     pure
-      State
+      state
         { elapsed,
-          lastKey,
-          bright
+          cursor = do
+            (pos, erase) <- state.cursor
+            guard (erase > elapsed)
+            Just (pos, erase)
         }
 
 render :: State -> Termbox.Scene
-render State {elapsed, lastKey, bright} =
-  renderBox Termbox.Pos {row = 1, col = 2} $
-    vcat
-      [ string "Welcome to Termbox. Try typing, clicking, and resizing the terminal!",
-        string " ",
-        hcat
-          [ string "Elapsed time: ",
-            string (map Termbox.char (printf "%.1fs" elapsed))
-          ],
-        hcat
-          [ string "Latest key press: ",
-            case lastKey of
-              Nothing -> emptyBox
-              Just event -> string (map (Termbox.bold . Termbox.char) (show event))
-          ],
-        string " ",
-        string "default red green yellow blue magenta cyan white",
-        hcat
-          [ rect
-              Rect
-                { size = Termbox.Size {width = 7, height = 2},
-                  color = brighten Termbox.defaultColor
-                },
-            string " ",
-            rect
-              Rect
-                { size = Termbox.Size {width = 3, height = 2},
-                  color = brighten Termbox.red
-                },
-            string " ",
-            rect
-              Rect
-                { size = Termbox.Size {width = 5, height = 2},
-                  color = brighten Termbox.green
-                },
-            string " ",
-            rect
-              Rect
-                { size = Termbox.Size {width = 6, height = 2},
-                  color = brighten Termbox.yellow
-                },
-            string " ",
-            rect
-              Rect
-                { size = Termbox.Size {width = 4, height = 2},
-                  color = brighten Termbox.blue
-                },
-            string " ",
-            rect
-              Rect
-                { size = Termbox.Size {width = 7, height = 2},
-                  color = brighten Termbox.magenta
-                },
-            string " ",
-            rect
-              Rect
-                { size = Termbox.Size {width = 4, height = 2},
-                  color = brighten Termbox.cyan
-                },
-            string " ",
-            rect
-              Rect
-                { size = Termbox.Size {width = 5, height = 2},
-                  color = brighten Termbox.white
-                },
-            string " ",
-            vcat
-              [ string ("Press " ++ [Termbox.bold (Termbox.char '*')] ++ " to toggle brightness."),
-                string
-                  ( let selected = map (Termbox.bg (Termbox.gray 20) . Termbox.fg (Termbox.gray 0))
-                     in if bright
-                          then "normal " ++ selected "bright"
-                          else selected "normal" ++ " bright"
-                  )
-              ]
-          ],
-        string " ",
-        string "color 0 .. color 215",
-        vcat
-          ( map
-              ( \is ->
-                  hcat
-                    ( map
-                        ( \i ->
-                            acat
-                              [ rect
-                                  Rect
-                                    { size = Termbox.Size {width = 4, height = 2},
-                                      color = Termbox.color i
-                                    },
-                                string (map (Termbox.bg (Termbox.color i) . Termbox.char) (show i))
-                              ]
-                        )
-                        is
-                    )
-              )
-              (chunksOf 24 [0 .. 215])
-          ),
-        string " ",
-        string "gray 0 .. gray 23",
-        hcat
-          ( map
-              ( \i ->
-                  acat
-                    [ rect
-                        Rect
-                          { size = Termbox.Size {width = 4, height = 2},
-                            color = Termbox.gray i
-                          },
-                      string (map (Termbox.bg (Termbox.gray i) . Termbox.char) (show i))
-                    ]
-              )
-              [0 .. 23]
-          ),
-        string " ",
-        hcat
-          [ string (map Termbox.bold "This text is bold."),
-            string " ",
-            string (map Termbox.underline "This text is underlined."),
-            string " ",
-            string (map Termbox.blink "This text is blinking (maybe).")
-          ],
-        string " ",
-        hcat
-          [ string "Press ",
-            string (map Termbox.bold "Esc"),
-            string " to quit!"
-          ]
-      ]
+render state =
+  vcat
+    [ string "Welcome to Termbox. Try typing, clicking, and resizing the terminal!",
+      string " ",
+      hcat
+        [ string "Elapsed time: ",
+          string (printf "%.1fs" state.elapsed)
+        ],
+      hcat [string "Terminal size: ", string (show state.terminalSize)],
+      hcat
+        [ string "Latest key press: ",
+          case state.lastKey of
+            Nothing -> emptyBox
+            Just event -> string (show event) & boldBox
+        ],
+      hcat
+        [ string "Latest mouse click: ",
+          case state.lastMouse of
+            Nothing -> emptyBox
+            Just event -> string (show event) & boldBox
+        ],
+      string " ",
+      hcat
+        [ let selected = bgBox (Termbox.gray 20) . fgBox (Termbox.gray 0)
+           in vcat
+                if state.bright
+                  then [string " ", string "normal", selected (string "bright")]
+                  else [string " ", selected (string "normal"), string "bright"],
+          string " ",
+          vcat
+            [ string "default red green yellow blue magenta cyan white",
+              hcat
+                [ rect Termbox.Size {width = 7, height = 2} (brighten Termbox.defaultColor),
+                  string " ",
+                  rect Termbox.Size {width = 3, height = 2} (brighten Termbox.red),
+                  string " ",
+                  rect Termbox.Size {width = 5, height = 2} (brighten Termbox.green),
+                  string " ",
+                  rect Termbox.Size {width = 6, height = 2} (brighten Termbox.yellow),
+                  string " ",
+                  rect Termbox.Size {width = 4, height = 2} (brighten Termbox.blue),
+                  string " ",
+                  rect Termbox.Size {width = 7, height = 2} (brighten Termbox.magenta),
+                  string " ",
+                  rect Termbox.Size {width = 4, height = 2} (brighten Termbox.cyan),
+                  string " ",
+                  rect Termbox.Size {width = 5, height = 2} (brighten Termbox.white),
+                  string " ",
+                  hcat [string "Press ", boldBox (string "*"), string " to toggle brightness."]
+                ]
+            ]
+        ],
+      string " ",
+      string "color 0 .. color 215",
+      vcat $
+        chunksOf 24 [0 .. 215] & map \is ->
+          hcat $
+            is & map \i ->
+              acat
+                [ rect Termbox.Size {width = 4, height = 2} (Termbox.color i),
+                  string (show i) & bgBox (Termbox.color i)
+                ],
+      string " ",
+      string "gray 0 .. gray 23",
+      hcat $
+        [0 .. 23] & map \i ->
+          acat
+            [ rect (Termbox.Size {width = 4, height = 2}) (Termbox.gray i),
+              string (show i) & bgBox (Termbox.gray i)
+            ],
+      string " ",
+      hcat
+        [ string "This text is bold." & boldBox,
+          string " ",
+          string "This text is underlined." & underlineBox,
+          string " ",
+          string "This text is blinking (maybe)." & blinkBox
+        ],
+      string " ",
+      hcat
+        [ string "Press ",
+          string "Esc" & boldBox,
+          string " to quit!"
+        ]
+    ]
+    & boxImage
+    & Termbox.at Termbox.Pos {row = 1, col = 2}
+    & Termbox.image
+    & case state.cursor of
+      Nothing -> id
+      Just (pos, _) -> Termbox.cursor pos
+    & Termbox.fill (Termbox.gray 4)
   where
     brighten :: Termbox.Color -> Termbox.Color
     brighten =
-      if bright
+      if state.bright
         then Termbox.bright
         else id
 
@@ -221,68 +205,71 @@ finished State {lastKey} =
     _ -> False
 
 data Box
-  = Box !Termbox.Size Content
-
-data Content
-  = E
-  | O !Termbox.Cell
-  | A !Box !Box
-  | H !Box !Box
-  | V !Box !Box
+  = Box !Termbox.Size !Termbox.Image
 
 emptyBox :: Box
 emptyBox =
-  Box (Termbox.Size 0 0) E
+  Box (Termbox.Size 0 0) mempty
 
-one :: Termbox.Cell -> Box
-one cell =
-  Box (Termbox.Size 1 1) (O cell) -- assume it's not an empty cell *shrug*
+boxImage :: Box -> Termbox.Image
+boxImage (Box _size image) =
+  image
+
+fgBox :: Termbox.Color -> Box -> Box
+fgBox color (Box size image) =
+  Box size (Termbox.fg color image)
+
+bgBox :: Termbox.Color -> Box -> Box
+bgBox color (Box size image) =
+  Box size (Termbox.bg color image)
+
+boldBox :: Box -> Box
+boldBox (Box size image) =
+  Box size (Termbox.bold image)
+
+underlineBox :: Box -> Box
+underlineBox (Box size image) =
+  Box size (Termbox.underline image)
+
+blinkBox :: Box -> Box
+blinkBox (Box size image) =
+  Box size (Termbox.blink image)
+
+one :: Char -> Box
+one char =
+  Box (Termbox.Size 1 1) (Termbox.char char)
 
 acat :: [Box] -> Box
 acat =
   foldr f emptyBox
   where
     f :: Box -> Box -> Box
-    f box1@(Box (Termbox.Size w1 h1) _) box2@(Box (Termbox.Size w2 h2) _) =
-      Box (Termbox.Size (max w1 w2) (max h1 h2)) (A box1 box2)
+    f (Box (Termbox.Size w1 h1) i1) (Box (Termbox.Size w2 h2) i2) =
+      Box (Termbox.Size (max w1 w2) (max h1 h2)) (i1 <> i2)
 
 hcat :: [Box] -> Box
 hcat =
   foldr f emptyBox
   where
     f :: Box -> Box -> Box
-    f box1@(Box (Termbox.Size w1 h1) _) box2@(Box (Termbox.Size w2 h2) _) =
-      Box (Termbox.Size (w1 + w2) (max h1 h2)) (H box1 box2)
+    f (Box (Termbox.Size w1 h1) i1) (Box (Termbox.Size w2 h2) i2) =
+      Box (Termbox.Size (w1 + w2) (max h1 h2)) (i1 <> Termbox.atCol w1 i2)
 
 vcat :: [Box] -> Box
 vcat =
   foldr f emptyBox
   where
     f :: Box -> Box -> Box
-    f box1@(Box (Termbox.Size w1 h1) _) box2@(Box (Termbox.Size w2 h2) _) =
-      Box (Termbox.Size (max w1 w2) (h1 + h2)) (V box1 box2)
+    f (Box (Termbox.Size w1 h1) i1) (Box (Termbox.Size w2 h2) i2) =
+      Box (Termbox.Size (max w1 w2) (h1 + h2)) (i1 <> Termbox.atRow h1 i2)
 
-renderBox :: Termbox.Pos -> Box -> Termbox.Scene
-renderBox pos (Box _ content) =
-  case content of
-    E -> mempty
-    O cell -> Termbox.cell pos cell
-    A box1 box2 -> renderBox pos box1 <> renderBox pos box2
-    H box1@(Box (Termbox.Size w1 _) _) box2 -> renderBox pos box1 <> renderBox (Termbox.posRight w1 pos) box2
-    V box1@(Box (Termbox.Size _ h1) _) box2 -> renderBox pos box1 <> renderBox (Termbox.posDown h1 pos) box2
-
-string :: [Termbox.Cell] -> Box
+string :: [Char] -> Box
 string =
   hcat . map one
 
-data Rect = Rect
-  { size :: Termbox.Size,
-    color :: Termbox.Color
-  }
-
-rect :: Rect -> Box
-rect Rect {size = Termbox.Size {width, height}, color} =
-  vcat (replicate height (string (replicate width (Termbox.bg color (Termbox.char ' ')))))
+rect :: Termbox.Size -> Termbox.Color -> Box
+rect Termbox.Size {width, height} color =
+  bgBox color (vcat (replicate height (string (replicate width ' '))))
 
 chunksOf :: Int -> [a] -> [[a]]
 chunksOf n = \case

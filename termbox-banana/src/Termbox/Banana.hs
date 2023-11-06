@@ -6,116 +6,130 @@
 --
 -- * @<https://hackage.haskell.org/package/termbox-tea termbox-tea>@, an Elm Architecture interface.
 --
--- This module is intended to be imported qualified.
---
 -- ==== __👉 Quick start example__
 --
 -- This @termbox@ program displays the number of keys pressed.
 --
 -- @
+-- {-\# LANGUAGE BlockArguments \#-}
 -- {-\# LANGUAGE DuplicateRecordFields \#-}
 -- {-\# LANGUAGE ImportQualifiedPost \#-}
 -- {-\# LANGUAGE LambdaCase \#-}
 -- {-\# LANGUAGE OverloadedRecordDot \#-}
--- {-\# LANGUAGE OverloadedStrings \#-}
--- {-\# LANGUAGE NoFieldSelectors \#-}
+--
+-- module Main (main) where
 --
 -- import Data.Foldable (fold)
+-- import Data.Function ((&))
 -- import Reactive.Banana ((\<\@\>))
 -- import Reactive.Banana qualified as Banana
 -- import Termbox.Banana qualified as Termbox
 --
 -- main :: IO ()
--- main =
---   Termbox.'run' network \>\>= \\case
---     Left err -\> putStrLn (\"Termbox program failed to initialize: \" ++ show err)
---     Right n -\> putStrLn (\"Pressed \" ++ show n ++ \" keys.\")
+-- main = do
+--   result \<- Termbox.'run' network
+--   putStrLn case result of
+--     Left err -\> \"Termbox program failed to initialize: \" ++ show err
+--     Right state -\> \"Final state: \" ++ show state
 --
--- network :: Banana.MonadMoment m =\> Termbox.'Inputs' -\> m (Termbox.'Outputs' Int)
+-- network :: (Banana.MonadMoment m) =\> Termbox.'Inputs' -\> m (Termbox.'Outputs' Int)
 -- network inputs = do
---   keysPressed <- Banana.accumB 0 ((+ 1) \<$ inputs.keys)
+--   keysPressed \<- Banana.accumB 0 ((+ 1) \<$ inputs.keys)
 --   pure
 --     Termbox.'Outputs'
 --       { scene = render \<$\> keysPressed,
 --         done = Banana.filterJust (isDone \<$\> keysPressed \<\@\> inputs.keys)
 --       }
 --   where
---     isDone :: Int -\> Termbox.'Termbox.Banana.Key' -\> Maybe Int
+--     isDone :: Int -\> Termbox.'Key' -\> Maybe Int
 --     isDone n = \\case
---       Termbox.'Termbox.Banana.KeyEsc' -\> Just n
+--       Termbox.'KeyEsc' -\> Just n
 --       _ -\> Nothing
 --
--- render :: Int -\> Termbox.'Termbox.Banana.Scene'
+-- render :: Int -\> Termbox.'Scene'
 -- render keysPressed =
 --   fold
---     [ string
---         Termbox.'Termbox.Banana.Pos' {row = 2, col = 4}
---         (\"Number of keys pressed: \" ++ map Termbox.'Termbox.Banana.char' (show keysPressed)),
---       string
---         Termbox.'Termbox.Banana.Pos' {row = 4, col = 4}
---         (\"Press \" ++ map (Termbox.'Termbox.Banana.bold' . Termbox.'Termbox.Banana.char') \"Esc\" ++ \" to quit.\")
+--     [ string (\"Number of keys pressed: \" ++ show keysPressed),
+--       fold
+--         [ string \"Press\",
+--           string \"Esc\" & Termbox.'bold' & Termbox.'atCol' 6,
+--           string \"to quit.\" & Termbox.'atCol' 10
+--         ]
+--         & Termbox.'atRow' 2
 --     ]
+--     & Termbox.'at' Termbox.'Pos' {row = 2, col = 4}
+--     & Termbox.'image'
 --
--- string :: Termbox.'Termbox.Banana.Pos' -\> [Termbox.'Termbox.Banana.Cell'] -\> Termbox.'Termbox.Banana.Scene'
--- string pos cells =
---   foldMap (\\(i, cell) -\> Termbox.'Termbox.Banana.cell' (Termbox.'Termbox.Banana.posRight' i pos) cell) (zip [0 ..] cells)
+-- string :: [Char] -\> Termbox.'Image'
+-- string chars =
+--   zip [0 ..] chars & foldMap \\(i, char) -\>
+--     Termbox.'char' char & Termbox.'atCol' i
 -- @
 module Termbox.Banana
   ( -- * Main
     Inputs (..),
     Outputs (..),
     run,
-    Termbox.InitError (..),
+    InitError (..),
 
     -- * Terminal contents
 
     -- ** Scene
-    Termbox.Scene,
-    Termbox.cell,
-    Termbox.fill,
-    Termbox.cursor,
+    Scene,
+    image,
+    fill,
+    cursor,
 
-    -- ** Cell
-    Termbox.Cell,
-    Termbox.char,
-    Termbox.fg,
-    Termbox.bg,
-    Termbox.bold,
-    Termbox.underline,
-    Termbox.blink,
+    -- ** Image
+    Image,
+    char,
+
+    -- *** Color
+    fg,
+    bg,
+
+    -- *** Style
+    bold,
+    underline,
+    blink,
+
+    -- *** Translation
+    at,
+    atRow,
+    atCol,
 
     -- ** Colors
-    Termbox.Color,
+    Color,
 
     -- *** Basic colors
-    Termbox.defaultColor,
-    Termbox.red,
-    Termbox.green,
-    Termbox.yellow,
-    Termbox.blue,
-    Termbox.magenta,
-    Termbox.cyan,
-    Termbox.white,
-    Termbox.bright,
+    defaultColor,
+    red,
+    green,
+    yellow,
+    blue,
+    magenta,
+    cyan,
+    white,
+    bright,
 
     -- *** 216 miscellaneous colors
-    Termbox.color,
+    color,
 
     -- *** 24 monochrome colors
-    Termbox.gray,
+    gray,
 
     -- * Event handling
-    Termbox.Key (..),
-    Termbox.Mouse (..),
-    Termbox.MouseButton (..),
+    Key (..),
+    Mouse (..),
+    MouseButton (..),
 
     -- * Miscellaneous types
-    Termbox.Pos (..),
-    Termbox.posUp,
-    Termbox.posDown,
-    Termbox.posLeft,
-    Termbox.posRight,
-    Termbox.Size (..),
+    Pos (..),
+    posUp,
+    posDown,
+    posLeft,
+    posRight,
+    Size (..),
   )
 where
 
@@ -124,24 +138,64 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Void (Void)
 import qualified Reactive.Banana as Banana
 import qualified Reactive.Banana.Frameworks as Banana
-import qualified Termbox
+import Termbox
+  ( Color,
+    Image,
+    InitError (..),
+    Key (..),
+    Mouse (..),
+    MouseButton (..),
+    Pos (..),
+    Scene,
+    Size (..),
+    at,
+    atCol,
+    atRow,
+    bg,
+    blink,
+    blue,
+    bold,
+    bright,
+    char,
+    color,
+    cursor,
+    cyan,
+    defaultColor,
+    fg,
+    fill,
+    getSize,
+    gray,
+    green,
+    image,
+    magenta,
+    poll,
+    posDown,
+    posLeft,
+    posRight,
+    posUp,
+    red,
+    underline,
+    white,
+    yellow,
+  )
+import qualified Termbox (Event (..), render, run)
 
 -- | The inputs to a @termbox@ FRP network.
 data Inputs = Inputs
   { -- | The initial terminal size.
-    initialSize :: !Termbox.Size,
+    initialSize :: !Size,
     -- | Key events.
-    keys :: !(Banana.Event Termbox.Key),
+    keys :: !(Banana.Event Key),
     -- | Resize events.
-    resizes :: !(Banana.Event Termbox.Size),
+    resizes :: !(Banana.Event Size),
     -- | Mouse events.
-    mouses :: !(Banana.Event Termbox.Mouse)
+    mouses :: !(Banana.Event Mouse)
   }
 
 -- | The outputs from a @termbox@ FRP network.
 data Outputs a = Outputs
   { -- | The scene to render.
-    scene :: !(Banana.Behavior Termbox.Scene),
+    scene :: !(Banana.Behavior Scene),
     -- | The events of arbitrary values, on the first of which is relevant, which causes 'run' to return.
     --
     -- /Note/: Wrapping this event in 'Banana.once' is not necessary, as this library does so internally.
@@ -158,13 +212,13 @@ run ::
   -- | The FRP network.
   (Inputs -> Banana.MomentIO (Outputs a)) ->
   -- | The result of the FRP network.
-  IO (Either Termbox.InitError a)
+  IO (Either InitError a)
 run program =
   Termbox.run (run_ program)
 
 run_ :: (Inputs -> Banana.MomentIO (Outputs a)) -> IO a
 run_ program = do
-  initialSize <- Termbox.getSize
+  initialSize <- getSize
 
   doneVar <- newEmptyMVar
   (keysAddHandler, fireKey) <- Banana.newAddHandler
@@ -191,7 +245,7 @@ run_ program = do
   Banana.actuate network
 
   let loop = do
-        Termbox.poll @Void >>= \case
+        poll @Void >>= \case
           Termbox.EventKey key -> fireKey key
           Termbox.EventResize size -> fireResize size
           Termbox.EventMouse mouse -> fireMouse mouse

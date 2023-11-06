@@ -6,47 +6,46 @@
 --
 -- * @<https://hackage.haskell.org/package/termbox-banana termbox-banana>@, a @reactive-banana@ FRP interface.
 --
--- This module is intended to be imported qualified.
---
 -- ==== __👉 Quick start example__
 --
 -- This @termbox@ program displays the number of keys pressed.
 --
 -- @
+-- {-\# LANGUAGE BlockArguments \#-}
 -- {-\# LANGUAGE DerivingStrategies \#-}
 -- {-\# LANGUAGE DuplicateRecordFields \#-}
 -- {-\# LANGUAGE ImportQualifiedPost \#-}
 -- {-\# LANGUAGE LambdaCase \#-}
+-- {-\# LANGUAGE NamedFieldPuns \#-}
 -- {-\# LANGUAGE OverloadedRecordDot \#-}
--- {-\# LANGUAGE OverloadedStrings \#-}
--- {-\# LANGUAGE NoFieldSelectors \#-}
 --
 -- import Data.Foldable (fold)
+-- import Data.Function ((&))
 -- import Data.Void (Void)
 -- import Termbox.Tea qualified as Termbox
 --
 -- main :: IO ()
 -- main = do
---   result <-
+--   result \<-
 --     Termbox.'run'
---       Termbox.'Termbox.Tea.Program'
+--       Termbox.'Program'
 --         { initialize,
 --           pollEvent,
 --           handleEvent,
 --           render,
 --           finished
 --         }
---   case result of
---     Left err -\> putStrLn (\"Termbox program failed to initialize: \" ++ show err)
---     Right state -\> putStrLn (\"Final state: \" ++ show state)
+--   putStrLn case result of
+--     Left err -\> \"Termbox program failed to initialize: \" ++ show err
+--     Right state -\> \"Final state: \" ++ show state
 --
 -- data MyState = MyState
---   { keysPressed :: Int,
---     pressedEsc :: Bool
+--   { keysPressed :: !Int,
+--     pressedEsc :: !Bool
 --   }
 --   deriving stock (Show)
 --
--- initialize :: Termbox.'Termbox.Tea.Size' -\> MyState
+-- initialize :: Termbox.'Size' -\> MyState
 -- initialize _size =
 --   MyState
 --     { keysPressed = 0,
@@ -57,113 +56,167 @@
 -- pollEvent =
 --   Nothing
 --
--- handleEvent :: MyState -\> Termbox.'Termbox.Tea.Event' Void -\> IO MyState
+-- handleEvent :: MyState -\> Termbox.'Event' Void -\> IO MyState
 -- handleEvent state = \\case
---   Termbox.'Termbox.Tea.EventKey' key -\>
+--   Termbox.'EventKey' key -\>
 --     pure
 --       MyState
 --         { keysPressed = state.keysPressed + 1,
 --           pressedEsc =
 --             case key of
---               Termbox.'Termbox.Tea.KeyEsc' -\> True
+--               Termbox.'KeyEsc' -\> True
 --               _ -\> False
 --         }
 --   _ -\> pure state
 --
--- render :: MyState -\> Termbox.'Termbox.Tea.Scene'
+-- render :: MyState -\> Termbox.'Scene'
 -- render state =
 --   fold
---     [ string
---         Termbox.'Termbox.Tea.Pos' {row = 2, col = 4}
---         (\"Number of keys pressed: \" ++ map Termbox.'Termbox.Tea.char' (show state.keysPressed))
---     , string
---         Termbox.'Termbox.Tea.Pos' {row = 4, col = 4}
---         (\"Press \" ++ map (Termbox.'Termbox.Tea.bold' . Termbox.'Termbox.Tea.char') \"Esc\" ++ \" to quit.\")
+--     [ string (\"Number of keys pressed: \" ++ show state.keysPressed),
+--       fold
+--         [ string \"Press\",
+--           string \"Esc\" & Termbox.'bold' & Termbox.'atCol' 6,
+--           string \"to quit.\" & Termbox.'atCol' 10
+--         ]
+--         & Termbox.'atRow' 2
 --     ]
+--     & Termbox.'at' Termbox.'Pos' {row = 2, col = 4}
+--     & Termbox.'image'
 --
 -- finished :: MyState -\> Bool
 -- finished state =
 --   state.pressedEsc
 --
--- string :: Termbox.'Termbox.Tea.Pos' -\> [Termbox.'Termbox.Tea.Cell'] -\> Termbox.'Termbox.Tea.Scene'
--- string pos cells =
---   foldMap (\\(i, cell) -\> Termbox.'Termbox.Tea.cell' (Termbox.'Termbox.Tea.posRight' i pos) cell) (zip [0 ..] cells)
+-- string :: [Char] -\> Termbox.'Image'
+-- string chars =
+--   zip [0 ..] chars & foldMap \\(i, char) -\>
+--     Termbox.char char & Termbox.atCol i
 -- @
 module Termbox.Tea
   ( -- * Main
     Program (..),
     run,
-    Termbox.InitError (..),
+    InitError (..),
 
     -- * Terminal contents
 
     -- ** Scene
-    Termbox.Scene,
-    Termbox.cell,
-    Termbox.fill,
-    Termbox.cursor,
+    Scene,
+    image,
+    fill,
+    cursor,
 
-    -- ** Cell
-    Termbox.Cell,
-    Termbox.char,
-    Termbox.fg,
-    Termbox.bg,
-    Termbox.bold,
-    Termbox.underline,
-    Termbox.blink,
+    -- ** Image
+    Image,
+    char,
+
+    -- *** Color
+    fg,
+    bg,
+
+    -- *** Style
+    bold,
+    underline,
+    blink,
+
+    -- *** Translation
+    at,
+    atRow,
+    atCol,
 
     -- ** Colors
-    Termbox.Color,
+    Color,
 
     -- *** Basic colors
-    Termbox.defaultColor,
-    Termbox.red,
-    Termbox.green,
-    Termbox.yellow,
-    Termbox.blue,
-    Termbox.magenta,
-    Termbox.cyan,
-    Termbox.white,
-    Termbox.bright,
+    defaultColor,
+    red,
+    green,
+    yellow,
+    blue,
+    magenta,
+    cyan,
+    white,
+    bright,
 
     -- *** 216 miscellaneous colors
-    Termbox.color,
+    color,
 
     -- *** 24 monochrome colors
-    Termbox.gray,
+    gray,
 
     -- * Event handling
-    Termbox.Event (..),
-    Termbox.Key (..),
-    Termbox.Mouse (..),
-    Termbox.MouseButton (..),
+    Event (..),
+    Key (..),
+    Mouse (..),
+    MouseButton (..),
 
     -- * Miscellaneous types
-    Termbox.Pos (..),
-    Termbox.posUp,
-    Termbox.posDown,
-    Termbox.posLeft,
-    Termbox.posRight,
-    Termbox.Size (..),
+    Pos (..),
+    posUp,
+    posDown,
+    posLeft,
+    posRight,
+    Size (..),
   )
 where
 
-import Control.Concurrent.MVar
+import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Monad (forever)
 import qualified Ki
-import qualified Termbox
+import Termbox
+  ( Color,
+    Event (..),
+    Image,
+    InitError (..),
+    Key (..),
+    Mouse (..),
+    MouseButton (..),
+    Pos (..),
+    Scene,
+    Size (..),
+    at,
+    atCol,
+    atRow,
+    bg,
+    blink,
+    blue,
+    bold,
+    bright,
+    char,
+    color,
+    cursor,
+    cyan,
+    defaultColor,
+    fg,
+    fill,
+    getSize,
+    gray,
+    green,
+    image,
+    magenta,
+    poll,
+    posDown,
+    posLeft,
+    posRight,
+    posUp,
+    red,
+    underline,
+    white,
+    yellow,
+  )
+import qualified Termbox (render, run)
 
 -- | A @termbox@ program, parameterized by state __@s@__.
 data Program s = forall e.
   Program
   { -- | The initial state, given the initial terminal size.
-    initialize :: Termbox.Size -> s,
+    initialize :: Size -> s,
     -- | Poll for a user event. Every value that this @IO@ action returns is provided to @handleEvent@.
     pollEvent :: Maybe (IO e),
     -- | Handle an event.
-    handleEvent :: s -> Termbox.Event e -> IO s,
+    handleEvent :: s -> Event e -> IO s,
     -- | Render the current state.
-    render :: s -> Termbox.Scene,
+    render :: s -> Scene,
     -- | Is the current state finished?
     finished :: s -> Bool
   }
@@ -172,15 +225,15 @@ data Program s = forall e.
 --
 -- @run@ either:
 --
---   * Returns immediately with an 'Termbox.Tea.InitError'.
+--   * Returns immediately with an @InitError@.
 --   * Returns the final state, once it's @finished@.
-run :: Program s -> IO (Either Termbox.InitError s)
+run :: Program s -> IO (Either InitError s)
 run program =
   Termbox.run (run_ program)
 
 run_ :: Program s -> IO s
 run_ Program {initialize, pollEvent, handleEvent, render, finished} = do
-  state0 <- initialize <$> Termbox.getSize
+  state0 <- initialize <$> getSize
 
   let loop0 doPoll =
         let loop s0 =
@@ -194,7 +247,7 @@ run_ Program {initialize, pollEvent, handleEvent, render, finished} = do
          in loop
 
   case pollEvent of
-    Nothing -> loop0 Termbox.poll state0
+    Nothing -> loop0 poll state0
     Just pollEvent1 -> do
       eventVar <- newEmptyMVar
 
@@ -202,7 +255,7 @@ run_ Program {initialize, pollEvent, handleEvent, render, finished} = do
         Ki.fork_ scope do
           forever do
             event <- pollEvent1
-            putMVar eventVar (Termbox.EventUser event)
+            putMVar eventVar (EventUser event)
 
         Ki.fork_ scope do
           forever do

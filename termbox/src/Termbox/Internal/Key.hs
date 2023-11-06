@@ -22,7 +22,7 @@ import qualified Termbox.Bindings.Hs
 -- indistinguishable from @Ctrl+M@. Pattern synonyms below are provided for an alternate syntax in these cases, if
 -- desired.
 data Key
-  = KeyChar Char
+  = KeyChar !Char
   | KeyArrowDown
   | KeyArrowLeft
   | KeyArrowRight

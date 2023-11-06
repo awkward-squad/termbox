@@ -20,10 +20,9 @@ maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>, Travis Staton <hello@trav
 name: termbox-bindings-hs
 synopsis: termbox bindings
 tested-with: GHC == 9.4.7, GHC == 9.6.3, GHC == 9.8.1
-version: 0.1.0
-x-revision: 2
+version: 0.1.1
 
-extra-source-files:
+extra-doc-files:
   CHANGELOG.md
 
 source-repository head
@@ -65,3 +64,16 @@ library
   if impl(ghc >= 9.2)
     ghc-options:
       -Wno-missing-kind-signatures
+  other-modules:
+    Termbox.Bindings.Hs.Internal.Attr
+    Termbox.Bindings.Hs.Internal.Cell
+    Termbox.Bindings.Hs.Internal.Color
+    Termbox.Bindings.Hs.Internal.Event
+    Termbox.Bindings.Hs.Internal.EventMod
+    Termbox.Bindings.Hs.Internal.EventType
+    Termbox.Bindings.Hs.Internal.InitError
+    Termbox.Bindings.Hs.Internal.InputMode
+    Termbox.Bindings.Hs.Internal.Functions
+    Termbox.Bindings.Hs.Internal.Key
+    Termbox.Bindings.Hs.Internal.OutputMode
+    Termbox.Bindings.Hs.Internal.Prelude

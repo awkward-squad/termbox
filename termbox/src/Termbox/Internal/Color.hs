@@ -1,5 +1,6 @@
 module Termbox.Internal.Color
-  ( Color (..),
+  ( -- * Color
+    Color (..),
     defaultColor,
     red,
     green,
@@ -11,12 +12,18 @@ module Termbox.Internal.Color
     bright,
     color,
     gray,
+
+    -- * MaybeColor
+    MaybeColor,
+    unMaybeColor,
+    nothingColor,
+    justColor,
   )
 where
 
 import Data.Coerce (coerce)
 import Data.Word (Word16)
-import qualified Termbox.Bindings.Hs
+import Termbox.Bindings.Hs
 
 -- | A color.
 --
@@ -26,7 +33,8 @@ import qualified Termbox.Bindings.Hs
 -- * Miscellaneous colors, such as @'color' 33@.
 -- * Monochrome colors that range from black (@'gray' 0@) to white (@'gray' 23@).
 newtype Color
-  = Color Termbox.Bindings.Hs.Tb_color
+  = Color Tb_color
+  deriving newtype (Eq)
 
 defaultColor :: Color
 defaultColor =
@@ -60,12 +68,12 @@ white :: Color
 white =
   Color 7
 
--- | Make a basic color brighter.
+-- | Make a basic color bright.
 bright :: Color -> Color
 bright =
   coerce bright_
 
-bright_ :: Termbox.Bindings.Hs.Tb_color -> Termbox.Bindings.Hs.Tb_color
+bright_ :: Tb_color -> Tb_color
 bright_ c
   | c <= 7 = c + 8
   | otherwise = c
@@ -83,3 +91,21 @@ color =
 gray :: Int -> Color
 gray =
   coerce (fromIntegral @Int @Word16 . (+ 232) . max 0 . min 23)
+
+-- This is a more efficient `Maybe Color`; we represent Nothing by WORD_MAX (which isn't a valid termbox color)
+newtype MaybeColor
+  = MaybeColor Color
+  deriving stock (Eq)
+
+unMaybeColor :: MaybeColor -> Tb_color
+unMaybeColor (MaybeColor (Color (Tb_color c)))
+  | c == maxBound = TB_DEFAULT
+  | otherwise = Tb_color c
+
+nothingColor :: MaybeColor
+nothingColor =
+  MaybeColor (Color (Tb_color maxBound))
+
+justColor :: Color -> MaybeColor
+justColor =
+  MaybeColor
