@@ -66,23 +66,6 @@ extern "C" {
 
 #define TB_VERSION_STR "2.4.0-dev"
 
-/* The following compile-time options are supported:
- *
- * TB_OPT_PRINTF_BUF: Write buffer size for printf operations. Represents the
- *                    largest string that can be sent in one call to tb_print*
- *                    and tb_send* functions. Defaults to 4096.
- *
- *   TB_OPT_READ_BUF: Read buffer size for tty reads. Defaults to 64.
- */
-
-#define TB_LIB_OPTS
-
-#if defined(TB_LIB_OPTS) || 0 // __tb_lib_opts
-// Ensure consistent compile-time options when using as a shared library
-#undef TB_OPT_PRINTF_BUF
-#undef TB_OPT_READ_BUF
-#endif
-
 /* ASCII key constants (tb_event.key) */
 #define TB_KEY_CTRL_TILDE       0x00
 #define TB_KEY_CTRL_2           0x00 /* clash with 'CTRL_TILDE'     */
@@ -305,20 +288,6 @@ extern "C" {
 /* Function types to be used with tb_set_func() */
 #define TB_FUNC_EXTRACT_PRE     0
 #define TB_FUNC_EXTRACT_POST    1
-
-/* Define this to set the size of the buffer used in tb_printf()
- * and tb_sendf()
- */
-#ifndef TB_OPT_PRINTF_BUF
-#define TB_OPT_PRINTF_BUF 4096
-#endif
-
-/* Define this to set the size of the read buffer used when reading
- * from the tty
- */
-#ifndef TB_OPT_READ_BUF
-#define TB_OPT_READ_BUF 64
-#endif
 
 /* Define this for limited back compat with termbox v1 */
 #ifdef TB_OPT_V1_COMPAT
@@ -1793,7 +1762,7 @@ int tb_send(const char *buf, size_t nbuf) {
 
 int tb_sendf(const char *fmt, ...) {
     int rv;
-    char buf[TB_OPT_PRINTF_BUF];
+    char buf[4096];
     va_list vl;
     va_start(vl, fmt);
     rv = vsnprintf(buf, sizeof(buf), fmt, vl);
@@ -1993,7 +1962,7 @@ static int init_term_attrs(void) {
 int tb_printf_inner(int x, int y, uintattr_t fg, uintattr_t bg, size_t *out_w,
     const char *fmt, va_list vl) {
     int rv;
-    char buf[TB_OPT_PRINTF_BUF];
+    char buf[4096];
     rv = vsnprintf(buf, sizeof(buf), fmt, vl);
     if (rv < 0 || rv >= (int)sizeof(buf)) {
         return TB_ERR;
@@ -2220,7 +2189,7 @@ static int update_term_size_via_esc(void) {
         return TB_ERR_RESIZE_POLL;
     }
 
-    char buf[TB_OPT_READ_BUF];
+    char buf[64];
     ssize_t read_rv = read(global.rfd, buf, sizeof(buf) - 1);
     if (read_rv < 1) {
         global.last_errno = errno;
@@ -2512,7 +2481,7 @@ static const char *get_terminfo_string(int16_t str_offsets_pos,
 
 static int wait_event(struct tb_event *event, int timeout) {
     int rv;
-    char buf[TB_OPT_READ_BUF];
+    char buf[64];
 
     memset(event, 0, sizeof(*event));
     if_ok_return(rv, extract_event(event));

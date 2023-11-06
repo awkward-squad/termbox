@@ -62,9 +62,6 @@ library
   import: component
   build-depends: base ^>= 4.18 || ^>= 4.19
   c-sources: cbits/termbox2.c
-  -- These cc-options don't get passed when compiling capi wrappers: https://gitlab.haskell.org/ghc/ghc/-/issues/21835
-  -- Rather than use ccall, we just manually define TB_LIB_OPTS in termbox2.h instead.
-  -- cc-options: -DTB_LIB_OPTS
   default-extensions:
     CApiFFI
     DerivingStrategies
