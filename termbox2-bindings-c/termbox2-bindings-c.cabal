@@ -16,7 +16,7 @@ license: BSD-3-Clause
 maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>, Travis Staton <hello@travisstaton.com>
 name: termbox2-bindings-c
 synopsis: termbox2 bindings
-tested-with: GHC == 9.4.7, GHC == 9.6.3, GHC == 9.8.1
+tested-with: GHC == 9.6.3, GHC == 9.8.1
 version: 1.0.0
 
 extra-doc-files:
@@ -32,19 +32,16 @@ source-repository head
   subdir: termbox2-bindings-c
 
 library
-  build-depends: base ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17 || ^>= 4.18 || ^>= 4.19
+  build-depends: base ^>= 4.18 || ^>= 4.19
   -- These cc-options don't get passed when compiling capi wrappers: https://gitlab.haskell.org/ghc/ghc/-/issues/21835
   -- Rather than use ccall, we just manually define TB_LIB_OPTS in termbox.h instead.
   -- cc-options: -DTB_LIB_OPTS
   default-extensions:
     CApiFFI
-    DeriveGeneric
     DerivingStrategies
     DuplicateRecordFields
-    InstanceSigs
     InterruptibleFFI
-    NamedFieldPuns
-  default-language: Haskell2010
+  default-language: GHC2021
   exposed-modules: Termbox2.Bindings.C
   hs-source-dirs: src
   ghc-options:
@@ -52,17 +49,13 @@ library
     -Wno-all-missed-specialisations
     -Wno-implicit-prelude
     -Wno-missing-import-lists
+    -Wno-missing-kind-signatures
     -Wno-missing-local-signatures
+    -Wno-missing-safe-haskell-mode
     -Wno-monomorphism-restriction
+    -Wno-prepositive-qualified-module
     -Wno-safe
     -Wno-unsafe
-  if impl(ghc >= 8.10)
-    ghc-options:
-      -Wno-missing-safe-haskell-mode
-      -Wno-prepositive-qualified-module
-  if impl(ghc >= 9.2)
-    ghc-options:
-      -Wno-missing-kind-signatures
   if impl(ghc >= 9.8)
     ghc-options:
       -Wno-missing-role-annotations
