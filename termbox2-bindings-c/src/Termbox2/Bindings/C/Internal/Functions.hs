@@ -1,11 +1,8 @@
 module Termbox2.Bindings.C.Internal.Functions
-  ( tb_attr_width,
-    tb_cell_buffer,
+  ( tb_cell_buffer,
     tb_clear,
     tb_extend_cell,
     tb_get_fds,
-    tb_has_egc,
-    tb_has_truecolor,
     tb_height,
     tb_hide_cursor,
     tb_init,
@@ -29,7 +26,6 @@ module Termbox2.Bindings.C.Internal.Functions
     tb_set_output_mode,
     tb_shutdown,
     tb_strerror,
-    tb_version,
     tb_width,
   )
 where
@@ -40,10 +36,6 @@ import Foreign.C.ConstPtr (ConstPtr (..))
 import Foreign.Ptr (FunPtr, Ptr)
 import Termbox2.Bindings.C.Internal.Cell (Tb_cell)
 import Termbox2.Bindings.C.Internal.Event (Tb_event)
-
--- | Get how many bits wide attributes are.
-foreign import capi unsafe "termbox2.h tb_attr_width"
-  tb_attr_width :: CInt
 
 -- | Get a pointer to the back buffer.
 foreign import capi unsafe "termbox2.h tb_cell_buffer"
@@ -60,14 +52,6 @@ foreign import capi unsafe "termbox2.h tb_extend_cell"
 -- | Get the terminal and resize file descriptors.
 foreign import capi unsafe "termbox2.h tb_get_fds"
   tb_get_fds :: Ptr CInt -> Ptr CInt -> IO CInt
-
--- | Get whether the library was compiled with extended grapheme cluster support (it was).
-foreign import capi unsafe "termbox2.h tb_has_egc"
-  tb_has_egc :: CInt
-
--- | Get whether the library was compiled with truecolor support (it was).
-foreign import capi unsafe "termbox2.h tb_has_truecolor"
-  tb_has_truecolor :: CInt
 
 -- | Get the terminal height.
 foreign import capi unsafe "termbox2.h tb_height"
@@ -166,10 +150,6 @@ foreign import capi unsafe "termbox2.h tb_shutdown"
 -- | Convert an error code to a string.
 foreign import capi unsafe "termbox2.h tb_strerror"
   tb_strerror :: CInt -> IO (ConstPtr CChar)
-
--- | Get the @termbox2@ version string.
-foreign import capi unsafe "termbox2.h tb_version"
-  tb_version :: ConstPtr CChar
 
 -- | Get the terminal height.
 foreign import capi unsafe "termbox2.h tb_width"

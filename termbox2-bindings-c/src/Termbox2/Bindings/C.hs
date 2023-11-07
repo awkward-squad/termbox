@@ -49,12 +49,6 @@ module Termbox2.Bindings.C
     tb_last_errno,
     tb_strerror,
 
-    -- ** Query compile-time constants
-    tb_attr_width,
-    tb_has_egc,
-    tb_has_truecolor,
-    tb_version,
-
     -- * Objects
     Tb_cell (..),
     Tb_event (..),
@@ -362,13 +356,10 @@ import Termbox2.Bindings.C.Internal.Constants
   )
 import Termbox2.Bindings.C.Internal.Event (Tb_event (..))
 import Termbox2.Bindings.C.Internal.Functions
-  ( tb_attr_width,
-    tb_cell_buffer,
+  ( tb_cell_buffer,
     tb_clear,
     tb_extend_cell,
     tb_get_fds,
-    tb_has_egc,
-    tb_has_truecolor,
     tb_height,
     tb_hide_cursor,
     tb_init,
@@ -392,6 +383,5 @@ import Termbox2.Bindings.C.Internal.Functions
     tb_set_output_mode,
     tb_shutdown,
     tb_strerror,
-    tb_version,
     tb_width,
   )
