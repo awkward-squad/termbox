@@ -71,7 +71,7 @@ library
   hs-source-dirs: src
   include-dirs: cbits
   -- termbox2.h version:
-  --   df4d01bf468853713906cc427c9635380a4c60bb on September 22, 2023
+  --   f5d6386ea580569cce8ea2bbfadd25de70291bfd on Nov 6, 2023
   includes: termbox2.h
   other-modules:
     Termbox2.Bindings.C.Internal.Constants

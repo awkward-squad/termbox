@@ -66,6 +66,37 @@ extern "C" {
 
 #define TB_VERSION_STR "2.4.0-dev"
 
+/* The following compile-time options are supported:
+ *
+ *     TB_OPT_ATTR_W: Integer width of fg and bg attributes. Valid values
+ *                    (assuming system support) are 16, 32, and 64. (See
+ *                    uintattr_t). 32 or 64 enables output mode
+ *                    TB_OUTPUT_TRUECOLOR. 64 enables additional style
+ *                    attributes. (See tb_set_output_mode.) Larger values
+ *                    consume more memory in exchange for more features.
+ *                    Defaults to 16.
+ *
+ *        TB_OPT_EGC: If set, enable extended grapheme cluster support
+ *                    (tb_extend_cell, tb_set_cell_ex). Consumes more memory.
+ *                    Defaults off.
+ *
+ * TB_OPT_PRINTF_BUF: Write buffer size for printf operations. Represents the
+ *                    largest string that can be sent in one call to tb_print*
+ *                    and tb_send* functions. Defaults to 4096.
+ *
+ *   TB_OPT_READ_BUF: Read buffer size for tty reads. Defaults to 64.
+ *
+ *  TB_OPT_TRUECOLOR: Deprecated. Sets TB_OPT_ATTR_W to 32 if not already set.
+ */
+
+// Ensure consistent compile-time options when using as a shared library
+#undef TB_OPT_ATTR_W
+#undef TB_OPT_EGC
+#undef TB_OPT_PRINTF_BUF
+#undef TB_OPT_READ_BUF
+#define TB_OPT_ATTR_W 64
+#define TB_OPT_EGC
+
 /* ASCII key constants (tb_event.key) */
 #define TB_KEY_CTRL_TILDE       0x00
 #define TB_KEY_CTRL_2           0x00 /* clash with 'CTRL_TILDE'     */
@@ -207,6 +238,17 @@ extern "C" {
 #define TB_CYAN                 0x0007
 #define TB_WHITE                0x0008
 
+#if TB_OPT_ATTR_W == 16
+#define TB_BOLD      0x0100
+#define TB_UNDERLINE 0x0200
+#define TB_REVERSE   0x0400
+#define TB_ITALIC    0x0800
+#define TB_BLINK     0x1000
+#define TB_HI_BLACK  0x2000
+#define TB_BRIGHT    0x4000
+#define TB_DIM       0x8000
+#define TB_256_BLACK TB_HI_BLACK // TB_256_BLACK is deprecated
+#else // 32 or 64
 #define TB_BOLD                0x01000000
 #define TB_UNDERLINE           0x02000000
 #define TB_REVERSE             0x04000000
@@ -221,11 +263,14 @@ extern "C" {
 #define TB_TRUECOLOR_ITALIC    TB_ITALIC
 #define TB_TRUECOLOR_BLINK     TB_BLINK
 #define TB_TRUECOLOR_BLACK     TB_HI_BLACK
+#endif
 
+#if TB_OPT_ATTR_W == 64
 #define TB_STRIKEOUT   0x0000000100000000
 #define TB_UNDERLINE_2 0x0000000200000000
 #define TB_OVERLINE    0x0000000400000000
 #define TB_INVISIBLE   0x0000000800000000
+#endif
 
 /* Event types (tb_event.type) */
 #define TB_EVENT_KEY        1
@@ -250,7 +295,9 @@ extern "C" {
 #define TB_OUTPUT_256       2
 #define TB_OUTPUT_216       3
 #define TB_OUTPUT_GRAYSCALE 4
+#if TB_OPT_ATTR_W >= 32
 #define TB_OUTPUT_TRUECOLOR 5
+#endif
 
 /* Common function return values unless otherwise noted.
  *
@@ -289,6 +336,20 @@ extern "C" {
 #define TB_FUNC_EXTRACT_PRE     0
 #define TB_FUNC_EXTRACT_POST    1
 
+/* Define this to set the size of the buffer used in tb_printf()
+ * and tb_sendf()
+ */
+#ifndef TB_OPT_PRINTF_BUF
+#define TB_OPT_PRINTF_BUF 4096
+#endif
+
+/* Define this to set the size of the read buffer used when reading
+ * from the tty
+ */
+#ifndef TB_OPT_READ_BUF
+#define TB_OPT_READ_BUF 64
+#endif
+
 /* Define this for limited back compat with termbox v1 */
 #ifdef TB_OPT_V1_COMPAT
 #define tb_change_cell          tb_set_cell
@@ -305,7 +366,13 @@ extern "C" {
 #define tb_free    free
 #endif
 
+#if TB_OPT_ATTR_W == 64
 typedef uint64_t uintattr_t;
+#elif TB_OPT_ATTR_W == 32
+typedef uint32_t uintattr_t;
+#else // 16
+typedef uint16_t uintattr_t;
+#endif
 
 /* The terminal screen is represented as 2d array of cells. The structure is
  * optimized for dealing with single-width (wcwidth()==1) Unicode code points,
@@ -329,12 +396,14 @@ typedef uint64_t uintattr_t;
  * See tb_present() for implementation.
  */
 struct tb_cell {
-    uint32_t ch;   /* a Unicode character */
+    uint32_t ch;   /* a Unicode code point */
     uintattr_t fg; /* bitwise foreground attributes */
     uintattr_t bg; /* bitwise background attributes */
-    uint32_t *ech; /* a grapheme cluster of Unicode code points */
-    size_t nech;   /* length in bytes of ech, 0 means use ch instead of ech */
-    size_t cech;   /* capacity in bytes of ech */
+#ifdef TB_OPT_EGC
+    uint32_t *ech; /* a grapheme cluster of Unicode code points, 0-terminated */
+    size_t nech;   /* num elements in ech, 0 means use ch instead of ech */
+    size_t cech;   /* num elements allocated for ech */
+#endif
 };
 
 /* An incoming event from the tty.
@@ -453,7 +522,8 @@ int tb_set_input_mode(int mode);
  *      TB_BOLD, TB_UNDERLINE, TB_REVERSE, TB_ITALIC, TB_BLINK, TB_BRIGHT,
  *      TB_DIM
  *
- *    The following style attributes are also available:
+ *    The following style attributes are also available if compiled with
+ *    TB_OPT_ATTR_W set to 64:
  *      TB_STRIKEOUT, TB_UNDERLINE_2, TB_OVERLINE, TB_INVISIBLE
  *
  *    As in all modes, the value 0 is interpreted as TB_DEFAULT for
@@ -1527,9 +1597,11 @@ int tb_present(void) {
 
             int w;
             {
+#ifdef TB_OPT_EGC
                 if (back->nech > 0)
                     w = wcswidth((wchar_t *)back->ech, back->nech);
                 else
+#endif
                     /* wcwidth() simply returns -1 on overflow of wchar_t */
                     w = wcwidth((wchar_t)back->ch);
             }
@@ -1547,9 +1619,11 @@ int tb_present(void) {
                     }
                 } else {
                     {
+#ifdef TB_OPT_EGC
                         if (back->nech > 0)
                             send_cluster(x, y, back->ech, back->nech);
                         else
+#endif
                             send_char(x, y, back->ch);
                     }
                     for (i = 1; i < w; i++) {
@@ -1622,6 +1696,7 @@ int tb_set_cell_ex(int x, int y, uint32_t *ch, size_t nch, uintattr_t fg,
 
 int tb_extend_cell(int x, int y, uint32_t ch) {
     if_not_init_return();
+#ifdef TB_OPT_EGC
     int rv;
     struct tb_cell *cell;
     size_t nech;
@@ -1639,6 +1714,12 @@ int tb_extend_cell(int x, int y, uint32_t ch) {
     cell->ech[nech] = '\0';
     cell->nech = nech;
     return TB_OK;
+#else
+    (void)x;
+    (void)y;
+    (void)ch;
+    return TB_ERR;
+#endif
 }
 
 int tb_set_input_mode(int mode) {
@@ -1677,7 +1758,9 @@ int tb_set_output_mode(int mode) {
         case TB_OUTPUT_256:
         case TB_OUTPUT_216:
         case TB_OUTPUT_GRAYSCALE:
+#if TB_OPT_ATTR_W >= 32
         case TB_OUTPUT_TRUECOLOR:
+#endif
             global.last_fg = ~global.fg;
             global.last_bg = ~global.bg;
             global.output_mode = mode;
@@ -1762,7 +1845,7 @@ int tb_send(const char *buf, size_t nbuf) {
 
 int tb_sendf(const char *fmt, ...) {
     int rv;
-    char buf[4096];
+    char buf[TB_OPT_PRINTF_BUF];
     va_list vl;
     va_start(vl, fmt);
     rv = vsnprintf(buf, sizeof(buf), fmt, vl);
@@ -1894,15 +1977,23 @@ const char *tb_strerror(int err) {
 }
 
 int tb_has_truecolor(void) {
+#if TB_OPT_ATTR_W >= 32
     return 1;
+#else
+    return 0;
+#endif
 }
 
 int tb_has_egc(void) {
+#ifdef TB_OPT_EGC
     return 1;
+#else
+    return 0;
+#endif
 }
 
 int tb_attr_width(void) {
-    return 64;
+    return TB_OPT_ATTR_W;
 }
 
 const char *tb_version(void) {
@@ -1962,7 +2053,7 @@ static int init_term_attrs(void) {
 int tb_printf_inner(int x, int y, uintattr_t fg, uintattr_t bg, size_t *out_w,
     const char *fmt, va_list vl) {
     int rv;
-    char buf[4096];
+    char buf[TB_OPT_PRINTF_BUF];
     rv = vsnprintf(buf, sizeof(buf), fmt, vl);
     if (rv < 0 || rv >= (int)sizeof(buf)) {
         return TB_ERR;
@@ -2189,7 +2280,7 @@ static int update_term_size_via_esc(void) {
         return TB_ERR_RESIZE_POLL;
     }
 
-    char buf[64];
+    char buf[TB_OPT_READ_BUF];
     ssize_t read_rv = read(global.rfd, buf, sizeof(buf) - 1);
     if (read_rv < 1) {
         global.last_errno = errno;
@@ -2481,7 +2572,7 @@ static const char *get_terminfo_string(int16_t str_offsets_pos,
 
 static int wait_event(struct tb_event *event, int timeout) {
     int rv;
-    char buf[64];
+    char buf[TB_OPT_READ_BUF];
 
     memset(event, 0, sizeof(*event));
     if_ok_return(rv, extract_event(event));
@@ -2896,12 +2987,14 @@ static int send_attr(uintattr_t fg, uintattr_t bg) {
             cbg += 0xe7;
             break;
 
+#if TB_OPT_ATTR_W >= 32
         case TB_OUTPUT_TRUECOLOR:
             cfg = fg & 0xffffff;
             cbg = bg & 0xffffff;
             if (fg & TB_HI_BLACK) cfg = 0;
             if (bg & TB_HI_BLACK) cbg = 0;
             break;
+#endif
     }
 
     if (fg & TB_BOLD)
@@ -2921,6 +3014,7 @@ static int send_attr(uintattr_t fg, uintattr_t bg) {
     if (fg & TB_DIM)
         if_err_return(rv, bytebuf_puts(&global.out, global.caps[TB_CAP_DIM]));
 
+#if TB_OPT_ATTR_W == 64
     if (fg & TB_STRIKEOUT)
         if_err_return(rv, bytebuf_puts(&global.out, TB_HARDCAP_STRIKEOUT));
 
@@ -2933,6 +3027,7 @@ static int send_attr(uintattr_t fg, uintattr_t bg) {
     if (fg & TB_INVISIBLE)
         if_err_return(rv,
             bytebuf_puts(&global.out, global.caps[TB_CAP_INVISIBLE]));
+#endif
 
     if ((fg & TB_REVERSE) || (bg & TB_REVERSE))
         if_err_return(rv,
@@ -2944,10 +3039,12 @@ static int send_attr(uintattr_t fg, uintattr_t bg) {
         if (fg & TB_HI_BLACK) fg_is_default = 0;
         if (bg & TB_HI_BLACK) bg_is_default = 0;
     }
+#if TB_OPT_ATTR_W >= 32
     if (global.output_mode == TB_OUTPUT_TRUECOLOR) {
         fg_is_default = ((fg & 0xffffff) == 0) && ((fg & TB_HI_BLACK) == 0);
         bg_is_default = ((bg & 0xffffff) == 0) && ((bg & TB_HI_BLACK) == 0);
     }
+#endif
 
     if_err_return(rv, send_sgr(cfg, cbg, fg_is_default, bg_is_default));
 
@@ -3000,6 +3097,7 @@ static int send_sgr(uint32_t cfg, uint32_t cbg, int fg_is_default,
             send_literal(rv, "m");
             break;
 
+#if TB_OPT_ATTR_W >= 32
         case TB_OUTPUT_TRUECOLOR:
             send_literal(rv, "\x1b[");
             if (!fg_is_default) {
@@ -3023,6 +3121,7 @@ static int send_sgr(uint32_t cfg, uint32_t cbg, int fg_is_default,
             }
             send_literal(rv, "m");
             break;
+#endif
     }
     return TB_OK;
 }
@@ -3088,18 +3187,22 @@ static int cell_cmp(struct tb_cell *a, struct tb_cell *b) {
     if (a->ch != b->ch || a->fg != b->fg || a->bg != b->bg) {
         return 1;
     }
+#ifdef TB_OPT_EGC
     if (a->nech != b->nech) {
         return 1;
     } else if (a->nech > 0) { // a->nech == b->nech
         return memcmp(a->ech, b->ech, a->nech);
     }
+#endif
     return 0;
 }
 
 static int cell_copy(struct tb_cell *dst, struct tb_cell *src) {
+#ifdef TB_OPT_EGC
     if (src->nech > 0) {
         return cell_set(dst, src->ech, src->nech, src->fg, src->bg);
     }
+#endif
     return cell_set(dst, &src->ch, 1, src->fg, src->bg);
 }
 
@@ -3108,19 +3211,25 @@ static int cell_set(struct tb_cell *cell, uint32_t *ch, size_t nch,
     cell->ch = ch ? *ch : 0;
     cell->fg = fg;
     cell->bg = bg;
+#ifdef TB_OPT_EGC
     if (nch <= 1) {
         cell->nech = 0;
     } else {
         int rv;
         if_err_return(rv, cell_reserve_ech(cell, nch + 1));
-        memcpy(cell->ech, ch, nch);
+        memcpy(cell->ech, ch, sizeof(ch) * nch);
         cell->ech[nch] = '\0';
         cell->nech = nch;
     }
+#else
+    (void)nch;
+    (void)cell_reserve_ech;
+#endif
     return TB_OK;
 }
 
 static int cell_reserve_ech(struct tb_cell *cell, size_t n) {
+#ifdef TB_OPT_EGC
     if (cell->cech >= n) {
         return TB_OK;
     }
@@ -3129,12 +3238,19 @@ static int cell_reserve_ech(struct tb_cell *cell, size_t n) {
     }
     cell->cech = n;
     return TB_OK;
+#else
+    (void)cell;
+    (void)n;
+    return TB_ERR;
+#endif
 }
 
 static int cell_free(struct tb_cell *cell) {
+#ifdef TB_OPT_EGC
     if (cell->ech) {
         tb_free(cell->ech);
     }
+#endif
     memset(cell, 0, sizeof(*cell));
     return TB_OK;
 }
