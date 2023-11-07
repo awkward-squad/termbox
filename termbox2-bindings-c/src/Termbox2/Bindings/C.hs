@@ -217,10 +217,6 @@ module Termbox2.Bindings.C
     -- ** Function types
     _TB_FUNC_EXTRACT_PRE,
     _TB_FUNC_EXTRACT_POST,
-
-    -- ** Buffer sizes
-    _TB_OPT_PRINTF_BUF,
-    _TB_OPT_READ_BUF,
   )
 where
 
@@ -349,8 +345,6 @@ import Termbox2.Bindings.C.Internal.Constants
     _TB_MOD_MOTION,
     _TB_MOD_SHIFT,
     _TB_OK,
-    _TB_OPT_PRINTF_BUF,
-    _TB_OPT_READ_BUF,
     _TB_OUTPUT_216,
     _TB_OUTPUT_256,
     _TB_OUTPUT_CURRENT,

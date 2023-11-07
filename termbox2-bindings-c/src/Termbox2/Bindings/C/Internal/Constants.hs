@@ -122,8 +122,6 @@ module Termbox2.Bindings.C.Internal.Constants
     _TB_MOD_MOTION,
     _TB_MOD_SHIFT,
     _TB_OK,
-    _TB_OPT_PRINTF_BUF,
-    _TB_OPT_READ_BUF,
     _TB_OUTPUT_216,
     _TB_OUTPUT_256,
     _TB_OUTPUT_CURRENT,
@@ -389,10 +387,6 @@ foreign import capi "termbox2.h value TB_MOD_MOTION" _TB_MOD_MOTION :: Word8
 foreign import capi "termbox2.h value TB_MOD_SHIFT" _TB_MOD_SHIFT :: Word8
 
 foreign import capi "termbox2.h value TB_OK" _TB_OK :: CInt
-
-foreign import capi "termbox2.h value TB_OPT_PRINTF_BUF" _TB_OPT_PRINTF_BUF :: CInt
-
-foreign import capi "termbox2.h value TB_OPT_READ_BUF" _TB_OPT_READ_BUF :: CInt
 
 foreign import capi "termbox2.h value TB_OUTPUT_216" _TB_OUTPUT_216 :: CInt
 

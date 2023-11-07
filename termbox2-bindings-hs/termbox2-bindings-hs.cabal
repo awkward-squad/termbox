@@ -60,12 +60,16 @@ library
     termbox2-bindings-c ^>= 1.0.0,
   default-extensions:
     DerivingStrategies
+    DuplicateRecordFields
+    LambdaCase
+    NamedFieldPuns
     PatternSynonyms
     ViewPatterns
   exposed-modules: Termbox2.Bindings.Hs
   hs-source-dirs: src
   other-modules:
     Termbox2.Bindings.Hs.Internal.Attr
+    Termbox2.Bindings.Hs.Internal.Key
 
 -- executable termbox2-bindings-hs-example-demo
 --   import: component
