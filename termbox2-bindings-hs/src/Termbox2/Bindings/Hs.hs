@@ -2,8 +2,7 @@ module Termbox2.Bindings.Hs
   ( -- * Functions
 
     -- ** Initialize / shutdown
-
-    -- tb_init,
+    tb_init,
     -- tb_init_fd,
     -- tb_init_file,
     -- tb_init_rwfd,
@@ -80,6 +79,31 @@ module Termbox2.Bindings.Hs
         TB_STRIKEOUT,
         TB_UNDERLINE,
         TB_UNDERLINE_2
+      ),
+    Tb_error
+      ( Tb_error,
+        TB_ERR,
+        TB_ERR_CAP_COLLISION,
+        TB_ERR_INIT_ALREADY,
+        TB_ERR_INIT_OPEN,
+        TB_ERR_MEM,
+        TB_ERR_NEED_MORE,
+        TB_ERR_NOT_INIT,
+        TB_ERR_NO_EVENT,
+        TB_ERR_NO_TERM,
+        TB_ERR_OUT_OF_BOUNDS,
+        TB_ERR_POLL,
+        TB_ERR_READ,
+        TB_ERR_RESIZE_IOCTL,
+        TB_ERR_RESIZE_PIPE,
+        TB_ERR_RESIZE_POLL,
+        TB_ERR_RESIZE_READ,
+        TB_ERR_RESIZE_SIGACTION,
+        TB_ERR_RESIZE_SSCANF,
+        TB_ERR_RESIZE_WRITE,
+        TB_ERR_TCGETATTR,
+        TB_ERR_TCSETATTR,
+        TB_ERR_UNSUPPORTED_TERM
       ),
     -- Tb_event (..),
     Tb_key
@@ -216,35 +240,6 @@ module Termbox2.Bindings.Hs
     -- _TB_OUTPUT_NORMAL,
     -- _TB_OUTPUT_TRUECOLOR,
 
-    -- ** Result codes
-
-    -- _TB_OK,
-
-    -- *** Error codes
-
-    -- _TB_ERR,
-    -- _TB_ERR_CAP_COLLISION,
-    -- _TB_ERR_INIT_ALREADY,
-    -- _TB_ERR_INIT_OPEN,
-    -- _TB_ERR_MEM,
-    -- _TB_ERR_NEED_MORE,
-    -- _TB_ERR_NOT_INIT,
-    -- _TB_ERR_NO_EVENT,
-    -- _TB_ERR_NO_TERM,
-    -- _TB_ERR_OUT_OF_BOUNDS,
-    -- _TB_ERR_POLL,
-    -- _TB_ERR_READ,
-    -- _TB_ERR_RESIZE_IOCTL,
-    -- _TB_ERR_RESIZE_PIPE,
-    -- _TB_ERR_RESIZE_POLL,
-    -- _TB_ERR_RESIZE_READ,
-    -- _TB_ERR_RESIZE_SIGACTION,
-    -- _TB_ERR_RESIZE_SSCANF,
-    -- _TB_ERR_RESIZE_WRITE,
-    -- _TB_ERR_TCGETATTR,
-    -- _TB_ERR_TCSETATTR,
-    -- _TB_ERR_UNSUPPORTED_TERM,
-
     -- ** Function types
   )
 where
@@ -253,4 +248,6 @@ where
 -- _TB_FUNC_EXTRACT_POST,
 
 import Termbox2.Bindings.Hs.Internal.Attr (Tb_attr (..))
+import Termbox2.Bindings.Hs.Internal.Error (Tb_error (..))
+import Termbox2.Bindings.Hs.Internal.Functions (tb_init)
 import Termbox2.Bindings.Hs.Internal.Key (Tb_key (..))
