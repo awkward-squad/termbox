@@ -12,13 +12,13 @@ import GHC.Generics (Generic)
 
 -- | A cell.
 data {-# CTYPE "termbox2.h" "struct tb_cell" #-} Tb_cell = Tb_cell
-  { -- | A unicode character.
+  { -- | A unicode code point.
     ch :: {-# UNPACK #-} !Word32,
     -- | Foreground attribute.
     fg :: {-# UNPACK #-} !Word64,
     -- | Background attribute.
     bg :: {-# UNPACK #-} !Word64,
-    -- | A list of unicode code points.
+    -- | A grapheme cluster of unicode code points.
     ech :: {-# UNPACK #-} !(Ptr Word32),
     -- | Length of @ech@; 0 means use @ch@.
     nech :: {-# UNPACK #-} !CSize,

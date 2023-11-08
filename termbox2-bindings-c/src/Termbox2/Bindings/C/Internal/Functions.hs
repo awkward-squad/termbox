@@ -87,7 +87,7 @@ foreign import capi unsafe "termbox2.h tb_init_rwfd"
 foreign import capi unsafe "termbox2.h tb_invalidate"
   tb_invalidate :: IO CInt
 
--- | Get the last error returned by this library.
+-- | Get the last error this library observed, in certain cases.
 foreign import capi unsafe "termbox2.h tb_last_errno"
   tb_last_errno :: IO CInt
 
@@ -151,6 +151,6 @@ foreign import capi unsafe "termbox2.h tb_shutdown"
 foreign import capi unsafe "termbox2.h tb_strerror"
   tb_strerror :: CInt -> IO (ConstPtr CChar)
 
--- | Get the terminal height.
+-- | Get the terminal width.
 foreign import capi unsafe "termbox2.h tb_width"
   tb_width :: IO CInt
