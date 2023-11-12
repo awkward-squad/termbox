@@ -23,7 +23,6 @@ module Termbox2.Bindings.Hs
     -- ** Poll for events
     tb_peek_event,
     tb_poll_event,
-    tb_event_mod_has,
     tb_get_fds,
 
     -- ** Set cell contents
@@ -94,7 +93,7 @@ module Termbox2.Bindings.Hs
         TB_ERR_UNSUPPORTED_TERM
       ),
     Tb_event (..),
-    Tb_event_mod,
+    Tb_event_mod (Tb_event_mod),
     _TB_MOD_ALT,
     _TB_MOD_CTRL,
     _TB_MOD_SHIFT,
@@ -104,12 +103,10 @@ module Termbox2.Bindings.Hs
         TB_EVENT_MOUSE,
         TB_EVENT_RESIZE
       ),
-    Tb_input_mode
-      ( Tb_input_mode,
-        TB_INPUT_ALT,
-        TB_INPUT_ESC,
-        TB_INPUT_MOUSE
-      ),
+    Tb_input_mode (Tb_input_mode),
+    _TB_INPUT_ALT,
+    _TB_INPUT_ESC,
+    _TB_INPUT_MOUSE,
     Tb_key
       ( Tb_key,
         TB_KEY_ARROW_DOWN,
@@ -232,7 +229,7 @@ where
 import Termbox2.Bindings.Hs.Internal.Attr (Tb_attr (..))
 import Termbox2.Bindings.Hs.Internal.Error (Tb_error (..))
 import Termbox2.Bindings.Hs.Internal.Event (Tb_event (..))
-import Termbox2.Bindings.Hs.Internal.EventMod (Tb_event_mod, tb_event_mod_has, _TB_MOD_ALT, _TB_MOD_CTRL, _TB_MOD_MOTION, _TB_MOD_SHIFT)
+import Termbox2.Bindings.Hs.Internal.EventMod (Tb_event_mod (..), _TB_MOD_ALT, _TB_MOD_CTRL, _TB_MOD_MOTION, _TB_MOD_SHIFT)
 import Termbox2.Bindings.Hs.Internal.EventType (Tb_event_type (..))
 import Termbox2.Bindings.Hs.Internal.Functions
   ( tb_clear,
@@ -265,6 +262,6 @@ import Termbox2.Bindings.Hs.Internal.Functions
     tb_strerror,
     tb_width,
   )
-import Termbox2.Bindings.Hs.Internal.InputMode (Tb_input_mode (..))
+import Termbox2.Bindings.Hs.Internal.InputMode (Tb_input_mode (..), _TB_INPUT_ALT, _TB_INPUT_ESC, _TB_INPUT_MOUSE)
 import Termbox2.Bindings.Hs.Internal.Key (Tb_key (..))
 import Termbox2.Bindings.Hs.Internal.OutputMode (Tb_output_mode (..))
