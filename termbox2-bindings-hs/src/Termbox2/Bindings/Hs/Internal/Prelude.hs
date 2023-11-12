@@ -1,14 +1,16 @@
 module Termbox2.Bindings.Hs.Internal.Prelude
   ( charToWord32,
+    word32ToChar,
     cintToInt,
     intToCInt,
-    word32ToChar,
+    csizeToInt,
+    intToCSize,
   )
 where
 
-import qualified Data.Char as Char
+import Data.Char qualified as Char
 import Data.Word (Word32)
-import Foreign.C.Types (CInt)
+import Foreign.C.Types (CInt, CSize)
 
 charToWord32 :: Char -> Word32
 charToWord32 =
@@ -29,3 +31,13 @@ intToCInt :: Int -> CInt
 intToCInt =
   fromIntegral
 {-# INLINE intToCInt #-}
+
+csizeToInt :: CSize -> Int
+csizeToInt =
+  fromIntegral
+{-# INLINE csizeToInt #-}
+
+intToCSize :: Int -> CSize
+intToCSize =
+  fromIntegral
+{-# INLINE intToCSize #-}

@@ -113,7 +113,7 @@ foreign import capi unsafe "termbox2.h tb_print_ex"
 
 -- | Send raw bytes to the terminal.
 foreign import capi unsafe "termbox2.h tb_send"
-  tb_send :: CString -> CSize -> IO CInt
+  tb_send :: Ptr CChar -> CSize -> IO CInt
 
 -- | Set a cell value in the back buffer.
 foreign import capi unsafe "termbox2.h tb_set_cell"

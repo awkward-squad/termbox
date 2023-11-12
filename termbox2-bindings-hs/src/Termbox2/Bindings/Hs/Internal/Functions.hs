@@ -22,7 +22,6 @@ module Termbox2.Bindings.Hs.Internal.Functions
     tb_set_cell_ex,
     tb_set_clear_attrs,
     tb_set_cursor,
-    tb_set_func,
     tb_set_input_mode,
     tb_set_output_mode,
     tb_shutdown,
@@ -31,18 +30,20 @@ module Termbox2.Bindings.Hs.Internal.Functions
   )
 where
 
+import Data.ByteString (ByteString)
+import Data.ByteString.Unsafe qualified as ByteString
 import Data.Coerce (coerce)
 import Data.Text (Text)
-import Data.Text.Foreign qualified as Text (peekCStringLen)
+import Data.Text.Foreign qualified as Text (peekCStringLen, withCString)
 import Foreign.C (CInt, Errno (..), withCString)
 import Foreign.C.ConstPtr (ConstPtr (..))
-import Foreign.Marshal (alloca)
-import Foreign.Marshal.Array (lengthArray0)
+import Foreign.Marshal (alloca, lengthArray0, withArrayLen)
 import Foreign.Storable qualified as Storable
 import System.Posix.Types (Fd (Fd))
 import Termbox2.Bindings.C qualified as Termbox
 import Termbox2.Bindings.Hs.Internal.Attr (Tb_attr (Tb_attr))
 import Termbox2.Bindings.Hs.Internal.Error (Tb_error (Tb_error))
+import Termbox2.Bindings.Hs.Internal.Event (Tb_event, makeEvent)
 import Termbox2.Bindings.Hs.Internal.InputMode (Tb_input_mode (Tb_input_mode))
 import Termbox2.Bindings.Hs.Internal.OutputMode (Tb_output_mode (Tb_output_mode))
 import Termbox2.Bindings.Hs.Internal.Prelude
@@ -147,14 +148,26 @@ tb_last_errno =
   coerce Termbox.tb_last_errno
 
 -- | Wait up to a number of milliseconds for an event.
--- tb_peek_event :: Ptr Tb_event -> CInt -> IO CInt
-tb_peek_event :: ()
-tb_peek_event = ()
+tb_peek_event :: Int -> IO (Either Tb_error Tb_event)
+tb_peek_event ms =
+  alloca \eventPtr -> do
+    code <- Termbox.tb_peek_event eventPtr (intToCInt ms)
+    if code == Termbox._TB_OK
+      then do
+        event <- Storable.peek eventPtr
+        pure (Right (makeEvent event))
+      else pure (Left (Tb_error code))
 
 -- | Wait for an event.
--- tb_poll_event :: Ptr Tb_event -> IO CInt
-tb_poll_event :: ()
-tb_poll_event = ()
+tb_poll_event :: IO (Either Tb_error Tb_event)
+tb_poll_event =
+  alloca \eventPtr -> do
+    code <- Termbox.tb_poll_event eventPtr
+    if code == Termbox._TB_OK
+      then do
+        event <- Storable.peek eventPtr
+        pure (Right (makeEvent event))
+      else pure (Left (Tb_error code))
 
 -- | Synchronize the back buffer with the terminal.
 tb_present :: IO (Either Tb_error ())
@@ -163,21 +176,53 @@ tb_present =
 
 -- | Print a string to the back buffer.
 -- tb_print :: CInt -> CInt -> Word64 -> Word64 -> CString -> IO CInt
-tb_print :: ()
-tb_print = ()
+tb_print ::
+  -- | x
+  Int ->
+  -- | y
+  Int ->
+  -- | fg
+  Tb_attr ->
+  -- | fg
+  Tb_attr ->
+  -- | str
+  Text ->
+  IO (Either Tb_error ())
+tb_print x y (Tb_attr fg) (Tb_attr bg) str =
+  Text.withCString str \cstr ->
+    check (Termbox.tb_print (intToCInt x) (intToCInt y) fg bg cstr)
 
--- | Print a string to the back buffer.
+-- | Print a string to the back buffer and return its width.
 -- tb_print_ex :: CInt -> CInt -> Word64 -> Word64 -> Ptr CSize -> CString -> IO CInt
-tb_print_ex :: ()
-tb_print_ex = ()
+tb_print_ex ::
+  -- | x
+  Int ->
+  -- | y
+  Int ->
+  -- | fg
+  Tb_attr ->
+  -- | fg
+  Tb_attr ->
+  -- | str
+  Text ->
+  IO (Either Tb_error Int)
+tb_print_ex x y (Tb_attr fg) (Tb_attr bg) str =
+  alloca \sizePtr ->
+    Text.withCString str \cstr -> do
+      code <- Termbox.tb_print_ex (intToCInt x) (intToCInt y) fg bg sizePtr cstr
+      if code == Termbox._TB_OK
+        then do
+          size <- Storable.peek sizePtr
+          pure (Right (csizeToInt size))
+        else pure (Left (Tb_error code))
 
 -- | Send raw bytes to the terminal.
--- tb_send :: CString -> CSize -> IO CInt
-tb_send :: ()
-tb_send = ()
+tb_send :: ByteString -> IO (Either Tb_error ())
+tb_send bytes =
+  ByteString.unsafeUseAsCStringLen bytes \(cstr, len) ->
+    check (Termbox.tb_send cstr (intToCSize len))
 
 -- | Set a cell value in the back buffer.
--- tb_set_cell :: CInt -> CInt -> Word32 -> Word64 -> Word64 -> IO CInt
 tb_set_cell ::
   -- | x
   Int ->
@@ -194,12 +239,23 @@ tb_set_cell x y ch (Tb_attr fg) (Tb_attr bg) =
   check (Termbox.tb_set_cell (intToCInt x) (intToCInt y) (charToWord32 ch) fg bg)
 
 -- | Set a cell value in the back buffer.
--- tb_set_cell_ex :: CInt -> CInt -> Ptr Word32 -> CSize -> Word64 -> Word64 -> IO CInt
-tb_set_cell_ex :: ()
-tb_set_cell_ex = ()
+tb_set_cell_ex ::
+  -- | x
+  Int ->
+  -- | y
+  Int ->
+  -- | chs
+  [Char] ->
+  -- | fg
+  Tb_attr ->
+  -- | bg
+  Tb_attr ->
+  IO (Either Tb_error ())
+tb_set_cell_ex x y chs (Tb_attr fg) (Tb_attr bg) =
+  withArrayLen (map charToWord32 chs) \len cchs ->
+    check (Termbox.tb_set_cell_ex (intToCInt x) (intToCInt y) cchs (intToCSize len) fg bg)
 
 -- | Set the foreground and background attributes that @tb_clear@ clears the back buffer with.
--- tb_set_clear_attrs :: Word64 -> Word64 -> IO CInt
 tb_set_clear_attrs ::
   -- | fg
   Tb_attr ->
@@ -210,7 +266,6 @@ tb_set_clear_attrs (Tb_attr fg) (Tb_attr bg) =
   check (Termbox.tb_set_clear_attrs fg bg)
 
 -- | Set the cursor in the back buffer.
--- tb_set_cursor :: CInt -> CInt -> IO CInt
 tb_set_cursor ::
   -- | x
   Int ->
@@ -219,11 +274,6 @@ tb_set_cursor ::
   IO (Either Tb_error ())
 tb_set_cursor x y =
   check (Termbox.tb_set_cursor (intToCInt x) (intToCInt y))
-
--- | Set or clear custom escape sequence functions.
--- tb_set_func :: CInt -> FunPtr (Ptr Tb_event -> Ptr CSize -> IO CInt) -> IO CInt
-tb_set_func :: ()
-tb_set_func = ()
 
 -- | Set the input mode.
 tb_set_input_mode :: Tb_input_mode -> IO (Either Tb_error ())

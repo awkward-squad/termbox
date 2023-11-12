@@ -45,9 +45,6 @@ module Termbox2.Bindings.Hs
     tb_present,
     tb_invalidate,
 
-    -- ** Custom escape sequences
-    tb_set_func,
-
     -- ** Error utils
     tb_last_errno,
     tb_strerror,
@@ -66,6 +63,19 @@ module Termbox2.Bindings.Hs
         TB_STRIKEOUT,
         TB_UNDERLINE,
         TB_UNDERLINE_2
+      ),
+    Tb_color
+      ( Tb_color,
+        TB_DEFAULT,
+        TB_BLACK,
+        TB_BLUE,
+        TB_CYAN,
+        TB_GREEN,
+        TB_HI_BLACK,
+        TB_MAGENTA,
+        TB_RED,
+        TB_WHITE,
+        TB_YELLOW
       ),
     Tb_error
       ( Tb_error,
@@ -191,42 +201,11 @@ module Termbox2.Bindings.Hs
         TB_OUTPUT_NORMAL,
         TB_OUTPUT_TRUECOLOR
       ),
-
-    -- ** Colors
-
-    -- _TB_DEFAULT,
-    -- _TB_BLACK,
-    -- _TB_HI_BLACK,
-    -- _TB_BLUE,
-    -- _TB_CYAN,
-    -- _TB_GREEN,
-    -- _TB_MAGENTA,
-    -- _TB_RED,
-    -- _TB_WHITE,
-    -- _TB_YELLOW,
-
-    -- ** Attributes
-
-    -- _TB_BLINK,
-    -- _TB_BOLD,
-    -- _TB_BRIGHT,
-    -- _TB_DIM,
-    -- _TB_INVISIBLE,
-    -- _TB_ITALIC,
-    -- _TB_OVERLINE,
-    -- _TB_REVERSE,
-    -- _TB_STRIKEOUT,
-    -- _TB_UNDERLINE,
-    -- _TB_UNDERLINE_2,
-
-    -- ** Function types
   )
 where
 
--- _TB_FUNC_EXTRACT_PRE,
--- _TB_FUNC_EXTRACT_POST,
-
 import Termbox2.Bindings.Hs.Internal.Attr (Tb_attr (..))
+import Termbox2.Bindings.Hs.Internal.Color (Tb_color (..))
 import Termbox2.Bindings.Hs.Internal.Error (Tb_error (..))
 import Termbox2.Bindings.Hs.Internal.Event (Tb_event (..))
 import Termbox2.Bindings.Hs.Internal.EventMod (Tb_event_mod (..), _TB_MOD_ALT, _TB_MOD_CTRL, _TB_MOD_MOTION, _TB_MOD_SHIFT)
@@ -255,7 +234,6 @@ import Termbox2.Bindings.Hs.Internal.Functions
     tb_set_cell_ex,
     tb_set_clear_attrs,
     tb_set_cursor,
-    tb_set_func,
     tb_set_input_mode,
     tb_set_output_mode,
     tb_shutdown,
