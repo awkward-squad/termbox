@@ -44,6 +44,7 @@ import Termbox2.Bindings.C qualified as Termbox
 import Termbox2.Bindings.Hs.Internal.Attr (Tb_attr (Tb_attr))
 import Termbox2.Bindings.Hs.Internal.Error (Tb_error (Tb_error))
 import Termbox2.Bindings.Hs.Internal.InputMode (Tb_input_mode (Tb_input_mode))
+import Termbox2.Bindings.Hs.Internal.OutputMode (Tb_output_mode (Tb_output_mode))
 import Termbox2.Bindings.Hs.Internal.Prelude
 
 -- | Clear the back buffer.
@@ -86,9 +87,13 @@ tb_get_input_mode = do
       else Right (Tb_input_mode n)
 
 -- | Get the output mode.
--- tb_get_output_mode :: IO (Either Tb_error Tb_output_mode)
-tb_get_output_mode :: ()
-tb_get_output_mode = ()
+tb_get_output_mode :: IO (Either Tb_error Tb_output_mode)
+tb_get_output_mode = do
+  n <- Termbox.tb_set_output_mode Termbox._TB_OUTPUT_CURRENT
+  pure
+    if n < 0
+      then Left (Tb_error n)
+      else Right (Tb_output_mode n)
 
 -- | Get the terminal height.
 tb_height :: IO (Either Tb_error Int)
@@ -225,10 +230,10 @@ tb_set_input_mode :: Tb_input_mode -> IO (Either Tb_error ())
 tb_set_input_mode (Tb_input_mode mode) =
   check (Termbox.tb_set_input_mode mode)
 
--- | Get or set the output mode.
--- tb_set_output_mode :: CInt -> IO CInt
-tb_set_output_mode :: ()
-tb_set_output_mode = ()
+-- | Get the output mode.
+tb_set_output_mode :: Tb_output_mode -> IO (Either Tb_error ())
+tb_set_output_mode (Tb_output_mode mode) =
+  check (Termbox.tb_set_output_mode mode)
 
 -- | Shutdown the @termbox@ library.
 tb_shutdown :: IO (Either Tb_error ())

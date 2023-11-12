@@ -93,6 +93,12 @@ module Termbox2.Bindings.Hs
         TB_ERR_UNSUPPORTED_TERM
       ),
     -- Tb_event (..),
+    Tb_input_mode
+      ( Tb_input_mode,
+        TB_INPUT_ALT,
+        TB_INPUT_ESC,
+        TB_INPUT_MOUSE
+      ),
     Tb_key
       ( Tb_key,
         TB_KEY_ARROW_DOWN,
@@ -170,6 +176,14 @@ module Termbox2.Bindings.Hs
         TB_KEY_SPACE,
         TB_KEY_TAB
       ),
+    Tb_output_mode
+      ( Tb_output_mode,
+        TB_OUTPUT_216,
+        TB_OUTPUT_256,
+        TB_OUTPUT_GRAYSCALE,
+        TB_OUTPUT_NORMAL,
+        TB_OUTPUT_TRUECOLOR
+      ),
 
     -- ** Colors
 
@@ -218,15 +232,6 @@ module Termbox2.Bindings.Hs
     -- _TB_INPUT_ESC,
     -- _TB_INPUT_MOUSE,
 
-    -- ** Output modes
-
-    -- _TB_OUTPUT_CURRENT,
-    -- _TB_OUTPUT_216,
-    -- _TB_OUTPUT_256,
-    -- _TB_OUTPUT_GRAYSCALE,
-    -- _TB_OUTPUT_NORMAL,
-    -- _TB_OUTPUT_TRUECOLOR,
-
     -- ** Function types
   )
 where
@@ -267,4 +272,6 @@ import Termbox2.Bindings.Hs.Internal.Functions
     tb_strerror,
     tb_width,
   )
+import Termbox2.Bindings.Hs.Internal.InputMode (Tb_input_mode (..))
 import Termbox2.Bindings.Hs.Internal.Key (Tb_key (..))
+import Termbox2.Bindings.Hs.Internal.OutputMode (Tb_output_mode (..))

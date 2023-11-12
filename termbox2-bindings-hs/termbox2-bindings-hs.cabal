@@ -75,6 +75,7 @@ library
     Termbox2.Bindings.Hs.Internal.Functions
     Termbox2.Bindings.Hs.Internal.InputMode
     Termbox2.Bindings.Hs.Internal.Key
+    Termbox2.Bindings.Hs.Internal.OutputMode
     Termbox2.Bindings.Hs.Internal.Prelude
 
 -- executable termbox2-bindings-hs-example-demo
