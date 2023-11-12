@@ -25,7 +25,6 @@ instance Show Tb_output_mode where
     TB_OUTPUT_GRAYSCALE -> "TB_OUTPUT_GRAYSCALE"
     TB_OUTPUT_NORMAL -> "TB_OUTPUT_NORMAL"
     TB_OUTPUT_TRUECOLOR -> "TB_OUTPUT_TRUECOLOR"
-    Tb_output_mode mode -> show ("Tb_output_mode " ++ show mode)
 
 pattern TB_OUTPUT_216 :: Tb_output_mode
 pattern TB_OUTPUT_216 <-
@@ -56,3 +55,6 @@ pattern TB_OUTPUT_TRUECOLOR <-
   ((== Tb_output_mode _TB_OUTPUT_TRUECOLOR) -> True)
   where
     TB_OUTPUT_TRUECOLOR = Tb_output_mode _TB_OUTPUT_TRUECOLOR
+
+-- N.B. This requires Tb_output_mode to remain abstract
+{-# COMPLETE TB_OUTPUT_216, TB_OUTPUT_256, TB_OUTPUT_GRAYSCALE, TB_OUTPUT_NORMAL, TB_OUTPUT_TRUECOLOR #-}

@@ -72,6 +72,9 @@ library
   other-modules:
     Termbox2.Bindings.Hs.Internal.Attr
     Termbox2.Bindings.Hs.Internal.Error
+    Termbox2.Bindings.Hs.Internal.Event
+    Termbox2.Bindings.Hs.Internal.EventMod
+    Termbox2.Bindings.Hs.Internal.EventType
     Termbox2.Bindings.Hs.Internal.Functions
     Termbox2.Bindings.Hs.Internal.InputMode
     Termbox2.Bindings.Hs.Internal.Key

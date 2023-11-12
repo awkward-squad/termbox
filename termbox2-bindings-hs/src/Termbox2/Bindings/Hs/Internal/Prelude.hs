@@ -2,7 +2,7 @@ module Termbox2.Bindings.Hs.Internal.Prelude
   ( charToWord32,
     cintToInt,
     intToCInt,
-    -- word32ToChar,
+    word32ToChar,
   )
 where
 
