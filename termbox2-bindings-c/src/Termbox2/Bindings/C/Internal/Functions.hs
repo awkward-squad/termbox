@@ -42,48 +42,149 @@ foreign import capi unsafe "termbox2.h tb_cell_buffer"
   tb_cell_buffer :: IO (Ptr Tb_cell)
 
 -- | Clear the back buffer.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
 foreign import capi unsafe "termbox2.h tb_clear"
   tb_clear :: IO CInt
 
 -- | Append a code point to a cell in the back buffer.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
+--     * __TB_ERR_OUT_OF_BOUNDS__
 foreign import capi unsafe "termbox2.h tb_extend_cell"
   tb_extend_cell :: CInt -> CInt -> Word32 -> IO CInt
 
 -- | Get the terminal and resize file descriptors.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_NOT_INIT__
 foreign import capi unsafe "termbox2.h tb_get_fds"
   tb_get_fds :: Ptr CInt -> Ptr CInt -> IO CInt
 
 -- | Get the terminal height.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_NOT_INIT__
 foreign import capi unsafe "termbox2.h tb_height"
   tb_height :: IO CInt
 
 -- | Hide the cursor in the back buffer.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
 foreign import capi unsafe "termbox2.h tb_hide_cursor"
   tb_hide_cursor :: IO CInt
 
 -- | Initialize the @termbox@ library.
+--
+-- Can fail with:
+--
+--     * __TB_ERR__
+--     * __TB_ERR_INIT_ALREADY__
+--     * __TB_ERR_INIT_OPEN__
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NO_TERM__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_PIPE__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SIGACTION__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
+--     * __TB_ERR_TCGETATTR__
+--     * __TB_ERR_TCSETATTR__
+--     * __TB_ERR_UNSUPPORTED_TERM__
 foreign import capi unsafe "termbox2.h tb_init"
   tb_init :: IO CInt
 
 -- | Initialize the @termbox@ library.
 --
 -- > tb_init = tb_init_fd(0)
+--
+-- Can fail with:
+--
+--     * __TB_ERR__
+--     * __TB_ERR_INIT_ALREADY__
+--     * __TB_ERR_INIT_OPEN__
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NO_TERM__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_PIPE__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SIGACTION__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
+--     * __TB_ERR_TCGETATTR__
+--     * __TB_ERR_TCSETATTR__
+--     * __TB_ERR_UNSUPPORTED_TERM__
 foreign import capi unsafe "termbox2.h tb_init_fd"
   tb_init_fd :: CInt -> IO CInt
 
 -- | Initialize the @termbox@ library.
 --
 -- > tb_init = tb_init_file("/dev/tty")
+--
+-- Can fail with:
+--
+--     * __TB_ERR__
+--     * __TB_ERR_INIT_ALREADY__
+--     * __TB_ERR_INIT_OPEN__
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NO_TERM__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_PIPE__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SIGACTION__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
+--     * __TB_ERR_TCGETATTR__
+--     * __TB_ERR_TCSETATTR__
+--     * __TB_ERR_UNSUPPORTED_TERM__
 foreign import capi unsafe "termbox2.h tb_init_file"
   tb_init_file :: CString -> IO CInt
 
 -- | Initialize the @termbox@ library.
 --
 -- > tb_init = tb_init_rwfd(0, 0)
+--
+-- Can fail with:
+--
+--     * __TB_ERR__
+--     * __TB_ERR_INIT_ALREADY__
+--     * __TB_ERR_INIT_OPEN__
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NO_TERM__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_PIPE__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SIGACTION__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
+--     * __TB_ERR_TCGETATTR__
+--     * __TB_ERR_TCSETATTR__
+--     * __TB_ERR_UNSUPPORTED_TERM__
 foreign import capi unsafe "termbox2.h tb_init_rwfd"
   tb_init_rwfd :: CInt -> CInt -> IO CInt
 
 -- | Invalidate the screen, causing a redraw. This is mainly used after switching output modes.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
 foreign import capi unsafe "termbox2.h tb_invalidate"
   tb_invalidate :: IO CInt
 
@@ -92,14 +193,46 @@ foreign import capi unsafe "termbox2.h tb_last_errno"
   tb_last_errno :: IO CInt
 
 -- | Wait up to a number of milliseconds for an event.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
+--     * __TB_ERR_NO_EVENT__
+--     * __TB_ERR_POLL__
+--     * __TB_ERR_READ__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
 foreign import capi interruptible "termbox2.h tb_peek_event"
   tb_peek_event :: Ptr Tb_event -> CInt -> IO CInt
 
 -- | Wait for an event.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
+--     * __TB_ERR_POLL__
+--     * __TB_ERR_READ__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
 foreign import capi interruptible "termbox2.h tb_poll_event"
   tb_poll_event :: Ptr Tb_event -> IO CInt
 
 -- | Synchronize the back buffer with the terminal.
+--
+-- Can fail with:
+--
+--     * __TB_ERR__
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
+--     * __TB_ERR_OUT_OF_BOUNDS__
 foreign import capi unsafe "termbox2.h tb_present"
   tb_present :: IO CInt
 
@@ -152,5 +285,9 @@ foreign import capi unsafe "termbox2.h tb_strerror"
   tb_strerror :: CInt -> IO (ConstPtr CChar)
 
 -- | Get the terminal width.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_NOT_INIT__
 foreign import capi unsafe "termbox2.h tb_width"
   tb_width :: IO CInt

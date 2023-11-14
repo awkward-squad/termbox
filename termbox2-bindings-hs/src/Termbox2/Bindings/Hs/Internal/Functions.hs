@@ -49,11 +49,22 @@ import Termbox2.Bindings.Hs.Internal.OutputMode (Tb_output_mode (Tb_output_mode)
 import Termbox2.Bindings.Hs.Internal.Prelude
 
 -- | Clear the back buffer.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
 tb_clear :: IO (Either Tb_error ())
 tb_clear =
   check Termbox.tb_clear
 
 -- | Append a code point to a cell in the back buffer.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
+--     * __TB_ERR_OUT_OF_BOUNDS__
 tb_extend_cell ::
   -- | x
   Int ->
@@ -66,6 +77,10 @@ tb_extend_cell x y ch =
   check (Termbox.tb_extend_cell (intToCInt x) (intToCInt y) (charToWord32 ch))
 
 -- | Get the terminal and resize file descriptors.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_NOT_INIT__
 tb_get_fds :: IO (Either Tb_error (Fd, Fd))
 tb_get_fds =
   alloca \p1 ->
@@ -79,6 +94,10 @@ tb_get_fds =
         else pure (Left (Tb_error code))
 
 -- | Get the input mode.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_NOT_INIT__
 tb_get_input_mode :: IO (Either Tb_error Tb_input_mode)
 tb_get_input_mode = do
   n <- Termbox.tb_set_input_mode Termbox._TB_INPUT_CURRENT
@@ -88,6 +107,10 @@ tb_get_input_mode = do
       else Right (Tb_input_mode n)
 
 -- | Get the output mode.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_NOT_INIT__
 tb_get_output_mode :: IO (Either Tb_error Tb_output_mode)
 tb_get_output_mode = do
   n <- Termbox.tb_set_output_mode Termbox._TB_OUTPUT_CURRENT
@@ -97,6 +120,10 @@ tb_get_output_mode = do
       else Right (Tb_output_mode n)
 
 -- | Get the terminal height.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_NOT_INIT__
 tb_height :: IO (Either Tb_error Int)
 tb_height = do
   n <- Termbox.tb_height
@@ -106,11 +133,34 @@ tb_height = do
       else Right (cintToInt n)
 
 -- | Hide the cursor in the back buffer.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
 tb_hide_cursor :: IO (Either Tb_error ())
 tb_hide_cursor =
   check Termbox.tb_hide_cursor
 
 -- | Initialize the @termbox@ library.
+--
+-- Can fail with:
+--
+--     * __TB_ERR__
+--     * __TB_ERR_INIT_ALREADY__
+--     * __TB_ERR_INIT_OPEN__
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NO_TERM__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_PIPE__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SIGACTION__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
+--     * __TB_ERR_TCGETATTR__
+--     * __TB_ERR_TCSETATTR__
+--     * __TB_ERR_UNSUPPORTED_TERM__
 tb_init :: IO (Either Tb_error ())
 tb_init =
   check Termbox.tb_init
@@ -118,6 +168,24 @@ tb_init =
 -- | Initialize the @termbox@ library.
 --
 -- > tb_init = tb_init_fd(0)
+--
+-- Can fail with:
+--
+--     * __TB_ERR__
+--     * __TB_ERR_INIT_ALREADY__
+--     * __TB_ERR_INIT_OPEN__
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NO_TERM__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_PIPE__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SIGACTION__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
+--     * __TB_ERR_TCGETATTR__
+--     * __TB_ERR_TCSETATTR__
+--     * __TB_ERR_UNSUPPORTED_TERM__
 tb_init_fd :: Fd -> IO (Either Tb_error ())
 tb_init_fd (Fd fd) =
   check (Termbox.tb_init_fd fd)
@@ -125,6 +193,24 @@ tb_init_fd (Fd fd) =
 -- | Initialize the @termbox@ library.
 --
 -- > tb_init = tb_init_file("/dev/tty")
+--
+-- Can fail with:
+--
+--     * __TB_ERR__
+--     * __TB_ERR_INIT_ALREADY__
+--     * __TB_ERR_INIT_OPEN__
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NO_TERM__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_PIPE__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SIGACTION__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
+--     * __TB_ERR_TCGETATTR__
+--     * __TB_ERR_TCSETATTR__
+--     * __TB_ERR_UNSUPPORTED_TERM__
 tb_init_file :: FilePath -> IO (Either Tb_error ())
 tb_init_file path =
   withCString path \c_path ->
@@ -133,11 +219,34 @@ tb_init_file path =
 -- | Initialize the @termbox@ library.
 --
 -- > tb_init = tb_init_rwfd(0, 0)
+--
+-- Can fail with:
+--
+--     * __TB_ERR__
+--     * __TB_ERR_INIT_ALREADY__
+--     * __TB_ERR_INIT_OPEN__
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NO_TERM__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_PIPE__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SIGACTION__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
+--     * __TB_ERR_TCGETATTR__
+--     * __TB_ERR_TCSETATTR__
+--     * __TB_ERR_UNSUPPORTED_TERM__
 tb_init_rwfd :: Fd -> Fd -> IO (Either Tb_error ())
 tb_init_rwfd (Fd r) (Fd w) =
   check (Termbox.tb_init_rwfd r w)
 
 -- | Invalidate the screen, causing a redraw. This is mainly used after switching output modes.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
 tb_invalidate :: IO (Either Tb_error ())
 tb_invalidate =
   check Termbox.tb_invalidate
@@ -148,6 +257,19 @@ tb_last_errno =
   coerce Termbox.tb_last_errno
 
 -- | Wait up to a number of milliseconds for an event.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
+--     * __TB_ERR_NO_EVENT__
+--     * __TB_ERR_POLL__
+--     * __TB_ERR_READ__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
 tb_peek_event :: Int -> IO (Either Tb_error Tb_event)
 tb_peek_event ms =
   alloca \eventPtr -> do
@@ -159,6 +281,18 @@ tb_peek_event ms =
       else pure (Left (Tb_error code))
 
 -- | Wait for an event.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
+--     * __TB_ERR_POLL__
+--     * __TB_ERR_READ__
+--     * __TB_ERR_RESIZE_IOCTL__
+--     * __TB_ERR_RESIZE_POLL__
+--     * __TB_ERR_RESIZE_READ__
+--     * __TB_ERR_RESIZE_SSCANF__
+--     * __TB_ERR_RESIZE_WRITE__
 tb_poll_event :: IO (Either Tb_error Tb_event)
 tb_poll_event =
   alloca \eventPtr -> do
@@ -170,6 +304,13 @@ tb_poll_event =
       else pure (Left (Tb_error code))
 
 -- | Synchronize the back buffer with the terminal.
+--
+-- Can fail with:
+--
+--     * __TB_ERR__
+--     * __TB_ERR_MEM__
+--     * __TB_ERR_NOT_INIT__
+--     * __TB_ERR_OUT_OF_BOUNDS__
 tb_present :: IO (Either Tb_error ())
 tb_present =
   check Termbox.tb_present
@@ -298,6 +439,10 @@ tb_strerror (Tb_error code) = do
   Text.peekCStringLen (c_string, len)
 
 -- | Get the terminal width.
+--
+-- Can fail with:
+--
+--     * __TB_ERR_NOT_INIT__
 tb_width :: IO (Either Tb_error Int)
 tb_width = do
   n <- Termbox.tb_width

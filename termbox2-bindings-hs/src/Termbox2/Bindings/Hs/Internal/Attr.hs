@@ -1,6 +1,16 @@
 module Termbox2.Bindings.Hs.Internal.Attr
   ( Tb_attr
       ( Tb_attr,
+        TB_DEFAULT,
+        TB_BLACK,
+        TB_BLUE,
+        TB_CYAN,
+        TB_GREEN,
+        TB_HI_BLACK,
+        TB_MAGENTA,
+        TB_RED,
+        TB_WHITE,
+        TB_YELLOW,
         TB_BLINK,
         TB_BOLD,
         TB_BRIGHT,
@@ -19,17 +29,27 @@ where
 import Data.Bits ((.|.))
 import Data.Word (Word64)
 import Termbox2.Bindings.C
-  ( _TB_BLINK,
+  ( _TB_BLACK,
+    _TB_BLINK,
+    _TB_BLUE,
     _TB_BOLD,
     _TB_BRIGHT,
+    _TB_CYAN,
+    _TB_DEFAULT,
     _TB_DIM,
+    _TB_GREEN,
+    _TB_HI_BLACK,
     _TB_INVISIBLE,
     _TB_ITALIC,
+    _TB_MAGENTA,
     _TB_OVERLINE,
+    _TB_RED,
     _TB_REVERSE,
     _TB_STRIKEOUT,
     _TB_UNDERLINE,
     _TB_UNDERLINE_2,
+    _TB_WHITE,
+    _TB_YELLOW,
   )
 
 -- | An attribute.
@@ -44,6 +64,66 @@ instance Monoid Tb_attr where
 instance Semigroup Tb_attr where
   Tb_attr cx <> Tb_attr cy =
     Tb_attr (cx .|. cy)
+
+pattern TB_DEFAULT :: Tb_attr
+pattern TB_DEFAULT <-
+  ((== Tb_attr _TB_DEFAULT) -> True)
+  where
+    TB_DEFAULT = Tb_attr _TB_DEFAULT
+
+pattern TB_BLACK :: Tb_attr
+pattern TB_BLACK <-
+  ((== Tb_attr _TB_BLACK) -> True)
+  where
+    TB_BLACK = Tb_attr _TB_BLACK
+
+pattern TB_BLUE :: Tb_attr
+pattern TB_BLUE <-
+  ((== Tb_attr _TB_BLUE) -> True)
+  where
+    TB_BLUE = Tb_attr _TB_BLUE
+
+pattern TB_CYAN :: Tb_attr
+pattern TB_CYAN <-
+  ((== Tb_attr _TB_CYAN) -> True)
+  where
+    TB_CYAN = Tb_attr _TB_CYAN
+
+pattern TB_GREEN :: Tb_attr
+pattern TB_GREEN <-
+  ((== Tb_attr _TB_GREEN) -> True)
+  where
+    TB_GREEN = Tb_attr _TB_GREEN
+
+pattern TB_HI_BLACK :: Tb_attr
+pattern TB_HI_BLACK <-
+  ((== Tb_attr _TB_HI_BLACK) -> True)
+  where
+    TB_HI_BLACK = Tb_attr _TB_HI_BLACK
+
+pattern TB_MAGENTA :: Tb_attr
+pattern TB_MAGENTA <-
+  ((== Tb_attr _TB_MAGENTA) -> True)
+  where
+    TB_MAGENTA = Tb_attr _TB_MAGENTA
+
+pattern TB_RED :: Tb_attr
+pattern TB_RED <-
+  ((== Tb_attr _TB_RED) -> True)
+  where
+    TB_RED = Tb_attr _TB_RED
+
+pattern TB_WHITE :: Tb_attr
+pattern TB_WHITE <-
+  ((== Tb_attr _TB_WHITE) -> True)
+  where
+    TB_WHITE = Tb_attr _TB_WHITE
+
+pattern TB_YELLOW :: Tb_attr
+pattern TB_YELLOW <-
+  ((== Tb_attr _TB_YELLOW) -> True)
+  where
+    TB_YELLOW = Tb_attr _TB_YELLOW
 
 pattern TB_BLINK :: Tb_attr
 pattern TB_BLINK <-

@@ -52,6 +52,16 @@ module Termbox2.Bindings.Hs
     -- * Types
     Tb_attr
       ( Tb_attr,
+        TB_DEFAULT,
+        TB_BLACK,
+        TB_BLUE,
+        TB_CYAN,
+        TB_GREEN,
+        TB_HI_BLACK,
+        TB_MAGENTA,
+        TB_RED,
+        TB_WHITE,
+        TB_YELLOW,
         TB_BLINK,
         TB_BOLD,
         TB_BRIGHT,
@@ -63,19 +73,6 @@ module Termbox2.Bindings.Hs
         TB_STRIKEOUT,
         TB_UNDERLINE,
         TB_UNDERLINE_2
-      ),
-    Tb_color
-      ( Tb_color,
-        TB_DEFAULT,
-        TB_BLACK,
-        TB_BLUE,
-        TB_CYAN,
-        TB_GREEN,
-        TB_HI_BLACK,
-        TB_MAGENTA,
-        TB_RED,
-        TB_WHITE,
-        TB_YELLOW
       ),
     Tb_error
       ( Tb_error,
@@ -205,7 +202,6 @@ module Termbox2.Bindings.Hs
 where
 
 import Termbox2.Bindings.Hs.Internal.Attr (Tb_attr (..))
-import Termbox2.Bindings.Hs.Internal.Color (Tb_color (..))
 import Termbox2.Bindings.Hs.Internal.Error (Tb_error (..))
 import Termbox2.Bindings.Hs.Internal.Event (Tb_event (..))
 import Termbox2.Bindings.Hs.Internal.EventMod (Tb_event_mod (..), _TB_MOD_ALT, _TB_MOD_CTRL, _TB_MOD_MOTION, _TB_MOD_SHIFT)

@@ -72,7 +72,6 @@ library
   hs-source-dirs: src
   other-modules:
     Termbox2.Bindings.Hs.Internal.Attr
-    Termbox2.Bindings.Hs.Internal.Color
     Termbox2.Bindings.Hs.Internal.Error
     Termbox2.Bindings.Hs.Internal.Event
     Termbox2.Bindings.Hs.Internal.EventMod
@@ -83,12 +82,13 @@ library
     Termbox2.Bindings.Hs.Internal.OutputMode
     Termbox2.Bindings.Hs.Internal.Prelude
 
--- executable termbox2-bindings-hs-example-demo
---   import: component
---   if !flag(build-examples)
---     buildable: False
---   build-depends:
---     base,
---     termbox2-bindings-hs
---   hs-source-dirs: examples
---   main-is: Demo.hs
+executable termbox2-bindings-hs-example-demo
+  import: component
+  -- if !flag(build-examples)
+  --   buildable: False
+  build-depends:
+    base,
+    termbox2-bindings-hs,
+    text,
+  hs-source-dirs: examples
+  main-is: Demo.hs
