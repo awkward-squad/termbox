@@ -23,7 +23,7 @@ import qualified Termbox.Bindings.C as Termbox
 -- | A color and attributes.
 newtype Tb_color_and_attrs
   = Tb_color_and_attrs Word16
-  deriving stock (Eq, Ord, Show)
+  deriving stock (Eq, Show)
 
 instance Monoid Tb_color_and_attrs where
   mempty = Tb_color_and_attrs 0

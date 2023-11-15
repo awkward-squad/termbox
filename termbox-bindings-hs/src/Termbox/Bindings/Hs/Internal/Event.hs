@@ -24,7 +24,7 @@ data Tb_event = Tb_event
     x :: {-# UNPACK #-} !Int32,
     y :: {-# UNPACK #-} !Int32
   }
-  deriving stock (Eq, Generic, Ord, Show)
+  deriving stock (Eq, Generic, Show)
 
 ceventToEvent :: Termbox.Tb_event -> Tb_event
 ceventToEvent Termbox.Tb_event {type_, mod, key, ch, w, h, x, y} =

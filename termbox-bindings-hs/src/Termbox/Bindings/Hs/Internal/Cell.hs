@@ -18,7 +18,7 @@ data Tb_cell = Tb_cell
     -- | Background color and attributes.
     bg :: {-# UNPACK #-} !Tb_color_and_attrs
   }
-  deriving stock (Eq, Generic, Ord, Show)
+  deriving stock (Eq, Generic, Show)
 
 cellToCCell :: Tb_cell -> Termbox.Tb_cell
 cellToCCell Tb_cell {ch, fg = Tb_color_and_attrs fg, bg = Tb_color_and_attrs bg} =

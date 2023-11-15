@@ -13,7 +13,16 @@ module Termbox.Internal.Mouse
 where
 
 import GHC.Generics (Generic)
-import qualified Termbox.Bindings.Hs
+import Termbox.Bindings.Hs
+  ( Tb_key
+      ( TB_KEY_MOUSE_LEFT,
+        TB_KEY_MOUSE_MIDDLE,
+        TB_KEY_MOUSE_RELEASE,
+        TB_KEY_MOUSE_RIGHT,
+        TB_KEY_MOUSE_WHEEL_DOWN,
+        TB_KEY_MOUSE_WHEEL_UP
+      ),
+  )
 import Termbox.Internal.Pos (Pos)
 
 -- | A mouse event.
@@ -25,7 +34,7 @@ data Mouse = Mouse
 
 -- | A mouse button.
 newtype MouseButton
-  = MouseButton Termbox.Bindings.Hs.Tb_key
+  = MouseButton Tb_key
   deriving stock (Eq, Ord)
 
 instance Show MouseButton where
@@ -38,21 +47,21 @@ instance Show MouseButton where
     WheelUp -> "WheelUp"
 
 pattern LeftClick :: MouseButton
-pattern LeftClick = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_LEFT
+pattern LeftClick = MouseButton TB_KEY_MOUSE_LEFT
 
 pattern MiddleClick :: MouseButton
-pattern MiddleClick = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_MIDDLE
+pattern MiddleClick = MouseButton TB_KEY_MOUSE_MIDDLE
 
 pattern RightClick :: MouseButton
-pattern RightClick = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_RIGHT
+pattern RightClick = MouseButton TB_KEY_MOUSE_RIGHT
 
 pattern ReleaseClick :: MouseButton
-pattern ReleaseClick = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_RELEASE
+pattern ReleaseClick = MouseButton TB_KEY_MOUSE_RELEASE
 
 pattern WheelDown :: MouseButton
-pattern WheelDown = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_WHEEL_DOWN
+pattern WheelDown = MouseButton TB_KEY_MOUSE_WHEEL_DOWN
 
 pattern WheelUp :: MouseButton
-pattern WheelUp = MouseButton Termbox.Bindings.Hs.TB_KEY_MOUSE_WHEEL_UP
+pattern WheelUp = MouseButton TB_KEY_MOUSE_WHEEL_UP
 
 {-# COMPLETE LeftClick, MiddleClick, ReleaseClick, RightClick, WheelDown, WheelUp #-}

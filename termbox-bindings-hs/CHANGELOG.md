@@ -5,7 +5,9 @@
 - Make `Show` instance of `Tb_key` not call `error` on unknown keys
 - Hide representation of `Tb_event_mod`
 - Improve `Show` instance of `Tb_event_mod`
-- Delete `tb_attr`
+- Add `Exception` instance for `Tb_init_error`
+- Remove `tb_attr`
+- Remove `Ord` instances of `Tb_cell`, `Tb_event`, `Tb_event_mod`, `Tb_event_type`, `Tb_init_error`
 
 ## [0.1.1] - November 5, 2023
 

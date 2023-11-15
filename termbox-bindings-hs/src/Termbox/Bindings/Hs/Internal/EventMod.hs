@@ -13,7 +13,7 @@ import qualified Termbox.Bindings.C
 -- | An event modifier.
 newtype Tb_event_mod
   = Tb_event_mod Word8
-  deriving stock (Eq, Ord)
+  deriving stock (Eq)
 
 instance Show Tb_event_mod where
   show = \case
