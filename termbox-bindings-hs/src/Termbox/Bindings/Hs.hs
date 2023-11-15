@@ -68,12 +68,10 @@ module Termbox.Bindings.Hs
         TB_EPIPE_TRAP_ERROR,
         TB_EUNSUPPORTED_TERMINAL
       ),
-    Tb_input_mode
-      ( TB_INPUT_CURRENT,
-        TB_INPUT_ALT,
-        TB_INPUT_ESC,
-        TB_INPUT_MOUSE
-      ),
+    Tb_input_mode (Tb_input_mode),
+    _TB_INPUT_ALT,
+    _TB_INPUT_ESC,
+    _TB_INPUT_MOUSE,
     Tb_key
       ( TB_KEY_ARROW_DOWN,
         TB_KEY_ARROW_LEFT,
@@ -195,6 +193,11 @@ import Termbox.Bindings.Hs.Internal.Functions
     tb_width,
   )
 import Termbox.Bindings.Hs.Internal.InitError (Tb_init_error (..))
-import Termbox.Bindings.Hs.Internal.InputMode (Tb_input_mode (..))
+import Termbox.Bindings.Hs.Internal.InputMode
+  ( Tb_input_mode (Tb_input_mode),
+    _TB_INPUT_ALT,
+    _TB_INPUT_ESC,
+    _TB_INPUT_MOUSE,
+  )
 import Termbox.Bindings.Hs.Internal.Key (Tb_key (..))
 import Termbox.Bindings.Hs.Internal.OutputMode (Tb_output_mode (..))

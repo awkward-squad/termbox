@@ -1,51 +1,41 @@
 module Termbox.Bindings.Hs.Internal.InputMode
-  ( Tb_input_mode
-      ( Tb_input_mode,
-        TB_INPUT_CURRENT,
-        TB_INPUT_ALT,
-        TB_INPUT_ESC,
-        TB_INPUT_MOUSE
-      ),
+  ( Tb_input_mode (Tb_input_mode),
+    _TB_INPUT_ALT,
+    _TB_INPUT_ESC,
+    _TB_INPUT_MOUSE,
   )
 where
 
+import Data.Bits (Bits, (.|.))
+import Data.Coerce (coerce)
 import Foreign.C.Types (CInt)
-import qualified Termbox.Bindings.C
+import qualified Termbox.Bindings.C as Termbox
 
 -- | The input mode.
 newtype Tb_input_mode
   = Tb_input_mode CInt
-  deriving stock (Eq, Ord)
+  deriving stock (Eq)
+  deriving newtype (Bits)
 
 instance Show Tb_input_mode where
-  show = \case
-    TB_INPUT_CURRENT -> "TB_INPUT_CURRENT"
-    TB_INPUT_ALT -> "TB_INPUT_ALT"
-    TB_INPUT_ESC -> "TB_INPUT_ESC"
-    TB_INPUT_MOUSE -> "TB_INPUT_MOUSE"
+  show mode
+    | mode == _TB_INPUT_ESC = "_TB_INPUT_ESC"
+    | mode == _TB_INPUT_ALT = "_TB_INPUT_ALT"
+    | mode == _TB_INPUT_ESC <> _TB_INPUT_MOUSE = "_TB_INPUT_ESC <> _TB_INPUT_MOUSE"
+    | mode == _TB_INPUT_ALT <> _TB_INPUT_MOUSE = "_TB_INPUT_ALT <> _TB_INPUT_MOUSE"
+    | otherwise = "Tb_input_mode " ++ show (coerce @_ @CInt mode)
 
-pattern TB_INPUT_CURRENT :: Tb_input_mode
-pattern TB_INPUT_CURRENT <-
-  ((== Tb_input_mode Termbox.Bindings.C._TB_INPUT_CURRENT) -> True)
-  where
-    TB_INPUT_CURRENT = Tb_input_mode Termbox.Bindings.C._TB_INPUT_CURRENT
+instance Semigroup Tb_input_mode where
+  (<>) = coerce ((.|.) :: CInt -> CInt -> CInt)
 
-pattern TB_INPUT_ALT :: Tb_input_mode
-pattern TB_INPUT_ALT <-
-  ((== Tb_input_mode Termbox.Bindings.C._TB_INPUT_ALT) -> True)
-  where
-    TB_INPUT_ALT = Tb_input_mode Termbox.Bindings.C._TB_INPUT_ALT
+_TB_INPUT_ALT :: Tb_input_mode
+_TB_INPUT_ALT =
+  Tb_input_mode Termbox._TB_INPUT_ALT
 
-pattern TB_INPUT_ESC :: Tb_input_mode
-pattern TB_INPUT_ESC <-
-  ((== Tb_input_mode Termbox.Bindings.C._TB_INPUT_ESC) -> True)
-  where
-    TB_INPUT_ESC = Tb_input_mode Termbox.Bindings.C._TB_INPUT_ESC
+_TB_INPUT_ESC :: Tb_input_mode
+_TB_INPUT_ESC =
+  Tb_input_mode Termbox._TB_INPUT_ESC
 
-pattern TB_INPUT_MOUSE :: Tb_input_mode
-pattern TB_INPUT_MOUSE <-
-  ((== Tb_input_mode Termbox.Bindings.C._TB_INPUT_MOUSE) -> True)
-  where
-    TB_INPUT_MOUSE = Tb_input_mode Termbox.Bindings.C._TB_INPUT_MOUSE
-
-{-# COMPLETE TB_INPUT_CURRENT, TB_INPUT_ALT, TB_INPUT_ESC, TB_INPUT_MOUSE #-}
+_TB_INPUT_MOUSE :: Tb_input_mode
+_TB_INPUT_MOUSE =
+  Tb_input_mode Termbox._TB_INPUT_MOUSE

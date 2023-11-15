@@ -7,7 +7,7 @@ module Termbox.Internal.Main
 where
 
 import Control.Exception (Exception, mask, onException)
-import qualified Termbox.Bindings.Hs
+import Termbox.Bindings.Hs
 
 -- | @termbox@ initialization errors.
 data InitError
@@ -33,19 +33,19 @@ run action =
 -- If @initialize@ succeeds, it must be paired with a call to 'finalize'.
 initialize :: IO (Either InitError ())
 initialize =
-  Termbox.Bindings.Hs.tb_init >>= \case
+  tb_init >>= \case
     Left err ->
       (pure . Left) case err of
-        Termbox.Bindings.Hs.TB_EFAILED_TO_OPEN_TTY -> FailedToOpenTTY
-        Termbox.Bindings.Hs.TB_EPIPE_TRAP_ERROR -> PipeTrapError
-        Termbox.Bindings.Hs.TB_EUNSUPPORTED_TERMINAL -> UnsupportedTerminal
+        TB_EFAILED_TO_OPEN_TTY -> FailedToOpenTTY
+        TB_EPIPE_TRAP_ERROR -> PipeTrapError
+        TB_EUNSUPPORTED_TERMINAL -> UnsupportedTerminal
     Right () -> do
-      _ <- Termbox.Bindings.Hs.tb_select_input_mode Termbox.Bindings.Hs.TB_INPUT_MOUSE
-      _ <- Termbox.Bindings.Hs.tb_select_output_mode Termbox.Bindings.Hs.TB_OUTPUT_256
+      tb_select_input_mode _TB_INPUT_MOUSE
+      _ <- tb_select_output_mode TB_OUTPUT_256
       pure (Right ())
 
 -- | Shut down a @termbox@ program.
 finalize :: IO ()
 finalize = do
-  _ <- Termbox.Bindings.Hs.tb_select_output_mode Termbox.Bindings.Hs.TB_OUTPUT_NORMAL
-  Termbox.Bindings.Hs.tb_shutdown
+  _ <- tb_select_output_mode TB_OUTPUT_NORMAL
+  tb_shutdown

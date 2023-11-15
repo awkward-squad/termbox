@@ -1,21 +1,24 @@
 module Termbox.Bindings.Hs.Internal.Functions
-  ( tb_init,
+  ( tb_change_cell,
+    tb_get_input_mode,
+    tb_height,
+    tb_init,
     tb_init_fd,
     tb_init_file,
-    tb_select_input_mode,
-    tb_select_output_mode,
-    tb_width,
-    tb_height,
     tb_peek_event,
     tb_poll_event,
-    tb_set_cursor,
     tb_put_cell,
-    tb_change_cell,
+    tb_select_input_mode,
+    tb_select_output_mode,
     tb_set_clear_attributes,
+    tb_set_cursor,
+    tb_width,
   )
 where
 
 import Data.Coerce (coerce)
+import Data.Functor (void)
+import Foreign.C (CInt (..))
 import Foreign.C.String (withCString)
 import Foreign.Marshal.Alloc (alloca)
 import qualified Foreign.Storable as Storable
@@ -44,6 +47,11 @@ tb_change_cell ::
   IO ()
 tb_change_cell cx cy c (Tb_color_and_attrs foreground) (Tb_color_and_attrs background) =
   Termbox.tb_change_cell (intToCInt cx) (intToCInt cy) (charToWord32 c) foreground background
+
+-- | Get the input mode.
+tb_get_input_mode :: IO Tb_input_mode
+tb_get_input_mode =
+  coerce Termbox.tb_select_input_mode Termbox._TB_INPUT_CURRENT
 
 -- | Get the terminal height.
 tb_height :: IO Int
@@ -118,10 +126,10 @@ tb_put_cell cx cy cell =
     Storable.poke c_cell (cellToCCell cell)
     Termbox.tb_put_cell (intToCInt cx) (intToCInt cy) c_cell
 
--- | Get or set the input mode.
-tb_select_input_mode :: Tb_input_mode -> IO Tb_input_mode
+-- | Set the input mode.
+tb_select_input_mode :: Tb_input_mode -> IO ()
 tb_select_input_mode =
-  coerce Termbox.tb_select_input_mode
+  void . coerce @(CInt -> IO CInt) @(Tb_input_mode -> IO Tb_input_mode) Termbox.tb_select_input_mode
 
 -- | Get or set the output mode.
 tb_select_output_mode :: Tb_output_mode -> IO Tb_output_mode
