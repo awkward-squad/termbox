@@ -36,37 +36,39 @@ newtype Color
   = Color Tb_attrs
   deriving newtype (Eq)
 
+-- These intentionally don't use e.g. TB_RED, 'cause they're all off-by-one in TB_OUTPUT_256
+
 defaultColor :: Color
 defaultColor =
-  Color _TB_DEFAULT
+  Color (Tb_attrs 0)
 
 red :: Color
 red =
-  Color _TB_RED
+  Color (Tb_attrs 1)
 
 green :: Color
 green =
-  Color _TB_GREEN
+  Color (Tb_attrs 2)
 
 yellow :: Color
 yellow =
-  Color _TB_YELLOW
+  Color (Tb_attrs 3)
 
 blue :: Color
 blue =
-  Color _TB_BLUE
+  Color (Tb_attrs 4)
 
 magenta :: Color
 magenta =
-  Color _TB_MAGENTA
+  Color (Tb_attrs 5)
 
 cyan :: Color
 cyan =
-  Color _TB_CYAN
+  Color (Tb_attrs 6)
 
 white :: Color
 white =
-  Color _TB_WHITE
+  Color (Tb_attrs 7)
 
 -- | Make a basic color bright.
 bright :: Color -> Color
