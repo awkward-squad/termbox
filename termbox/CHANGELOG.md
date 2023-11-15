@@ -1,4 +1,4 @@
-## [2.0.0.1] - Unreleased
+## [2.0.0.1] - November 14, 2023
 
 - Update to `termbox-bindings-hs-1.0.0`
 
