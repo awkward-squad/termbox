@@ -40,4 +40,5 @@ pattern TB_EVENT_RESIZE <-
   where
     TB_EVENT_RESIZE = Tb_event_type Termbox.Bindings.C._TB_EVENT_RESIZE
 
+-- N.B. This requires Tb_event_type to remain abstract
 {-# COMPLETE TB_EVENT_KEY, TB_EVENT_MOUSE, TB_EVENT_RESIZE #-}

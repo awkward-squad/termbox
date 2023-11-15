@@ -55,8 +55,7 @@ module Termbox.Bindings.Hs
     _TB_UNDERLINE,
     Tb_event (..),
     Tb_event_mod
-      ( Tb_event_mod,
-        TB_MOD_ALT,
+      ( TB_MOD_ALT,
         TB_MOD_MOTION
       ),
     Tb_event_type

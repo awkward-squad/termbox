@@ -6,7 +6,7 @@ where
 
 import Data.Int (Int32)
 import GHC.Generics (Generic)
-import qualified Termbox.Bindings.C
+import qualified Termbox.Bindings.C as Termbox
 import Termbox.Bindings.Hs.Internal.EventMod (Tb_event_mod (..))
 import Termbox.Bindings.Hs.Internal.EventType (Tb_event_type (..))
 import Termbox.Bindings.Hs.Internal.Key (Tb_key (..))
@@ -16,7 +16,7 @@ import Prelude hiding (mod)
 -- | An event.
 data Tb_event = Tb_event
   { type_ :: {-# UNPACK #-} !Tb_event_type,
-    mod :: {-# UNPACK #-} !Tb_event_mod,
+    mod :: {-# UNPACK #-} !(Maybe Tb_event_mod),
     key :: {-# UNPACK #-} !Tb_key,
     ch :: {-# UNPACK #-} !Char,
     w :: {-# UNPACK #-} !Int32,
@@ -26,11 +26,11 @@ data Tb_event = Tb_event
   }
   deriving stock (Eq, Generic, Ord, Show)
 
-ceventToEvent :: Termbox.Bindings.C.Tb_event -> Tb_event
-ceventToEvent Termbox.Bindings.C.Tb_event {type_, mod, key, ch, w, h, x, y} =
+ceventToEvent :: Termbox.Tb_event -> Tb_event
+ceventToEvent Termbox.Tb_event {type_, mod, key, ch, w, h, x, y} =
   Tb_event
     { type_ = Tb_event_type type_,
-      mod = Tb_event_mod mod,
+      mod = if mod == 0 then Nothing else Just (Tb_event_mod mod),
       key = Tb_key key,
       ch = word32ToChar ch,
       w,
