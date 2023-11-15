@@ -1,6 +1,8 @@
-## [0.1.1.1] - Unreleased
+## [1.0.0] - Unreleased
 
 - Make `Show` instance of `Tb_key` not call `error` on unknown keys
+- Rework `Tb_attr` and `Tb_color` into `Tb_color_and_attrs`
+- Delete `tb_attr`
 
 ## [0.1.1] - November 5, 2023
 

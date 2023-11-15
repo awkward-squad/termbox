@@ -1,3 +1,7 @@
+## [2.0.0.1] - Unreleased
+
+- Update to `termbox-bindings-hs-1.0.0`
+
 ## [2.0.0] - November 5, 2023
 
 - Overhaul `Cell`+`Scene` API; now it's `Image`+`Scene`

@@ -16,7 +16,7 @@ module Termbox.Bindings.Hs
     tb_init_file,
     tb_shutdown,
 
-    -- ** Get\/set input\/output mode
+    -- ** Get or set input or output mode
     tb_select_input_mode,
     tb_select_output_mode,
 
@@ -27,9 +27,6 @@ module Termbox.Bindings.Hs
     -- ** Poll for events
     tb_peek_event,
     tb_poll_event,
-
-    -- ** Style a color
-    tb_attr,
 
     -- ** Set a cell
     tb_set_cursor,
@@ -42,25 +39,20 @@ module Termbox.Bindings.Hs
     tb_present,
 
     -- * Types
-    Tb_attr
-      ( Tb_attr,
-        TB_BOLD,
-        TB_REVERSE,
-        TB_UNDERLINE
-      ),
     Tb_cell (..),
-    Tb_color
-      ( Tb_color,
-        TB_DEFAULT,
-        TB_BLACK,
-        TB_BLUE,
-        TB_CYAN,
-        TB_GREEN,
-        TB_MAGENTA,
-        TB_RED,
-        TB_WHITE,
-        TB_YELLOW
-      ),
+    Tb_color_and_attrs (Tb_color_and_attrs),
+    _TB_DEFAULT,
+    _TB_BLACK,
+    _TB_BLUE,
+    _TB_CYAN,
+    _TB_GREEN,
+    _TB_MAGENTA,
+    _TB_RED,
+    _TB_WHITE,
+    _TB_YELLOW,
+    _TB_BOLD,
+    _TB_REVERSE,
+    _TB_UNDERLINE,
     Tb_event (..),
     Tb_event_mod
       ( Tb_event_mod,
@@ -169,15 +161,27 @@ module Termbox.Bindings.Hs
 where
 
 import Termbox.Bindings.C (tb_clear, tb_present, tb_shutdown)
-import Termbox.Bindings.Hs.Internal.Attr (Tb_attr (..))
 import Termbox.Bindings.Hs.Internal.Cell (Tb_cell (..))
-import Termbox.Bindings.Hs.Internal.Color (Tb_color (..))
+import Termbox.Bindings.Hs.Internal.ColorAndAttrs
+  ( Tb_color_and_attrs (..),
+    _TB_BLACK,
+    _TB_BLUE,
+    _TB_BOLD,
+    _TB_CYAN,
+    _TB_DEFAULT,
+    _TB_GREEN,
+    _TB_MAGENTA,
+    _TB_RED,
+    _TB_REVERSE,
+    _TB_UNDERLINE,
+    _TB_WHITE,
+    _TB_YELLOW,
+  )
 import Termbox.Bindings.Hs.Internal.Event (Tb_event (..))
 import Termbox.Bindings.Hs.Internal.EventMod (Tb_event_mod (..))
 import Termbox.Bindings.Hs.Internal.EventType (Tb_event_type (..))
 import Termbox.Bindings.Hs.Internal.Functions
-  ( tb_attr,
-    tb_change_cell,
+  ( tb_change_cell,
     tb_height,
     tb_init,
     tb_init_fd,

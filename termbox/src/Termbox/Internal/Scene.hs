@@ -27,7 +27,7 @@ data Scene = Scene
 render :: Scene -> IO ()
 render Scene {sceneFill, sceneDraw} = do
   tb_set_cursor Nothing
-  tb_set_clear_attributes TB_DEFAULT (unMaybeColor sceneFill)
+  tb_set_clear_attributes _TB_DEFAULT (unMaybeColor sceneFill)
   tb_clear
   sceneDraw sceneFill
   tb_present

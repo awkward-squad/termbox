@@ -5,24 +5,24 @@ module Termbox.Bindings.Hs.Internal.Cell
 where
 
 import GHC.Generics (Generic)
-import qualified Termbox.Bindings.C
-import Termbox.Bindings.Hs.Internal.Attr (Tb_attr (..))
+import qualified Termbox.Bindings.C as Termbox
+import Termbox.Bindings.Hs.Internal.ColorAndAttrs (Tb_color_and_attrs (..))
 import Termbox.Bindings.Hs.Internal.Prelude (charToWord32)
 
 -- | A cell.
 data Tb_cell = Tb_cell
   { -- | A unicode character.
     ch :: {-# UNPACK #-} !Char,
-    -- | Foreground attribute.
-    fg :: {-# UNPACK #-} !Tb_attr,
-    -- | Background attribute.
-    bg :: {-# UNPACK #-} !Tb_attr
+    -- | Foreground color and attributes.
+    fg :: {-# UNPACK #-} !Tb_color_and_attrs,
+    -- | Background color and attributes.
+    bg :: {-# UNPACK #-} !Tb_color_and_attrs
   }
   deriving stock (Eq, Generic, Ord, Show)
 
-cellToCCell :: Tb_cell -> Termbox.Bindings.C.Tb_cell
-cellToCCell Tb_cell {ch, fg = Tb_attr fg, bg = Tb_attr bg} =
-  Termbox.Bindings.C.Tb_cell
+cellToCCell :: Tb_cell -> Termbox.Tb_cell
+cellToCCell Tb_cell {ch, fg = Tb_color_and_attrs fg, bg = Tb_color_and_attrs bg} =
+  Termbox.Tb_cell
     { ch = charToWord32 ch,
       fg,
       bg

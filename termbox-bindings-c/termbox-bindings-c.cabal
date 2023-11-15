@@ -22,8 +22,7 @@ maintainer: Mitchell Rosen <mitchellwrosen@gmail.com>, Travis Staton <hello@trav
 name: termbox-bindings-c
 synopsis: termbox bindings
 tested-with: GHC == 9.4.7, GHC == 9.6.3, GHC == 9.8.1
-version: 0.1.0
-x-revision: 2
+version: 0.1.0.1
 
 extra-source-files:
   CHANGELOG.md

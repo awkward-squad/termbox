@@ -33,47 +33,47 @@ import Termbox.Bindings.Hs
 -- * Miscellaneous colors, such as @'color' 33@.
 -- * Monochrome colors that range from black (@'gray' 0@) to white (@'gray' 23@).
 newtype Color
-  = Color Tb_color
+  = Color Tb_color_and_attrs
   deriving newtype (Eq)
 
 defaultColor :: Color
 defaultColor =
-  Color 0
+  Color _TB_DEFAULT
 
 red :: Color
 red =
-  Color 1
+  Color _TB_RED
 
 green :: Color
 green =
-  Color 2
+  Color _TB_GREEN
 
 yellow :: Color
 yellow =
-  Color 3
+  Color _TB_YELLOW
 
 blue :: Color
 blue =
-  Color 4
+  Color _TB_BLUE
 
 magenta :: Color
 magenta =
-  Color 5
+  Color _TB_MAGENTA
 
 cyan :: Color
 cyan =
-  Color 6
+  Color _TB_CYAN
 
 white :: Color
 white =
-  Color 7
+  Color _TB_WHITE
 
 -- | Make a basic color bright.
 bright :: Color -> Color
 bright =
   coerce bright_
 
-bright_ :: Tb_color -> Tb_color
+bright_ :: Word16 -> Word16
 bright_ c
   | c <= 7 = c + 8
   | otherwise = c
@@ -97,14 +97,14 @@ newtype MaybeColor
   = MaybeColor Color
   deriving stock (Eq)
 
-unMaybeColor :: MaybeColor -> Tb_color
-unMaybeColor (MaybeColor (Color (Tb_color c)))
-  | c == maxBound = TB_DEFAULT
-  | otherwise = Tb_color c
+unMaybeColor :: MaybeColor -> Tb_color_and_attrs
+unMaybeColor (MaybeColor (Color (Tb_color_and_attrs c)))
+  | c == maxBound = _TB_DEFAULT
+  | otherwise = Tb_color_and_attrs c
 
 nothingColor :: MaybeColor
 nothingColor =
-  MaybeColor (Color (Tb_color maxBound))
+  MaybeColor (Color (Tb_color_and_attrs maxBound))
 
 justColor :: Color -> MaybeColor
 justColor =

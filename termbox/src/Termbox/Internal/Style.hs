@@ -29,12 +29,12 @@ instance Semigroup Style where
     Style (a2 <> a1) (b2 <> b1)
 
 -- Render a style as a foreground `tb_color`.
-asForeground :: Style -> Tb_color
+asForeground :: Style -> Tb_color_and_attrs
 asForeground Style {foreground} =
   renderColorAndAttr foreground
 
 -- Render a style as a background `tb_color`.
-asBackground :: Style -> Tb_color
+asBackground :: Style -> Tb_color_and_attrs
 asBackground Style {background} =
   renderColorAndAttr background
 
@@ -60,19 +60,19 @@ bg =
 
 bold :: Style
 bold =
-  onlyForeground (onlyAttr TB_BOLD)
+  onlyForeground (onlyAttr _TB_BOLD)
 
 underline :: Style
 underline =
-  onlyForeground (onlyAttr TB_UNDERLINE)
+  onlyForeground (onlyAttr _TB_UNDERLINE)
 
 blink :: Style
 blink =
-  onlyBackground (onlyAttr TB_BOLD)
+  onlyBackground (onlyAttr _TB_BOLD)
 
 data ColorAndAttr = ColorAndAttr
   { color :: {-# UNPACK #-} !MaybeColor,
-    attr :: {-# UNPACK #-} !Tb_attr
+    attr :: {-# UNPACK #-} !Tb_color_and_attrs
   }
 
 instance Monoid ColorAndAttr where
@@ -86,14 +86,14 @@ instance Semigroup ColorAndAttr where
       (if color2 == nothingColor then color1 else color2)
       (attr1 <> attr2)
 
-renderColorAndAttr :: ColorAndAttr -> Tb_color
+renderColorAndAttr :: ColorAndAttr -> Tb_color_and_attrs
 renderColorAndAttr ColorAndAttr {color, attr} =
-  tb_attr attr (unMaybeColor color)
+  attr <> unMaybeColor color
 
 onlyColor :: Color -> ColorAndAttr
 onlyColor color =
   mempty {color = justColor color}
 
-onlyAttr :: Tb_attr -> ColorAndAttr
+onlyAttr :: Tb_color_and_attrs -> ColorAndAttr
 onlyAttr attr =
   mempty {attr}
