@@ -276,7 +276,7 @@ foreign import capi unsafe "termbox.h tb_width"
 -- Objects
 
 -- | A cell.
-data Tb_cell = Tb_cell
+data {-# CTYPE "termbox.h" "struct tb_cell" #-} Tb_cell = Tb_cell
   { -- | A unicode character.
     ch :: {-# UNPACK #-} !Word32,
     -- | Foreground attribute.
@@ -304,7 +304,7 @@ instance Storable Tb_cell where
     Storable.pokeByteOff ptr 6 bg
 
 -- | An event.
-data Tb_event = Tb_event
+data {-# CTYPE "termbox.h" "struct tb_event" #-} Tb_event = Tb_event
   { type_ :: {-# UNPACK #-} !Word8,
     mod :: {-# UNPACK #-} !Word8,
     key :: {-# UNPACK #-} !Word16,
