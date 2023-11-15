@@ -42,6 +42,7 @@ library
     cbits/termbox.c
     cbits/utf8.c
   default-extensions:
+    BinaryLiterals
     CApiFFI
     DeriveGeneric
     DerivingStrategies

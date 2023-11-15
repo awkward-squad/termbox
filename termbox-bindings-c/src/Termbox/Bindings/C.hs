@@ -7,7 +7,7 @@ module Termbox.Bindings.C
     tb_init_file,
     tb_shutdown,
 
-    -- ** Get\/set input\/output mode
+    -- ** Get or set the input or output mode
     tb_select_input_mode,
     tb_select_output_mode,
 
@@ -238,11 +238,11 @@ foreign import capi unsafe "termbox.h tb_put_cell"
     Ptr Tb_cell ->
     IO ()
 
--- | Get\/set the input mode.
+-- | Get or set the input mode.
 foreign import capi unsafe "termbox.h tb_select_input_mode"
   tb_select_input_mode :: CInt -> IO CInt
 
--- | Get\/set the output mode.
+-- | Get or set the output mode.
 foreign import capi unsafe "termbox.h tb_select_output_mode"
   tb_select_output_mode :: CInt -> IO CInt
 
@@ -255,7 +255,7 @@ foreign import capi unsafe "termbox.h tb_set_clear_attributes"
     Word16 ->
     IO ()
 
--- | Set the cursor location, or hide it.
+-- | Set or hide the cursor location.
 foreign import capi unsafe "termbox.h tb_set_cursor"
   tb_set_cursor ::
     -- | x
@@ -287,13 +287,8 @@ data Tb_cell = Tb_cell
   deriving stock (Eq, Generic, Ord, Show)
 
 instance Storable Tb_cell where
-  sizeOf :: Tb_cell -> Int
-  sizeOf _ =
-    8
-
-  alignment :: Tb_cell -> Int
-  alignment _ =
-    4
+  sizeOf _ = 8
+  alignment _ = 4
 
   peek :: Ptr Tb_cell -> IO Tb_cell
   peek ptr =
@@ -322,13 +317,8 @@ data Tb_event = Tb_event
   deriving stock (Eq, Generic, Ord, Show)
 
 instance Storable Tb_event where
-  sizeOf :: Tb_event -> Int
-  sizeOf _ =
-    24
-
-  alignment :: Tb_event -> Int
-  alignment _ =
-    4
+  sizeOf _ = 24
+  alignment _ = 4
 
   peek :: Ptr Tb_event -> IO Tb_event
   peek ptr =
@@ -356,208 +346,123 @@ instance Storable Tb_event where
 ------------------------------------------------------------------------------------------------------------------------
 -- Constants
 
-foreign import capi "termbox.h value TB_BLACK" _TB_BLACK :: Word16
-
-foreign import capi "termbox.h value TB_BLUE" _TB_BLUE :: Word16
-
-foreign import capi "termbox.h value TB_BOLD" _TB_BOLD :: Word16
-
-foreign import capi "termbox.h value TB_CYAN" _TB_CYAN :: Word16
-
-foreign import capi "termbox.h value TB_DEFAULT" _TB_DEFAULT :: Word16
-
-foreign import capi "termbox.h value TB_EFAILED_TO_OPEN_TTY" _TB_EFAILED_TO_OPEN_TTY :: CInt
-
-foreign import capi "termbox.h value TB_EPIPE_TRAP_ERROR" _TB_EPIPE_TRAP_ERROR :: CInt
-
-foreign import capi "termbox.h value TB_EUNSUPPORTED_TERMINAL" _TB_EUNSUPPORTED_TERMINAL :: CInt
-
-foreign import capi "termbox.h value TB_EVENT_KEY" _TB_EVENT_KEY :: Word8
-
-foreign import capi "termbox.h value TB_EVENT_MOUSE" _TB_EVENT_MOUSE :: Word8
-
-foreign import capi "termbox.h value TB_EVENT_RESIZE" _TB_EVENT_RESIZE :: Word8
-
-foreign import capi "termbox.h value TB_GREEN" _TB_GREEN :: Word16
-
-foreign import capi "termbox.h value TB_HIDE_CURSOR" _TB_HIDE_CURSOR :: CInt
-
-foreign import capi "termbox.h value TB_INPUT_ALT" _TB_INPUT_ALT :: CInt
-
-foreign import capi "termbox.h value TB_INPUT_CURRENT" _TB_INPUT_CURRENT :: CInt
-
-foreign import capi "termbox.h value TB_INPUT_ESC" _TB_INPUT_ESC :: CInt
-
-foreign import capi "termbox.h value TB_INPUT_MOUSE" _TB_INPUT_MOUSE :: CInt
-
-foreign import capi "termbox.h value TB_KEY_ARROW_DOWN" _TB_KEY_ARROW_DOWN :: Word16
-
-foreign import capi "termbox.h value TB_KEY_ARROW_LEFT" _TB_KEY_ARROW_LEFT :: Word16
-
-foreign import capi "termbox.h value TB_KEY_ARROW_RIGHT" _TB_KEY_ARROW_RIGHT :: Word16
-
-foreign import capi "termbox.h value TB_KEY_ARROW_UP" _TB_KEY_ARROW_UP :: Word16
-
-foreign import capi "termbox.h value TB_KEY_BACKSPACE" _TB_KEY_BACKSPACE :: Word16
-
-foreign import capi "termbox.h value TB_KEY_BACKSPACE2" _TB_KEY_BACKSPACE2 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_2" _TB_KEY_CTRL_2 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_3" _TB_KEY_CTRL_3 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_4" _TB_KEY_CTRL_4 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_5" _TB_KEY_CTRL_5 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_6" _TB_KEY_CTRL_6 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_7" _TB_KEY_CTRL_7 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_8" _TB_KEY_CTRL_8 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_A" _TB_KEY_CTRL_A :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_B" _TB_KEY_CTRL_B :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_BACKSLASH" _TB_KEY_CTRL_BACKSLASH :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_C" _TB_KEY_CTRL_C :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_D" _TB_KEY_CTRL_D :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_E" _TB_KEY_CTRL_E :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_F" _TB_KEY_CTRL_F :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_G" _TB_KEY_CTRL_G :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_H" _TB_KEY_CTRL_H :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_I" _TB_KEY_CTRL_I :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_J" _TB_KEY_CTRL_J :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_K" _TB_KEY_CTRL_K :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_L" _TB_KEY_CTRL_L :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_LSQ_BRACKET" _TB_KEY_CTRL_LSQ_BRACKET :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_M" _TB_KEY_CTRL_M :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_N" _TB_KEY_CTRL_N :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_O" _TB_KEY_CTRL_O :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_P" _TB_KEY_CTRL_P :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_Q" _TB_KEY_CTRL_Q :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_R" _TB_KEY_CTRL_R :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_RSQ_BRACKET" _TB_KEY_CTRL_RSQ_BRACKET :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_S" _TB_KEY_CTRL_S :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_SLASH" _TB_KEY_CTRL_SLASH :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_T" _TB_KEY_CTRL_T :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_TILDE" _TB_KEY_CTRL_TILDE :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_U" _TB_KEY_CTRL_U :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_UNDERSCORE" _TB_KEY_CTRL_UNDERSCORE :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_V" _TB_KEY_CTRL_V :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_W" _TB_KEY_CTRL_W :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_X" _TB_KEY_CTRL_X :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_Y" _TB_KEY_CTRL_Y :: Word16
-
-foreign import capi "termbox.h value TB_KEY_CTRL_Z" _TB_KEY_CTRL_Z :: Word16
-
-foreign import capi "termbox.h value TB_KEY_DELETE" _TB_KEY_DELETE :: Word16
-
-foreign import capi "termbox.h value TB_KEY_END" _TB_KEY_END :: Word16
-
-foreign import capi "termbox.h value TB_KEY_ENTER" _TB_KEY_ENTER :: Word16
-
-foreign import capi "termbox.h value TB_KEY_ESC" _TB_KEY_ESC :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F1" _TB_KEY_F1 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F10" _TB_KEY_F10 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F11" _TB_KEY_F11 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F12" _TB_KEY_F12 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F2" _TB_KEY_F2 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F3" _TB_KEY_F3 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F4" _TB_KEY_F4 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F5" _TB_KEY_F5 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F6" _TB_KEY_F6 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F7" _TB_KEY_F7 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F8" _TB_KEY_F8 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_F9" _TB_KEY_F9 :: Word16
-
-foreign import capi "termbox.h value TB_KEY_HOME" _TB_KEY_HOME :: Word16
-
-foreign import capi "termbox.h value TB_KEY_INSERT" _TB_KEY_INSERT :: Word16
-
-foreign import capi "termbox.h value TB_KEY_MOUSE_LEFT" _TB_KEY_MOUSE_LEFT :: Word16
-
-foreign import capi "termbox.h value TB_KEY_MOUSE_MIDDLE" _TB_KEY_MOUSE_MIDDLE :: Word16
-
-foreign import capi "termbox.h value TB_KEY_MOUSE_RELEASE" _TB_KEY_MOUSE_RELEASE :: Word16
-
-foreign import capi "termbox.h value TB_KEY_MOUSE_RIGHT" _TB_KEY_MOUSE_RIGHT :: Word16
-
-foreign import capi "termbox.h value TB_KEY_MOUSE_WHEEL_DOWN" _TB_KEY_MOUSE_WHEEL_DOWN :: Word16
-
-foreign import capi "termbox.h value TB_KEY_MOUSE_WHEEL_UP" _TB_KEY_MOUSE_WHEEL_UP :: Word16
-
-foreign import capi "termbox.h value TB_KEY_PGDN" _TB_KEY_PGDN :: Word16
-
-foreign import capi "termbox.h value TB_KEY_PGUP" _TB_KEY_PGUP :: Word16
-
-foreign import capi "termbox.h value TB_KEY_SPACE" _TB_KEY_SPACE :: Word16
-
-foreign import capi "termbox.h value TB_KEY_TAB" _TB_KEY_TAB :: Word16
-
-foreign import capi "termbox.h value TB_MAGENTA" _TB_MAGENTA :: Word16
-
-foreign import capi "termbox.h value TB_MOD_ALT" _TB_MOD_ALT :: Word8
-
-foreign import capi "termbox.h value TB_MOD_MOTION" _TB_MOD_MOTION :: Word8
-
-foreign import capi "termbox.h value TB_OUTPUT_216" _TB_OUTPUT_216 :: CInt
-
-foreign import capi "termbox.h value TB_OUTPUT_256" _TB_OUTPUT_256 :: CInt
-
-foreign import capi "termbox.h value TB_OUTPUT_CURRENT" _TB_OUTPUT_CURRENT :: CInt
-
-foreign import capi "termbox.h value TB_OUTPUT_GRAYSCALE" _TB_OUTPUT_GRAYSCALE :: CInt
-
-foreign import capi "termbox.h value TB_OUTPUT_NORMAL" _TB_OUTPUT_NORMAL :: CInt
-
-foreign import capi "termbox.h value TB_RED" _TB_RED :: Word16
-
-foreign import capi "termbox.h value TB_REVERSE" _TB_REVERSE :: Word16
-
-foreign import capi "termbox.h value TB_UNDERLINE" _TB_UNDERLINE :: Word16
-
-foreign import capi "termbox.h value TB_WHITE" _TB_WHITE :: Word16
-
-foreign import capi "termbox.h value TB_YELLOW" _TB_YELLOW :: Word16
+_TB_KEY_ARROW_DOWN, _TB_KEY_ARROW_LEFT, _TB_KEY_ARROW_RIGHT, _TB_KEY_ARROW_UP, _TB_KEY_BACKSPACE, _TB_KEY_BACKSPACE2, _TB_KEY_CTRL_2, _TB_KEY_CTRL_3, _TB_KEY_CTRL_4, _TB_KEY_CTRL_5, _TB_KEY_CTRL_6, _TB_KEY_CTRL_7, _TB_KEY_CTRL_8, _TB_KEY_CTRL_A, _TB_KEY_CTRL_B, _TB_KEY_CTRL_BACKSLASH, _TB_KEY_CTRL_C, _TB_KEY_CTRL_D, _TB_KEY_CTRL_E, _TB_KEY_CTRL_F, _TB_KEY_CTRL_G, _TB_KEY_CTRL_H, _TB_KEY_CTRL_I, _TB_KEY_CTRL_J, _TB_KEY_CTRL_K, _TB_KEY_CTRL_L, _TB_KEY_CTRL_LSQ_BRACKET, _TB_KEY_CTRL_M, _TB_KEY_CTRL_N, _TB_KEY_CTRL_O, _TB_KEY_CTRL_P, _TB_KEY_CTRL_Q, _TB_KEY_CTRL_R, _TB_KEY_CTRL_RSQ_BRACKET, _TB_KEY_CTRL_S, _TB_KEY_CTRL_SLASH, _TB_KEY_CTRL_T, _TB_KEY_CTRL_TILDE, _TB_KEY_CTRL_U, _TB_KEY_CTRL_UNDERSCORE, _TB_KEY_CTRL_V, _TB_KEY_CTRL_W, _TB_KEY_CTRL_X, _TB_KEY_CTRL_Y, _TB_KEY_CTRL_Z, _TB_KEY_DELETE, _TB_KEY_END, _TB_KEY_ENTER, _TB_KEY_ESC, _TB_KEY_F1, _TB_KEY_F10, _TB_KEY_F11, _TB_KEY_F12, _TB_KEY_F2, _TB_KEY_F3, _TB_KEY_F4, _TB_KEY_F5, _TB_KEY_F6, _TB_KEY_F7, _TB_KEY_F8, _TB_KEY_F9, _TB_KEY_HOME, _TB_KEY_INSERT, _TB_KEY_MOUSE_LEFT, _TB_KEY_MOUSE_MIDDLE, _TB_KEY_MOUSE_RELEASE, _TB_KEY_MOUSE_RIGHT, _TB_KEY_MOUSE_WHEEL_DOWN, _TB_KEY_MOUSE_WHEEL_UP, _TB_KEY_PGDN, _TB_KEY_PGUP, _TB_KEY_SPACE, _TB_KEY_TAB :: Word16
+_TB_KEY_ARROW_DOWN = 0xFFFF - 19
+_TB_KEY_ARROW_LEFT = 0xFFFF - 20
+_TB_KEY_ARROW_RIGHT = 0xFFFF - 21
+_TB_KEY_ARROW_UP = 0xFFFF - 18
+_TB_KEY_BACKSPACE = 0x08
+_TB_KEY_BACKSPACE2 = 0x7F
+_TB_KEY_CTRL_2 = 0x00
+_TB_KEY_CTRL_3 = 0x1B
+_TB_KEY_CTRL_4 = 0x1C
+_TB_KEY_CTRL_5 = 0x1D
+_TB_KEY_CTRL_6 = 0x1E
+_TB_KEY_CTRL_7 = 0x1F
+_TB_KEY_CTRL_8 = 0x7F
+_TB_KEY_CTRL_A = 0x01
+_TB_KEY_CTRL_B = 0x02
+_TB_KEY_CTRL_BACKSLASH = 0x1C
+_TB_KEY_CTRL_C = 0x03
+_TB_KEY_CTRL_D = 0x04
+_TB_KEY_CTRL_E = 0x05
+_TB_KEY_CTRL_F = 0x06
+_TB_KEY_CTRL_G = 0x07
+_TB_KEY_CTRL_H = 0x08
+_TB_KEY_CTRL_I = 0x09
+_TB_KEY_CTRL_J = 0x0A
+_TB_KEY_CTRL_K = 0x0B
+_TB_KEY_CTRL_L = 0x0C
+_TB_KEY_CTRL_LSQ_BRACKET = 0x1B
+_TB_KEY_CTRL_M = 0x0D
+_TB_KEY_CTRL_N = 0x0E
+_TB_KEY_CTRL_O = 0x0F
+_TB_KEY_CTRL_P = 0x10
+_TB_KEY_CTRL_Q = 0x11
+_TB_KEY_CTRL_R = 0x12
+_TB_KEY_CTRL_RSQ_BRACKET = 0x1D
+_TB_KEY_CTRL_S = 0x13
+_TB_KEY_CTRL_SLASH = 0x1F
+_TB_KEY_CTRL_T = 0x14
+_TB_KEY_CTRL_TILDE = 0x00
+_TB_KEY_CTRL_U = 0x15
+_TB_KEY_CTRL_UNDERSCORE = 0x1F
+_TB_KEY_CTRL_V = 0x16
+_TB_KEY_CTRL_W = 0x17
+_TB_KEY_CTRL_X = 0x18
+_TB_KEY_CTRL_Y = 0x19
+_TB_KEY_CTRL_Z = 0x1A
+_TB_KEY_DELETE = 0xFFFF - 13
+_TB_KEY_END = 0xFFFF - 15
+_TB_KEY_ENTER = 0x0D
+_TB_KEY_ESC = 0x1B
+_TB_KEY_F1 = 0xFFFF - 0
+_TB_KEY_F10 = 0xFFFF - 9
+_TB_KEY_F11 = 0xFFFF - 10
+_TB_KEY_F12 = 0xFFFF - 11
+_TB_KEY_F2 = 0xFFFF - 1
+_TB_KEY_F3 = 0xFFFF - 2
+_TB_KEY_F4 = 0xFFFF - 3
+_TB_KEY_F5 = 0xFFFF - 4
+_TB_KEY_F6 = 0xFFFF - 5
+_TB_KEY_F7 = 0xFFFF - 6
+_TB_KEY_F8 = 0xFFFF - 7
+_TB_KEY_F9 = 0xFFFF - 8
+_TB_KEY_HOME = 0xFFFF - 14
+_TB_KEY_INSERT = 0xFFFF - 12
+_TB_KEY_MOUSE_LEFT = 0xFFFF - 22
+_TB_KEY_MOUSE_MIDDLE = 0xFFFF - 24
+_TB_KEY_MOUSE_RELEASE = 0xFFFF - 25
+_TB_KEY_MOUSE_RIGHT = 0xFFFF - 23
+_TB_KEY_MOUSE_WHEEL_DOWN = 0xFFFF - 27
+_TB_KEY_MOUSE_WHEEL_UP = 0xFFFF - 26
+_TB_KEY_PGDN = 0xFFFF - 17
+_TB_KEY_PGUP = 0xFFFF - 16
+_TB_KEY_SPACE = 0x20
+_TB_KEY_TAB = 0x09
+
+_TB_MOD_ALT, _TB_MOD_MOTION :: Word8
+_TB_MOD_ALT = 0x01
+_TB_MOD_MOTION = 0x02
+
+_TB_DEFAULT, _TB_BLACK, _TB_BLUE, _TB_CYAN, _TB_GREEN, _TB_MAGENTA, _TB_RED, _TB_WHITE, _TB_YELLOW :: Word16
+_TB_DEFAULT = 0x00
+_TB_BLACK = 0x01
+_TB_BLUE = 0x05
+_TB_CYAN = 0x07
+_TB_GREEN = 0x03
+_TB_MAGENTA = 0x06
+_TB_RED = 0x02
+_TB_WHITE = 0x08
+_TB_YELLOW = 0x04
+
+_TB_BOLD, _TB_REVERSE, _TB_UNDERLINE :: Word16
+_TB_BOLD = 0x0100
+_TB_REVERSE = 0x0400
+_TB_UNDERLINE = 0x0200
+
+_TB_EVENT_KEY, _TB_EVENT_MOUSE, _TB_EVENT_RESIZE :: Word8
+_TB_EVENT_KEY = 1
+_TB_EVENT_MOUSE = 3
+_TB_EVENT_RESIZE = 2
+
+_TB_EFAILED_TO_OPEN_TTY, _TB_EPIPE_TRAP_ERROR, _TB_EUNSUPPORTED_TERMINAL :: CInt
+_TB_EFAILED_TO_OPEN_TTY = -2
+_TB_EPIPE_TRAP_ERROR = -3
+_TB_EUNSUPPORTED_TERMINAL = -1
+
+_TB_HIDE_CURSOR :: CInt
+_TB_HIDE_CURSOR = -1
+
+_TB_INPUT_CURRENT, _TB_INPUT_ALT, _TB_INPUT_ESC, _TB_INPUT_MOUSE :: CInt
+_TB_INPUT_CURRENT = 0b000
+_TB_INPUT_ALT = 0b010
+_TB_INPUT_ESC = 0b001
+_TB_INPUT_MOUSE = 0b100
+
+_TB_OUTPUT_CURRENT, _TB_OUTPUT_216, _TB_OUTPUT_256, _TB_OUTPUT_GRAYSCALE, _TB_OUTPUT_NORMAL :: CInt
+_TB_OUTPUT_CURRENT = 0
+_TB_OUTPUT_216 = 3
+_TB_OUTPUT_256 = 2
+_TB_OUTPUT_GRAYSCALE = 4
+_TB_OUTPUT_NORMAL = 1
