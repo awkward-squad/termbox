@@ -16,7 +16,7 @@ import Prelude hiding (mod)
 -- | An event.
 data Tb_event = Tb_event
   { type_ :: {-# UNPACK #-} !Tb_event_type,
-    mod :: {-# UNPACK #-} !(Maybe Tb_event_mod),
+    mod :: !(Maybe Tb_event_mod),
     key :: {-# UNPACK #-} !Tb_key,
     ch :: {-# UNPACK #-} !Char,
     w :: {-# UNPACK #-} !Int32,
