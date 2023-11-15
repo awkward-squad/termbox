@@ -16,8 +16,12 @@ module Termbox.Bindings.Hs
     tb_init_file,
     tb_shutdown,
 
-    -- ** Get or set input or output mode
+    -- ** Get or set input mode
+    tb_get_input_mode,
     tb_select_input_mode,
+
+    -- ** Get or set output mode
+    tb_get_output_mode,
     tb_select_output_mode,
 
     -- ** Get terminal dimensions
@@ -148,8 +152,7 @@ module Termbox.Bindings.Hs
         TB_KEY_TAB
       ),
     Tb_output_mode
-      ( TB_OUTPUT_CURRENT,
-        TB_OUTPUT_216,
+      ( TB_OUTPUT_216,
         TB_OUTPUT_256,
         TB_OUTPUT_GRAYSCALE,
         TB_OUTPUT_NORMAL
@@ -179,6 +182,8 @@ import Termbox.Bindings.Hs.Internal.EventMod (Tb_event_mod (..))
 import Termbox.Bindings.Hs.Internal.EventType (Tb_event_type (..))
 import Termbox.Bindings.Hs.Internal.Functions
   ( tb_change_cell,
+    tb_get_input_mode,
+    tb_get_output_mode,
     tb_height,
     tb_init,
     tb_init_fd,

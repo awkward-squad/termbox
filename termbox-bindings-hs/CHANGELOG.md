@@ -2,6 +2,7 @@
 
 - Rework `Tb_attr` and `Tb_color` into `Tb_color_and_attrs`
 - Rework `Tb_select_input_mode` and `Tb_input_mode`
+- Rework `Tb_select_output_mode` and `Tb_output_mode`
 - Make `mod` field of `Tb_event` a `Maybe Tb_event_mod` rather than a `Tb_event_mod`
 - Make `Show` instance of `Tb_key` not call `error` on unknown keys
 - Hide representation of `Tb_event_mod`

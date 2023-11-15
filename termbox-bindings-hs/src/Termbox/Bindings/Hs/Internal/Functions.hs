@@ -1,6 +1,7 @@
 module Termbox.Bindings.Hs.Internal.Functions
   ( tb_change_cell,
     tb_get_input_mode,
+    tb_get_output_mode,
     tb_height,
     tb_init,
     tb_init_fd,
@@ -52,6 +53,11 @@ tb_change_cell cx cy c (Tb_color_and_attrs foreground) (Tb_color_and_attrs backg
 tb_get_input_mode :: IO Tb_input_mode
 tb_get_input_mode =
   coerce Termbox.tb_select_input_mode Termbox._TB_INPUT_CURRENT
+
+-- | Get the output mode.
+tb_get_output_mode :: IO Tb_output_mode
+tb_get_output_mode =
+  coerce Termbox.tb_select_output_mode Termbox._TB_OUTPUT_CURRENT
 
 -- | Get the terminal height.
 tb_height :: IO Int
@@ -128,13 +134,13 @@ tb_put_cell cx cy cell =
 
 -- | Set the input mode.
 tb_select_input_mode :: Tb_input_mode -> IO ()
-tb_select_input_mode =
-  void . coerce @(CInt -> IO CInt) @(Tb_input_mode -> IO Tb_input_mode) Termbox.tb_select_input_mode
+tb_select_input_mode (Tb_input_mode mode) =
+  void (Termbox.tb_select_input_mode mode)
 
--- | Get or set the output mode.
-tb_select_output_mode :: Tb_output_mode -> IO Tb_output_mode
-tb_select_output_mode =
-  coerce Termbox.tb_select_output_mode
+-- | Set the output mode.
+tb_select_output_mode :: Tb_output_mode -> IO ()
+tb_select_output_mode (Tb_output_mode mode) =
+  void (Termbox.tb_select_output_mode mode)
 
 -- | Set the foreground and background attributes that 'tb_clear' clears the back buffer with.
 tb_set_clear_attributes ::

@@ -41,11 +41,11 @@ initialize =
         TB_EUNSUPPORTED_TERMINAL -> UnsupportedTerminal
     Right () -> do
       tb_select_input_mode _TB_INPUT_MOUSE
-      _ <- tb_select_output_mode TB_OUTPUT_256
+      tb_select_output_mode TB_OUTPUT_256
       pure (Right ())
 
 -- | Shut down a @termbox@ program.
 finalize :: IO ()
 finalize = do
-  _ <- tb_select_output_mode TB_OUTPUT_NORMAL
+  tb_select_output_mode TB_OUTPUT_NORMAL
   tb_shutdown

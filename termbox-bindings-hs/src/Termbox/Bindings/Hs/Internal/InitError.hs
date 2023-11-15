@@ -15,8 +15,8 @@ import Termbox.Bindings.C (_TB_EFAILED_TO_OPEN_TTY, _TB_EPIPE_TRAP_ERROR, _TB_EU
 -- | A 'tb_init' error.
 newtype Tb_init_error
   = Tb_init_error CInt
-  deriving stock (Eq)
   deriving anyclass (Exception)
+  deriving stock (Eq)
 
 instance Show Tb_init_error where
   show = \case
