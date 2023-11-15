@@ -9,7 +9,7 @@
 - Improve `Show` instance of `Tb_event_mod`, `Tb_input_mode`
 - Add `Exception` instance for `Tb_init_error`
 - Remove `tb_attr`
-- Remove `Ord` instances of `Tb_cell`, `Tb_event`, `Tb_event_mod`, `Tb_event_type`, `Tb_init_error`
+- Remove `Ord` instances of `Tb_cell`, `Tb_event`, `Tb_event_mod`, `Tb_event_type`, `Tb_init_error`, `Tb_input_mode`, `Tb_output_mode`
 
 ## [0.1.1] - November 5, 2023
 

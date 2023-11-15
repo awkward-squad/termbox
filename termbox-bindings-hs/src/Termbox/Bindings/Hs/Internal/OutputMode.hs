@@ -20,7 +20,7 @@ import Termbox.Bindings.C
 -- | The output mode.
 newtype Tb_output_mode
   = Tb_output_mode CInt
-  deriving stock (Eq, Ord)
+  deriving stock (Eq)
 
 instance Show Tb_output_mode where
   show = \case
