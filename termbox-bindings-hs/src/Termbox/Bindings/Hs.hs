@@ -44,7 +44,7 @@ module Termbox.Bindings.Hs
 
     -- * Types
     Tb_cell (..),
-    Tb_color_and_attrs (Tb_color_and_attrs),
+    Tb_attrs (Tb_attrs),
     _TB_DEFAULT,
     _TB_BLACK,
     _TB_BLUE,
@@ -161,9 +161,8 @@ module Termbox.Bindings.Hs
 where
 
 import Termbox.Bindings.C (tb_clear, tb_present, tb_shutdown)
-import Termbox.Bindings.Hs.Internal.Cell (Tb_cell (..))
-import Termbox.Bindings.Hs.Internal.ColorAndAttrs
-  ( Tb_color_and_attrs (..),
+import Termbox.Bindings.Hs.Internal.Attrs
+  ( Tb_attrs (..),
     _TB_BLACK,
     _TB_BLUE,
     _TB_BOLD,
@@ -177,6 +176,7 @@ import Termbox.Bindings.Hs.Internal.ColorAndAttrs
     _TB_WHITE,
     _TB_YELLOW,
   )
+import Termbox.Bindings.Hs.Internal.Cell (Tb_cell (..))
 import Termbox.Bindings.Hs.Internal.Event (Tb_event (..))
 import Termbox.Bindings.Hs.Internal.EventMod (Tb_event_mod (..))
 import Termbox.Bindings.Hs.Internal.EventType (Tb_event_type (..))

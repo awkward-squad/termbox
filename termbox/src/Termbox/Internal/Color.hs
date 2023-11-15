@@ -33,7 +33,7 @@ import Termbox.Bindings.Hs
 -- * Miscellaneous colors, such as @'color' 33@.
 -- * Monochrome colors that range from black (@'gray' 0@) to white (@'gray' 23@).
 newtype Color
-  = Color Tb_color_and_attrs
+  = Color Tb_attrs
   deriving newtype (Eq)
 
 defaultColor :: Color
@@ -97,14 +97,14 @@ newtype MaybeColor
   = MaybeColor Color
   deriving stock (Eq)
 
-unMaybeColor :: MaybeColor -> Tb_color_and_attrs
-unMaybeColor (MaybeColor (Color (Tb_color_and_attrs c)))
-  | c == maxBound = _TB_DEFAULT
-  | otherwise = Tb_color_and_attrs c
+unMaybeColor :: MaybeColor -> Tb_attrs
+unMaybeColor c
+  | c == nothingColor = _TB_DEFAULT
+  | otherwise = coerce @_ @Tb_attrs c
 
 nothingColor :: MaybeColor
 nothingColor =
-  MaybeColor (Color (Tb_color_and_attrs maxBound))
+  coerce @Word16 maxBound
 
 justColor :: Color -> MaybeColor
 justColor =

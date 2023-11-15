@@ -66,8 +66,8 @@ library
     ghc-options:
       -Wno-missing-kind-signatures
   other-modules:
+    Termbox.Bindings.Hs.Internal.Attrs
     Termbox.Bindings.Hs.Internal.Cell
-    Termbox.Bindings.Hs.Internal.ColorAndAttrs
     Termbox.Bindings.Hs.Internal.Event
     Termbox.Bindings.Hs.Internal.EventMod
     Termbox.Bindings.Hs.Internal.EventType

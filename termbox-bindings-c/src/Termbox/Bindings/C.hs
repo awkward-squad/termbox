@@ -111,10 +111,6 @@ module Termbox.Bindings.C
     _TB_KEY_SPACE,
     _TB_KEY_TAB,
 
-    -- ** Alt modifiers
-    _TB_MOD_ALT,
-    _TB_MOD_MOTION,
-
     -- ** Colors
     _TB_DEFAULT,
     _TB_BLACK,
@@ -135,6 +131,10 @@ module Termbox.Bindings.C
     _TB_EVENT_KEY,
     _TB_EVENT_MOUSE,
     _TB_EVENT_RESIZE,
+
+    -- ** Event modifiers
+    _TB_MOD_ALT,
+    _TB_MOD_MOTION,
 
     -- ** 'tb_init' error codes
     _TB_EFAILED_TO_OPEN_TTY,
@@ -279,9 +279,9 @@ foreign import capi unsafe "termbox.h tb_width"
 data {-# CTYPE "termbox.h" "struct tb_cell" #-} Tb_cell = Tb_cell
   { -- | A unicode character.
     ch :: {-# UNPACK #-} !Word32,
-    -- | Foreground attribute.
+    -- | Foreground attributes.
     fg :: {-# UNPACK #-} !Word16,
-    -- | Background attribute.
+    -- | Background attributes.
     bg :: {-# UNPACK #-} !Word16
   }
   deriving stock (Eq, Generic, Ord, Show)

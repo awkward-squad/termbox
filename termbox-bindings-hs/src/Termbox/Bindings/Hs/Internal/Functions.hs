@@ -25,8 +25,8 @@ import Foreign.Marshal.Alloc (alloca)
 import qualified Foreign.Storable as Storable
 import System.Posix.Types (Fd (Fd))
 import qualified Termbox.Bindings.C as Termbox
+import Termbox.Bindings.Hs.Internal.Attrs (Tb_attrs (..))
 import Termbox.Bindings.Hs.Internal.Cell (Tb_cell, cellToCCell)
-import Termbox.Bindings.Hs.Internal.ColorAndAttrs (Tb_color_and_attrs (..))
 import Termbox.Bindings.Hs.Internal.Event (Tb_event, ceventToEvent)
 import Termbox.Bindings.Hs.Internal.InitError (Tb_init_error (..))
 import Termbox.Bindings.Hs.Internal.InputMode (Tb_input_mode (..))
@@ -42,11 +42,11 @@ tb_change_cell ::
   -- | ch
   Char ->
   -- | fg
-  Tb_color_and_attrs ->
+  Tb_attrs ->
   -- | bg
-  Tb_color_and_attrs ->
+  Tb_attrs ->
   IO ()
-tb_change_cell cx cy c (Tb_color_and_attrs foreground) (Tb_color_and_attrs background) =
+tb_change_cell cx cy c (Tb_attrs foreground) (Tb_attrs background) =
   Termbox.tb_change_cell (intToCInt cx) (intToCInt cy) (charToWord32 c) foreground background
 
 -- | Get the input mode.
@@ -145,9 +145,9 @@ tb_select_output_mode (Tb_output_mode mode) =
 -- | Set the foreground and background attributes that 'tb_clear' clears the back buffer with.
 tb_set_clear_attributes ::
   -- | fg
-  Tb_color_and_attrs ->
+  Tb_attrs ->
   -- | bg
-  Tb_color_and_attrs ->
+  Tb_attrs ->
   IO ()
 tb_set_clear_attributes =
   coerce Termbox.tb_set_clear_attributes
