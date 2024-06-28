@@ -8,9 +8,9 @@
 #
 # For more information, see https://github.com/haskell-CI/haskell-ci
 #
-# version: 0.15.20230312
+# version: 0.19.20240608
 #
-# REGENDATA ("0.15.20230312",["github","cabal.project"])
+# REGENDATA ("0.19.20240608",["github","cabal.project"])
 #
 name: Haskell-CI
 on:
@@ -23,24 +23,24 @@ jobs:
     timeout-minutes:
       60
     container:
-      image: buildpack-deps:bionic
+      image: buildpack-deps:jammy
     continue-on-error: ${{ matrix.allow-failure }}
     strategy:
       matrix:
         include:
-          - compiler: ghc-9.6.1
+          - compiler: ghc-9.10.1
             compilerKind: ghc
-            compilerVersion: 9.6.1
+            compilerVersion: 9.10.1
             setup-method: ghcup
             allow-failure: false
-          - compiler: ghc-9.4.4
+          - compiler: ghc-9.8.2
             compilerKind: ghc
-            compilerVersion: 9.4.4
+            compilerVersion: 9.8.2
             setup-method: ghcup
             allow-failure: false
-          - compiler: ghc-9.2.7
+          - compiler: ghc-9.6.5
             compilerKind: ghc
-            compilerVersion: 9.2.7
+            compilerVersion: 9.6.5
             setup-method: ghcup
             allow-failure: false
       fail-fast: false
@@ -50,10 +50,10 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common libtinfo5
           mkdir -p "$HOME/.ghcup/bin"
-          curl -sL https://downloads.haskell.org/ghcup/0.1.18.0/x86_64-linux-ghcup-0.1.18.0 > "$HOME/.ghcup/bin/ghcup"
+          curl -sL https://downloads.haskell.org/ghcup/0.1.20.0/x86_64-linux-ghcup-0.1.20.0 > "$HOME/.ghcup/bin/ghcup"
           chmod a+x "$HOME/.ghcup/bin/ghcup"
           "$HOME/.ghcup/bin/ghcup" install ghc "$HCVER" || (cat "$HOME"/.ghcup/logs/*.* && false)
-          "$HOME/.ghcup/bin/ghcup" install cabal 3.10.1.0 || (cat "$HOME"/.ghcup/logs/*.* && false)
+          "$HOME/.ghcup/bin/ghcup" install cabal 3.10.2.0 || (cat "$HOME"/.ghcup/logs/*.* && false)
         env:
           HCKIND: ${{ matrix.compilerKind }}
           HCNAME: ${{ matrix.compiler }}
@@ -65,11 +65,13 @@ jobs:
           echo "CABAL_DIR=$HOME/.cabal" >> "$GITHUB_ENV"
           echo "CABAL_CONFIG=$HOME/.cabal/config" >> "$GITHUB_ENV"
           HCDIR=/opt/$HCKIND/$HCVER
-          HC=$HOME/.ghcup/bin/$HCKIND-$HCVER
+          HC=$("$HOME/.ghcup/bin/ghcup" whereis ghc "$HCVER")
+          HCPKG=$(echo "$HC" | sed 's#ghc$#ghc-pkg#')
+          HADDOCK=$(echo "$HC" | sed 's#ghc$#haddock#')
           echo "HC=$HC" >> "$GITHUB_ENV"
-          echo "HCPKG=$HOME/.ghcup/bin/$HCKIND-pkg-$HCVER" >> "$GITHUB_ENV"
-          echo "HADDOCK=$HOME/.ghcup/bin/haddock-$HCVER" >> "$GITHUB_ENV"
-          echo "CABAL=$HOME/.ghcup/bin/cabal-3.10.1.0 -vnormal+nowrap" >> "$GITHUB_ENV"
+          echo "HCPKG=$HCPKG" >> "$GITHUB_ENV"
+          echo "HADDOCK=$HADDOCK" >> "$GITHUB_ENV"
+          echo "CABAL=$HOME/.ghcup/bin/cabal-3.10.2.0 -vnormal+nowrap" >> "$GITHUB_ENV"
           HCNUMVER=$(${HC} --numeric-version|perl -ne '/^(\d+)\.(\d+)\.(\d+)(\.(\d+))?$/; print(10000 * $1 + 100 * $2 + ($3 == 0 ? $5 != 1 : $3))')
           echo "HCNUMVER=$HCNUMVER" >> "$GITHUB_ENV"
           echo "ARG_TESTS=--enable-tests" >> "$GITHUB_ENV"
@@ -119,14 +121,14 @@ jobs:
       - name: install cabal-plan
         run: |
           mkdir -p $HOME/.cabal/bin
-          curl -sL https://github.com/haskell-hvr/cabal-plan/releases/download/v0.6.2.0/cabal-plan-0.6.2.0-x86_64-linux.xz > cabal-plan.xz
-          echo 'de73600b1836d3f55e32d80385acc055fd97f60eaa0ab68a755302685f5d81bc  cabal-plan.xz' | sha256sum -c -
+          curl -sL https://github.com/haskell-hvr/cabal-plan/releases/download/v0.7.3.0/cabal-plan-0.7.3.0-x86_64-linux.xz > cabal-plan.xz
+          echo 'f62ccb2971567a5f638f2005ad3173dba14693a45154c1508645c52289714cb2  cabal-plan.xz' | sha256sum -c -
           xz -d < cabal-plan.xz > $HOME/.cabal/bin/cabal-plan
           rm -f cabal-plan.xz
           chmod a+x $HOME/.cabal/bin/cabal-plan
           cabal-plan --version
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: source
       - name: initial cabal.project for sdist
@@ -137,6 +139,8 @@ jobs:
           echo "packages: $GITHUB_WORKSPACE/source/termbox-bindings-hs" >> cabal.project
           echo "packages: $GITHUB_WORKSPACE/source/termbox-bindings-c" >> cabal.project
           echo "packages: $GITHUB_WORKSPACE/source/termbox-tea" >> cabal.project
+          echo "packages: $GITHUB_WORKSPACE/source/termbox2-bindings-c" >> cabal.project
+          echo "packages: $GITHUB_WORKSPACE/source/termbox2-bindings-hs" >> cabal.project
           cat cabal.project
       - name: sdist
         run: |
@@ -158,6 +162,10 @@ jobs:
           echo "PKGDIR_termbox_bindings_c=${PKGDIR_termbox_bindings_c}" >> "$GITHUB_ENV"
           PKGDIR_termbox_tea="$(find "$GITHUB_WORKSPACE/unpacked" -maxdepth 1 -type d -regex '.*/termbox-tea-[0-9.]*')"
           echo "PKGDIR_termbox_tea=${PKGDIR_termbox_tea}" >> "$GITHUB_ENV"
+          PKGDIR_termbox2_bindings_c="$(find "$GITHUB_WORKSPACE/unpacked" -maxdepth 1 -type d -regex '.*/termbox2-bindings-c-[0-9.]*')"
+          echo "PKGDIR_termbox2_bindings_c=${PKGDIR_termbox2_bindings_c}" >> "$GITHUB_ENV"
+          PKGDIR_termbox2_bindings_hs="$(find "$GITHUB_WORKSPACE/unpacked" -maxdepth 1 -type d -regex '.*/termbox2-bindings-hs-[0-9.]*')"
+          echo "PKGDIR_termbox2_bindings_hs=${PKGDIR_termbox2_bindings_hs}" >> "$GITHUB_ENV"
           rm -f cabal.project cabal.project.local
           touch cabal.project
           touch cabal.project.local
@@ -166,6 +174,8 @@ jobs:
           echo "packages: ${PKGDIR_termbox_bindings_hs}" >> cabal.project
           echo "packages: ${PKGDIR_termbox_bindings_c}" >> cabal.project
           echo "packages: ${PKGDIR_termbox_tea}" >> cabal.project
+          echo "packages: ${PKGDIR_termbox2_bindings_c}" >> cabal.project
+          echo "packages: ${PKGDIR_termbox2_bindings_hs}" >> cabal.project
           echo "package termbox" >> cabal.project
           echo "    ghc-options: -Werror=missing-methods" >> cabal.project
           echo "package termbox-banana" >> cabal.project
@@ -176,9 +186,13 @@ jobs:
           echo "    ghc-options: -Werror=missing-methods" >> cabal.project
           echo "package termbox-tea" >> cabal.project
           echo "    ghc-options: -Werror=missing-methods" >> cabal.project
+          echo "package termbox2-bindings-c" >> cabal.project
+          echo "    ghc-options: -Werror=missing-methods" >> cabal.project
+          echo "package termbox2-bindings-hs" >> cabal.project
+          echo "    ghc-options: -Werror=missing-methods" >> cabal.project
           cat >> cabal.project <<EOF
           EOF
-          $HCPKG list --simple-output --names-only | perl -ne 'for (split /\s+/) { print "constraints: $_ installed\n" unless /^(termbox|termbox-banana|termbox-bindings-c|termbox-bindings-hs|termbox-tea)$/; }' >> cabal.project.local
+          $HCPKG list --simple-output --names-only | perl -ne 'for (split /\s+/) { print "constraints: any.$_ installed\n" unless /^(termbox|termbox-banana|termbox-bindings-c|termbox-bindings-hs|termbox-tea|termbox2-bindings-c|termbox2-bindings-hs)$/; }' >> cabal.project.local
           cat cabal.project
           cat cabal.project.local
       - name: dump install plan
@@ -186,7 +200,7 @@ jobs:
           $CABAL v2-build $ARG_COMPILER $ARG_TESTS $ARG_BENCH --dry-run all
           cabal-plan
       - name: restore cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           key: ${{ runner.os }}-${{ matrix.compiler }}-${{ github.sha }}
           path: ~/.cabal/store
@@ -213,6 +227,10 @@ jobs:
           ${CABAL} -vnormal check
           cd ${PKGDIR_termbox_tea} || false
           ${CABAL} -vnormal check
+          cd ${PKGDIR_termbox2_bindings_c} || false
+          ${CABAL} -vnormal check
+          cd ${PKGDIR_termbox2_bindings_hs} || false
+          ${CABAL} -vnormal check
       - name: haddock
         run: |
           $CABAL v2-haddock --disable-documentation --haddock-all $ARG_COMPILER --with-haddock $HADDOCK $ARG_TESTS $ARG_BENCH all
@@ -221,7 +239,7 @@ jobs:
           rm -f cabal.project.local
           $CABAL v2-build $ARG_COMPILER --disable-tests --disable-benchmarks all
       - name: save cache
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         if: always()
         with:
           key: ${{ runner.os }}-${{ matrix.compiler }}-${{ github.sha }}
