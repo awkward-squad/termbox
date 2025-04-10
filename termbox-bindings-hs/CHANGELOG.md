@@ -1,3 +1,7 @@
+## [1.0.0.1] - April 10, 2025
+
+- Support base-4.21
+
 ## [1.0.0] - November 14, 2023
 
 - Rework `Tb_attr` and `Tb_color` into `Tb_attrs`

@@ -1,10 +1,10 @@
 cabal-version: 2.4
 
-author: Mitchell Dalvi Rosen
+author: Mitchell Dalvi Rosen, Travis Staton
 bug-reports: https://github.com/awkward-squad/termbox/issues
 build-type: Simple
 category: User Interfaces
-copyright: (c) 2018-2024 Mitchell Dalvi Rosen, Travis Staton
+copyright: (c) 2018-2025 Mitchell Dalvi Rosen, Travis Staton
 description:
   This package provides an Elm Architecture interface to @termbox@ programs.
   .
@@ -17,9 +17,8 @@ license-file: LICENSE
 maintainer: Mitchell Dalvi Rosen <mitchellwrosen@gmail.com>, Travis Staton <hello@travisstaton.com>
 name: termbox-tea
 synopsis: termbox + The Elm Architecture
-tested-with: GHC == 9.6.5, GHC == 9.8.2, GHC == 9.10.1
-version: 1.0.0
-x-revision: 1
+tested-with: GHC == 9.8.4, GHC == 9.10.1, GHC == 9.12.2
+version: 1.0.0.1
 
 extra-doc-files:
   CHANGELOG.md
@@ -34,7 +33,7 @@ flag build-examples
   manual: True
 
 common component
-  default-language: Haskell2010
+  default-language: GHC2021
   ghc-options:
     -Weverything
     -Wno-all-missed-specialisations
@@ -58,28 +57,19 @@ common component
 library
   import: component
   build-depends:
-    base ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17 || ^>= 4.18 || ^>= 4.19 || ^>= 4.20,
+    base ^>= 4.13
+      || ^>= 4.14
+      || ^>= 4.15
+      || ^>= 4.16
+      || ^>= 4.17
+      || ^>= 4.18
+      || ^>= 4.19
+      || ^>= 4.20
+      || ^>= 4.21,
     termbox ^>= 2.0.0,
     ki ^>= 1.0,
   default-extensions:
     BlockArguments
-    CApiFFI
-    DeriveAnyClass
-    DeriveFunctor
-    DeriveGeneric
-    DerivingStrategies
-    DerivingVia
-    DuplicateRecordFields
-    ExistentialQuantification
-    FlexibleInstances
-    GeneralizedNewtypeDeriving
-    InstanceSigs
-    LambdaCase
-    NamedFieldPuns
-    NumericUnderscores
-    OverloadedStrings
-    PatternSynonyms
-    TypeApplications
   exposed-modules: Termbox.Tea
   hs-source-dirs: src
 

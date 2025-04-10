@@ -1,3 +1,7 @@
+## [2.0.0.1] - April 10, 2025
+
+- Support `base-4.21`
+
 ## [2.0.0] - November 5, 2023
 
 - Update to `termbox-2.0.0`
