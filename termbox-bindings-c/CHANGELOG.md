@@ -1,3 +1,7 @@
+## [Unreleased]
+
+- Fix C compilation issue related to `wcwidth` usage
+
 ## [0.1.0.2] - April 10, 2025
 
 - Support base-4.21
