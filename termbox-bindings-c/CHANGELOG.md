@@ -1,4 +1,4 @@
-## [Unreleased]
+## [0.1.0.3] – December 3, 2025
 
 - Fix C compilation issue related to `wcwidth` usage
 
